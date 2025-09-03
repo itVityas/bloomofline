@@ -54,6 +54,9 @@ INSTALLED_APPS = [
     'corsheaders',
 
     'apps.account',
+    'apps.onec',
+    'apps.shtrih',
+    'apps.warehouse',
 ]
 
 MIDDLEWARE = [
