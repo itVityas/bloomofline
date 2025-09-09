@@ -8,11 +8,14 @@ from .account_manager import AccountManager
 class Role(models.Model):
     name = models.CharField(max_length=30, unique=True)
     description = models.CharField(max_length=200, blank=True, null=True)
+    create_at = models.DateTimeField(auto_now_add=True)
+    update_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
 
     class Meta:
+        managed = False
         ordering = ['id']
 
 
@@ -34,6 +37,7 @@ class User(AbstractBaseUser):
         return self.username
 
     class Meta:
+        managed = False
         ordering = ['id']
 
 
@@ -41,7 +45,10 @@ class UserRoles(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     role = models.ForeignKey(
         Role, on_delete=models.SET_NULL, blank=True, null=True)
+    create_at = models.DateTimeField(auto_now_add=True)
+    update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        managed = False
         unique_together = ('user', 'role')
         ordering = ['id']

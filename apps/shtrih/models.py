@@ -121,15 +121,15 @@ class Products(models.Model):
     state = models.IntegerField()
     nameplate = models.IntegerField(blank=True, null=True)
     quantity = models.IntegerField()
-    cleared = models.ForeignKey(
-        'sez.ClearanceInvoice',
-        on_delete=models.SET_NULL,
-        db_column='cleared',
-        null=True,
-        blank=True,
-        related_name='products',
-        db_constraint=False
-    )
+    # cleared = models.ForeignKey(
+    #     'sez.ClearanceInvoice',
+    #     on_delete=models.SET_NULL,
+    #     db_column='cleared',
+    #     null=True,
+    #     blank=True,
+    #     related_name='products',
+    #     db_constraint=False
+    # )
 
     class Meta:
         managed = False

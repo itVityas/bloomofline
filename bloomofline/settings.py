@@ -57,6 +57,8 @@ INSTALLED_APPS = [
     'apps.onec',
     'apps.shtrih',
     'apps.warehouse',
+    'apps.woffline',
+    'apps.sync',
 ]
 
 MIDDLEWARE = [
