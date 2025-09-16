@@ -116,6 +116,7 @@ DATABASES = {
         }
     },
 }
+DATABASE_ROUTERS = ['db_routers.ModelDatabaseRouter']
 
 
 # Password validation

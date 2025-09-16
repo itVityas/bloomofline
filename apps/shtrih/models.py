@@ -12,6 +12,7 @@ class ModelNames(models.Model):
 
     class Meta:
         managed = False
+        using_db = 'default'
         db_table = 'model_names'
         ordering = ['-id']
 
@@ -28,6 +29,7 @@ class Production_codes(models.Model):
     nameplate = models.BooleanField(db_column='nameplate')
 
     class Meta:
+        using_db = 'default'
         managed = False
         db_table = 'production_codes'
         ordering = ['-code']
@@ -60,6 +62,7 @@ class Models(models.Model):
     update_at = models.DateTimeField()
 
     class Meta:
+        using_db = 'default'
         managed = False
         db_table = 'models'
         ordering = ['-id']
@@ -79,6 +82,7 @@ class Consignments(models.Model):
     declaration_date = models.DateTimeField()
 
     class Meta:
+        using_db = 'default'
         managed = False
         db_table = 'consignments'
         ordering = ['id']
@@ -97,6 +101,7 @@ class Colors(models.Model):
         max_length=50, db_column='russian_title', blank=True, null=True)
 
     class Meta:
+        using_db = 'default'
         managed = False
         db_table = 'colors'
         ordering = ['id']
@@ -132,6 +137,7 @@ class Products(models.Model):
     # )
 
     class Meta:
+        using_db = 'default'
         managed = False
         db_table = 'products'
         ordering = ['-id']
@@ -148,6 +154,7 @@ class Modules(models.Model):
     digit = models.IntegerField(db_column='digit')
 
     class Meta:
+        using_db = 'default'
         managed = False
         db_table = 'modules'
         ordering = ['-id']
@@ -164,6 +171,7 @@ class ModelColors(models.Model):
     color_id = models.ForeignKey(Colors, on_delete=models.CASCADE, db_column='color_id')
 
     class Meta:
+        using_db = 'default'
         managed = False
         db_table = 'model_colors'
         ordering = ['-id']
@@ -180,6 +188,7 @@ class TypesOfWork(models.Model):
     order = models.SmallIntegerField(db_column='order')
 
     class Meta:
+        using_db = 'default'
         managed = False
         db_table = 'types_of_work'
         ordering = ['id']
@@ -197,6 +206,7 @@ class Workplaces(models.Model):
     version = models.CharField(max_length=10, db_column='version')
 
     class Meta:
+        using_db = 'default'
         managed = False
         db_table = 'workplaces'
         ordering = ['-id']
@@ -214,6 +224,7 @@ class Protocols(models.Model):
     work_date = models.DateField(db_column='work_date')
 
     class Meta:
+        using_db = 'default'
         managed = False
         db_table = 'protocols'
         ordering = ['-id']

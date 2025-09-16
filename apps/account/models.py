@@ -15,6 +15,7 @@ class Role(models.Model):
         return self.name
 
     class Meta:
+        using_db = 'default'
         managed = False
         ordering = ['id']
 
@@ -37,6 +38,7 @@ class User(AbstractBaseUser):
         return self.username
 
     class Meta:
+        using_db = 'default'
         managed = False
         ordering = ['id']
 
@@ -49,6 +51,7 @@ class UserRoles(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        using_db = 'default'
         managed = False
         unique_together = ('user', 'role')
         ordering = ['id']
