@@ -116,7 +116,12 @@ DATABASES = {
         }
     },
 }
-DATABASE_ROUTERS = ['db_routers.ModelDatabaseRouter']
+DATABASE_ROUTERS = [
+    'apps.account.ModelDatabaseRouter',
+    'apps.onec.ModelDatabaseRouter',
+    'apps.shtrih.ModelDatabaseRouter',
+    'apps.sync.ModelDatabaseRouter',
+    'apps.warehouse.ModelDatabaseRouter',]
 
 
 # Password validation

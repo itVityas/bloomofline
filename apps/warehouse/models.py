@@ -13,7 +13,6 @@ class Warehouse(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        using_db = 'default'
         managed = False
         ordering = ['id']
 
@@ -28,7 +27,6 @@ class TypeOfWork(models.Model):
 
     class Meta:
         managed = False
-        using_db = 'default'
         ordering = ['id']
 
     def __str__(self):
@@ -42,7 +40,6 @@ class WarehouseAction(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        using_db = 'default'
         managed = False
         ordering = ['id']
 
@@ -56,7 +53,6 @@ class Pallet(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        using_db = 'default'
         managed = False
         ordering = ['-id']
 
@@ -75,7 +71,6 @@ class WarehouseProduct(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        using_db = 'default'
         managed = False
         ordering = ['-id']
 
@@ -92,7 +87,6 @@ class WarehouseTTN(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        using_db = 'default'
         managed = False
         ordering = ['-ttn_number']
 
@@ -109,7 +103,6 @@ class WarehouseDo(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        using_db = 'default'
         managed = False
         ordering = ['-id']
 
@@ -127,7 +120,6 @@ class Shipment(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        using_db = 'default'
         managed = False
         ordering = ['-id']
 
