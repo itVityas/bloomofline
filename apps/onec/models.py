@@ -9,6 +9,7 @@ class OneCTTN(models.Model):
 
     class Meta:
         managed = False
+        app_label = "onec"
         ordering = ['-id']
 
     def __str__(self):
@@ -24,6 +25,7 @@ class OneCTTNItem(models.Model):
 
     class Meta:
         managed = False
+        app_label = "onec"
         ordering = ['-id']
 
     def __str__(self):

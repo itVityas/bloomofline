@@ -16,6 +16,7 @@ class Role(models.Model):
 
     class Meta:
         managed = False
+        app_label = "account"
         ordering = ['id']
 
 
@@ -37,6 +38,7 @@ class User(AbstractBaseUser):
         return self.username
 
     class Meta:
+        app_label = "account"
         managed = False
         ordering = ['id']
 
@@ -49,6 +51,7 @@ class UserRoles(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        app_label = "account"
         managed = False
         unique_together = ('user', 'role')
         ordering = ['id']

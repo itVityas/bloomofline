@@ -1,5 +1,10 @@
 class ModelDatabaseRouter:
-    route_app_labels = {"apps.account", "apps.onec", "apps.shtrih", "apps.warehouse"}
+    route_app_labels = {
+        "account": 'bloom',
+        "onec": 'bloom',
+        "shtrih": 'bloom',
+        "warehouse": 'bloom',
+        "sync": 'default'}
 
     def db_for_read(self, model, **hints):
         if model._meta.app_label in self.route_app_labels:

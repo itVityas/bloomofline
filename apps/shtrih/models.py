@@ -12,6 +12,7 @@ class ModelNames(models.Model):
 
     class Meta:
         managed = False
+        app_label = "shtrih"
         db_table = 'model_names'
         ordering = ['-id']
 
@@ -29,6 +30,7 @@ class Production_codes(models.Model):
 
     class Meta:
         managed = False
+        app_label = "shtrih"
         db_table = 'production_codes'
         ordering = ['-code']
 
@@ -61,6 +63,7 @@ class Models(models.Model):
 
     class Meta:
         managed = False
+        app_label = "shtrih"
         db_table = 'models'
         ordering = ['-id']
 
@@ -80,6 +83,7 @@ class Consignments(models.Model):
 
     class Meta:
         managed = False
+        app_label = "shtrih"
         db_table = 'consignments'
         ordering = ['id']
 
@@ -98,6 +102,7 @@ class Colors(models.Model):
 
     class Meta:
         managed = False
+        app_label = "shtrih"
         db_table = 'colors'
         ordering = ['id']
 
@@ -133,6 +138,7 @@ class Products(models.Model):
 
     class Meta:
         managed = False
+        app_label = "shtrih"
         db_table = 'products'
         ordering = ['-id']
 
@@ -149,6 +155,7 @@ class Modules(models.Model):
 
     class Meta:
         managed = False
+        app_label = "shtrih"
         db_table = 'modules'
         ordering = ['-id']
 
@@ -165,6 +172,7 @@ class ModelColors(models.Model):
 
     class Meta:
         managed = False
+        app_label = "shtrih"
         db_table = 'model_colors'
         ordering = ['-id']
 
@@ -181,6 +189,7 @@ class TypesOfWork(models.Model):
 
     class Meta:
         managed = False
+        app_label = "shtrih"
         db_table = 'types_of_work'
         ordering = ['id']
 
@@ -198,6 +207,7 @@ class Workplaces(models.Model):
 
     class Meta:
         managed = False
+        app_label = "shtrih"
         db_table = 'workplaces'
         ordering = ['-id']
 
@@ -215,6 +225,7 @@ class Protocols(models.Model):
 
     class Meta:
         managed = False
+        app_label = "shtrih"
         db_table = 'protocols'
         ordering = ['-id']
 

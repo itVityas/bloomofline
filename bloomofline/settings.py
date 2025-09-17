@@ -117,11 +117,8 @@ DATABASES = {
     },
 }
 DATABASE_ROUTERS = [
-    'apps.account.ModelDatabaseRouter',
-    'apps.onec.ModelDatabaseRouter',
-    'apps.shtrih.ModelDatabaseRouter',
-    'apps.sync.ModelDatabaseRouter',
-    'apps.warehouse.ModelDatabaseRouter',]
+    'bloomofline.db_routers.ModelDatabaseRouter',
+]
 
 
 # Password validation

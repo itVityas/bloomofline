@@ -14,6 +14,7 @@ class Warehouse(models.Model):
 
     class Meta:
         managed = False
+        app_label = "warehouse"
         ordering = ['id']
 
     def __str__(self):
@@ -27,6 +28,7 @@ class TypeOfWork(models.Model):
 
     class Meta:
         managed = False
+        app_label = "warehouse"
         ordering = ['id']
 
     def __str__(self):
@@ -41,6 +43,7 @@ class WarehouseAction(models.Model):
 
     class Meta:
         managed = False
+        app_label = "warehouse"
         ordering = ['id']
 
     def __str(self):
@@ -54,6 +57,7 @@ class Pallet(models.Model):
 
     class Meta:
         managed = False
+        app_label = "warehouse"
         ordering = ['-id']
 
     def __str__(self):
@@ -72,6 +76,7 @@ class WarehouseProduct(models.Model):
 
     class Meta:
         managed = False
+        app_label = "warehouse"
         ordering = ['-id']
 
 
@@ -88,6 +93,7 @@ class WarehouseTTN(models.Model):
 
     class Meta:
         managed = False
+        app_label = "warehouse"
         ordering = ['-ttn_number']
 
     def __str__(self):
@@ -104,6 +110,7 @@ class WarehouseDo(models.Model):
 
     class Meta:
         managed = False
+        app_label = "warehouse"
         ordering = ['-id']
 
     def __str__(self):
@@ -121,6 +128,7 @@ class Shipment(models.Model):
 
     class Meta:
         managed = False
+        app_label = "warehouse"
         ordering = ['-id']
 
     def __str__(self):
