@@ -4,7 +4,8 @@ class ModelDatabaseRouter:
         "onec": 'bloom',
         "shtrih": 'bloom',
         "warehouse": 'bloom',
-        "sync": 'default'}
+        "sync": 'default',
+        'aoffline': 'default'}
 
     def db_for_read(self, model, **hints):
         if not self.route_app_labels.get(model._meta.app_label, None):

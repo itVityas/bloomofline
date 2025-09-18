@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'corsheaders',
 
     'apps.account',
+    'apps.aoffline',
     'apps.onec',
     'apps.shtrih',
     'apps.warehouse',
@@ -203,7 +204,7 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 
     # "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainPairSerializer",
-    "TOKEN_OBTAIN_SERIALIZER": "apps.account.serializers.autorization.CustomTokenObtainPairSerializer",
+    "TOKEN_OBTAIN_SERIALIZER": "apps.aoffline.serializers.autorization.CustomTokenObtainPairSerializer",
     "TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSerializer",
     "TOKEN_VERIFY_SERIALIZER": "rest_framework_simplejwt.serializers.TokenVerifySerializer",
     "TOKEN_BLACKLIST_SERIALIZER": "rest_framework_simplejwt.serializers.TokenBlacklistSerializer",
@@ -212,7 +213,7 @@ SIMPLE_JWT = {
 }
 
 # use auth class
-AUTH_USER_MODEL = 'account.User'
+AUTH_USER_MODEL = 'aoffline.User'
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Bloomofline backend",

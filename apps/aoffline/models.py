@@ -1,4 +1,7 @@
 from django.db import models
+from django.contrib.auth.models import AbstractBaseUser
+
+from .account_manager import AccountManager
 
 
 # Create your models here.
@@ -12,12 +15,11 @@ class Role(models.Model):
         return self.name
 
     class Meta:
-        managed = False
-        app_label = "account"
+        app_label = "aoffline"
         ordering = ['id']
 
 
-class User(models.Model):
+class User(AbstractBaseUser):
     username = models.CharField(db_index=True, max_length=30, unique=True)
     fio = models.CharField(max_length=50, blank=True, null=True)
     is_active = models.BooleanField(default=True)
@@ -27,12 +29,15 @@ class User(models.Model):
     position = models.CharField(max_length=50, blank=True, null=True)
     room = models.CharField(max_length=30, blank=True, null=True)
 
+    USERNAME_FIELD = 'username'
+
+    objects = AccountManager()
+
     def __str__(self):
         return self.username
 
     class Meta:
-        app_label = "account"
-        managed = False
+        app_label = "aoffline"
         ordering = ['id']
 
 
@@ -44,7 +49,6 @@ class UserRoles(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        app_label = "account"
-        managed = False
+        app_label = "aoffline"
         unique_together = ('user', 'role')
         ordering = ['id']
