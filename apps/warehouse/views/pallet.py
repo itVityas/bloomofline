@@ -13,7 +13,7 @@ from apps.warehouse.serializers.pallet import (
     PalletGenerateSerializer
 )
 from apps.warehouse.permissions import WarehousePermission
-from Bloom.paginator import StandartResultPaginator
+from bloomofline.paginator import StandartResultPaginator
 
 
 @extend_schema(tags=["Pallet"])

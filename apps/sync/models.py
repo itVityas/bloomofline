@@ -9,4 +9,4 @@ class SyncDate(models.Model):
 
     class Meta:
         ordering = ["-id"]
-        app_label = "local"
+        app_label = "sync"

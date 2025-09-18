@@ -6,7 +6,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from apps.shtrih.models import Colors
 from apps.shtrih.serializers.color import ColorsSerializer
 from apps.shtrih.permission import StrihPermission
-from Bloom.paginator import StandartResultPaginator
+from bloomofline.paginator import StandartResultPaginator
 from rest_framework import status
 from rest_framework.response import Response
 

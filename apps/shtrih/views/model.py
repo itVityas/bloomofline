@@ -6,7 +6,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from apps.shtrih.models import Models
 from apps.shtrih.serializers.model import ModelsSerializer
 from apps.shtrih.permission import StrihPermission
-from Bloom.paginator import StandartResultPaginator
+from bloomofline.paginator import StandartResultPaginator
 
 
 @extend_schema(tags=['Shtrih'])

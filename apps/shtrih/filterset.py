@@ -25,5 +25,5 @@ class ProductFilter(filter.FilterSet):
             'state',
             'nameplate',
             'quantity',
-            'cleared'
+            # 'cleared'
         ]

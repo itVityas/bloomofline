@@ -15,7 +15,7 @@ from apps.warehouse.serializers.warehouse_do import (
     WarehouseDoPalletSerializer
 )
 from apps.warehouse.permissions import WarehousePermission
-from Bloom.paginator import StandartResultPaginator
+from bloomofline.paginator import StandartResultPaginator
 from apps.warehouse.filters import WarehouseDoFilter
 
 

@@ -11,7 +11,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from apps.account.models import User, UserRoles
 from apps.account.serializers.user import UserSerializer, UserUpdateSerializer
 from apps.account.permissions import AccountPermissions
-from Bloom.paginator import StandartResultPaginator
+from bloomofline.paginator import StandartResultPaginator
 from apps.account.filterset import UserFilter
 
 

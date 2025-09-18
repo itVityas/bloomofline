@@ -215,7 +215,7 @@ SIMPLE_JWT = {
 AUTH_USER_MODEL = 'account.User'
 
 SPECTACULAR_SETTINGS = {
-    "TITLE": "Bloom backend",
+    "TITLE": "Bloomofline backend",
     "VERSION": "0.0.1",
     "SERVE_INCLUDE_SCHEMA": False,
     "SWAGGER_UI_SETTINGS": {

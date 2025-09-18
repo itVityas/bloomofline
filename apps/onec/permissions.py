@@ -1,4 +1,4 @@
-from Bloom.permission import RoleBasedPermission
+from bloomofline.permission import RoleBasedPermission
 
 
 class Warehouse1CPermission(RoleBasedPermission):

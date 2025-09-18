@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from apps.shtrih.models import ModelNames, Models, Products
 from apps.shtrih.serializers.model_name import ModelNamesSerializer, CountSerializer
 from apps.shtrih.permission import StrihPermission
-from Bloom.paginator import StandartResultPaginator
+from bloomofline.paginator import StandartResultPaginator
 
 
 @extend_schema(tags=['Shtrih'])
