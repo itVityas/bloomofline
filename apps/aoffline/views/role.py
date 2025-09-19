@@ -2,12 +2,12 @@ from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 
-from apps.account.models import Role
-from apps.account.serializers.role import RoleSerializer
-from apps.account.permissions import AccountPermissions
+from apps.aoffline.models import Role
+from apps.aoffline.serializers.role import RoleSerializer
+from apps.aoffline.permissions import AccountPermissions
 
 
-@extend_schema(tags=['Role'])
+@extend_schema(tags=['Role offline'])
 @extend_schema_view(
     get=extend_schema(
         summary='Получение списка ролей',
@@ -24,7 +24,7 @@ class RoleListCreateView(ListCreateAPIView):
     queryset = Role.objects.all()
 
 
-@extend_schema(tags=['Role'])
+@extend_schema(tags=['Role offline'])
 @extend_schema_view(
     get=extend_schema(
         summary='Получение роли по id',

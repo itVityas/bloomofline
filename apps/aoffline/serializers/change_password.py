@@ -1,9 +1,9 @@
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
-from apps.account.exceptions import (
+from apps.aoffline.exceptions import (
     PasswordEmptyException, OldPasswordException, PasswordException)
-from apps.account.models import User
+from apps.aoffline.models import User
 
 
 class ChangePasswordSerializer(serializers.Serializer):

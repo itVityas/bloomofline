@@ -2,8 +2,8 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from apps.account.models import User
-from apps.account.exceptions import PasswordException, PasswordEmptyException
+from apps.aoffline.models import User
+from apps.aoffline.exceptions import PasswordException, PasswordEmptyException
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):

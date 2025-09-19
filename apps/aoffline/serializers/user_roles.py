@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.account.models import UserRoles
+from apps.aoffline.models import UserRoles
 
 
 class UserRolesSerializer(serializers.ModelSerializer):

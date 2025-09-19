@@ -4,12 +4,12 @@ from rest_framework.generics import (
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 
-from apps.account.models import UserRoles
-from apps.account.serializers.user_roles import UserRolesSerializer
-from apps.account.permissions import AccountPermissions
+from apps.aoffline.models import UserRoles
+from apps.aoffline.serializers.user_roles import UserRolesSerializer
+from apps.aoffline.permissions import AccountPermissions
 
 
-@extend_schema(tags=['UserRoles'])
+@extend_schema(tags=['UserRoles offline'])
 @extend_schema_view(
     get=extend_schema(
         summary='Получение списка ролей и пользователя',
@@ -28,7 +28,7 @@ class UserRolesListView(ListCreateAPIView):
     filterset_fields = ('user', 'role')
 
 
-@extend_schema(tags=['UserRoles'])
+@extend_schema(tags=['UserRoles offline'])
 @extend_schema_view(
     get=extend_schema(
         summary='Получение роли и пользователя по id',

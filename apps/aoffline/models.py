@@ -6,6 +6,7 @@ from .account_manager import AccountManager
 
 # Create your models here.
 class Role(models.Model):
+    id = models.BigIntegerField(primary_key=True)
     name = models.CharField(max_length=30, unique=True)
     description = models.CharField(max_length=200, blank=True, null=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -20,7 +21,9 @@ class Role(models.Model):
 
 
 class User(AbstractBaseUser):
+    id = models.BigIntegerField(primary_key=True)
     username = models.CharField(db_index=True, max_length=30, unique=True)
+    password = models.CharField(max_length=128)
     fio = models.CharField(max_length=50, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -42,6 +45,7 @@ class User(AbstractBaseUser):
 
 
 class UserRoles(models.Model):
+    id = models.BigIntegerField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     role = models.ForeignKey(
         Role, on_delete=models.SET_NULL, blank=True, null=True)

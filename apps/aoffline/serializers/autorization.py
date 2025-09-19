@@ -2,8 +2,8 @@ from django.utils import timezone
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import get_user_model
 
-from apps.account.exceptions import EmptyUserException
-from apps.account.serializers.user import UserSerializer
+from apps.aoffline.exceptions import EmptyUserException
+from apps.aoffline.serializers.user import UserSerializer
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):

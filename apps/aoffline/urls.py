@@ -1,15 +1,15 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from apps.account.views.role import RoleListCreateView, RoleDetailedView
-from apps.account.views.user_roles import (
+from apps.aoffline.views.role import RoleListCreateView, RoleDetailedView
+from apps.aoffline.views.user_roles import (
     UserRolesListView, UserRolesDetailedView)
-from apps.account.views.user import (
+from apps.aoffline.views.user import (
     UserListView, UserDetailedView, UserRetrieveView, UserRoleDeleteView)
-from apps.account.views.register import RegistrationView
-from apps.account.views.change_password import ChangePasswordView, ChangeUserPasswordView
-from apps.account.serializers.autorization import CustomTokenObtainPairSerializer
-
+from apps.aoffline.views.register import RegistrationView
+from apps.aoffline.views.change_password import ChangePasswordView, ChangeUserPasswordView
+from apps.aoffline.serializers.autorization import CustomTokenObtainPairSerializer
+from apps.aoffline.views.sync import SyncAccountView
 
 urlpatterns = [
     # user
@@ -26,4 +26,6 @@ urlpatterns = [
     path('role/<int:pk>/', RoleDetailedView.as_view(), name='update-role'),
     path('userroles/', UserRolesListView.as_view(), name='userrole-list'),
     path('userroles/<int:pk>/', UserRolesDetailedView.as_view(), name='userrole-detailed'),
+    # sync
+    path('sync/', SyncAccountView.as_view(), name='account_sync')
 ]

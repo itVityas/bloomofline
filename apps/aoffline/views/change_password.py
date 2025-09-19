@@ -3,12 +3,12 @@ from rest_framework.generics import UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from apps.account.serializers.change_password import (
+from apps.aoffline.serializers.change_password import (
     ChangePasswordSerializer, ChangeUserPasswordSerializer)
-from apps.account.models import User
+from apps.aoffline.models import User
 
 
-@extend_schema(tags=['user'])
+@extend_schema(tags=['user offline'])
 @extend_schema_view(
     patch=extend_schema(
         summary='Изменение пароля',
@@ -24,7 +24,7 @@ class ChangePasswordView(UpdateAPIView):
         return self.request.user
 
 
-@extend_schema(tags=['user'])
+@extend_schema(tags=['user offline'])
 @extend_schema_view(
     patch=extend_schema(
         summary='Изменение пароля у пользователя',
