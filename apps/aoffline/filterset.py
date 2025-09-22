@@ -1,6 +1,6 @@
 import django_filters as filters
 
-from apps.account.models import User
+from apps.aoffline.models import User
 
 
 class UserFilter(filters.FilterSet):
