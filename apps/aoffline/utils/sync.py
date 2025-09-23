@@ -17,7 +17,10 @@ class AccountSynchronization:
         if not off_roles:
             roles = Role.objects.using('bloom').all()
         else:
-            roles = Role.objects.using('bloom').filter(update_at__gte=off_roles[0].update_at)
+            roles_del = Role_offline.objects.using('default').all().exclude(
+                id__in=[i['id'] for i in Role.objects.using('bloom').all().values('id')])
+            roles_del.delete()
+            roles = Role.objects.using('bloom').filter(update_at__gt=off_roles[0].update_at)
         for role in roles:
             Role_offline.objects.using('default').update_or_create(
                 id=role.id,
@@ -31,19 +34,25 @@ class AccountSynchronization:
         if not off_users:
             users = User.objects.using('bloom').all()
         else:
-            users = User.objects.using('bloom').filter(updated_at__gte=off_users[0].updated_at)
+            users_del = User_offline.objects.using('default').all().exclude(
+                id__in=[i['id'] for i in User.objects.using('bloom').all().values('id')])
+            users_del.delete()
+            users = User.objects.using('bloom').filter(updated_at__gt=off_users[0].updated_at)
         for user in users:
+            defaults = {
+                'fio': user.fio,
+                'username': user.username,
+                'password': user.password,
+                'is_active': user.is_active,
+                'created_at': user.created_at,
+                'updated_at': user.updated_at,
+                'departmant': user.departmant,
+                'position': user.position,
+                'room': user.room,
+            }
             User_offline.objects.using('default').update_or_create(
                 id=user.id,
-                fio=user.fio,
-                username=user.username,
-                password=user.password,
-                is_active=user.is_active,
-                created_at=user.created_at,
-                updated_at=user.updated_at,
-                departmant=user.departmant,
-                position=user.position,
-                room=user.room,
+                defaults=defaults
             )
 
     def user_roles_sync(self):
@@ -51,7 +60,10 @@ class AccountSynchronization:
         if not off_user_roles:
             user_roles = UserRoles.objects.using('bloom').all()
         else:
-            user_roles = UserRoles.objects.using('bloom').filter(update_at__gte=off_user_roles[0].update_at)
+            user_roles_del = UserRoles_offline.objects.using('default').all().exclude(
+                id__in=[i['id'] for i in UserRoles.objects.using('bloom').all().values('id')])
+            user_roles_del.delete()
+            user_roles = UserRoles.objects.using('bloom').filter(update_at__gt=off_user_roles[0].update_at)
         for user_role in user_roles:
             UserRoles_offline.objects.using('default').update_or_create(
                 id=user_role.id,

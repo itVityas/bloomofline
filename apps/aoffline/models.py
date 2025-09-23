@@ -10,7 +10,7 @@ class Role(models.Model):
     name = models.CharField(max_length=30, unique=True)
     description = models.CharField(max_length=200, blank=True, null=True)
     create_at = models.DateTimeField(auto_now_add=True)
-    update_at = models.DateTimeField(auto_now=True)
+    update_at = models.DateTimeField()
 
     def __str__(self):
         return self.name
@@ -27,7 +27,7 @@ class User(AbstractBaseUser):
     fio = models.CharField(max_length=50, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField()
     departmant = models.CharField(max_length=30, blank=True, null=True)
     position = models.CharField(max_length=50, blank=True, null=True)
     room = models.CharField(max_length=30, blank=True, null=True)
@@ -50,7 +50,7 @@ class UserRoles(models.Model):
     role = models.ForeignKey(
         Role, on_delete=models.SET_NULL, blank=True, null=True)
     create_at = models.DateTimeField(auto_now_add=True)
-    update_at = models.DateTimeField(auto_now=True)
+    update_at = models.DateTimeField()
 
     class Meta:
         app_label = "aoffline"
