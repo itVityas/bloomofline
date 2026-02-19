@@ -142,8 +142,6 @@ class ModelFilter(filter.FilterSet):
         model = Models
         fields = [
             'pk',
-            'production_code',
-            'variant_code',
             'code',
             'name',
             'cont_name',
