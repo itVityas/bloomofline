@@ -3,7 +3,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiResponse
 
-from apps.aoffline.utils.sync import AccountSynchronization
+from apps.aoffline.utils.aoffline_sync import AccountSynchronization
 
 
 @extend_schema(tags=['Synchronization'])
