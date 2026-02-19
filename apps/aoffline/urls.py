@@ -27,5 +27,5 @@ urlpatterns = [
     path('userroles/', UserRolesListView.as_view(), name='userrole-list'),
     path('userroles/<int:pk>/', UserRolesDetailedView.as_view(), name='userrole-detailed'),
     # sync
-    path('sync/', SyncAccountView.as_view(), name='account_sync')
+    path('user/sync/', SyncAccountView.as_view(), name='account_sync')
 ]

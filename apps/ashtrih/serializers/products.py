@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
 from apps.ashtrih.models import Products
-from apps.ashtrih.serializers.color import ColorsSerializer
 from apps.ashtrih.serializers.model import ModelsSerializer
 
 
@@ -22,7 +21,6 @@ class ProductGetSerializer(serializers.ModelSerializer):
     Read-only Fields:
         - All fields (since this is a GET-only serializer)
     """
-    color_id = ColorsSerializer(read_only=True)
     model = ModelsSerializer(read_only=True)
 
     class Meta:
