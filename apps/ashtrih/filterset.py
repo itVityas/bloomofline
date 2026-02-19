@@ -15,14 +15,6 @@ class ProductFilter(filter.FilterSet):
         field_name='barcode',
         lookup_expr='istartswith',
         help_text="Filter products by barcode prefix (case insensitive)",)
-    omega_model_id = filter.CharFilter(
-        field_name='model__omega_model_id',
-        lookup_expr='exact',
-        help_text="Filter products by omega model ID (case insensitive)",)
-    omega_variant_id = filter.CharFilter(
-        field_name='model__omega_variant_id',
-        lookup_expr='exact',
-        help_text="Filter products by omega variant ID (case insensitive)",)
     state = filter.NumberFilter(
         field_name='state',
         lookup_expr='exact',
@@ -35,11 +27,7 @@ class ProductFilter(filter.FilterSet):
             'barcode',
             'start_barcode',
             'state',
-            'nameplate',
             'quantity',
-            'cleared',
-            'omega_model_id',
-            'omega_variant_id',
             'state',
         ]
 

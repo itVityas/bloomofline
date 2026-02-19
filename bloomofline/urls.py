@@ -46,7 +46,9 @@ urlpatterns = [
     path('api/v1/', include('apps.onec.urls')),
     path('api/v1/', include('apps.warehouse.urls')),
     path('api/v1/', include('apps.sync.urls')),
-    path('api/v1/offline/', include('apps.aoffline.urls')),
+    path('api/v1/aaccount/', include('apps.aoffline.urls')),
+    path('api/v1/ashtrih/', include('apps.ashtrih.urls')),
+    path('api/v1/aonec/', include('apps.aonec.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

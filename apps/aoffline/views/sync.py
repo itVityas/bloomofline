@@ -3,7 +3,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiResponse
 
-from apps.aoffline.utils.aoffline_sync import AccountSynchronization
+from apps.aoffline.utils.aoffline_sync import AccountFullSynchronization
 
 
 @extend_schema(tags=['Synchronization'])
@@ -22,7 +22,7 @@ class SyncAccountView(APIView):
 
     def get(self, request):
         try:
-            acc_sync = AccountSynchronization()
+            acc_sync = AccountFullSynchronization()
             acc_sync.full_sync()
             return Response({'status': 'ok'})
         except Exception as e:

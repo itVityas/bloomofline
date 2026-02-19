@@ -1,6 +1,5 @@
 from django.urls import path
 
-from apps.onec.views.weight import Weight1cView
 from apps.onec.views.onec_ttn import (
     OneCTTNCreateAPIView,
     OneCTTNListAPIView,
@@ -14,7 +13,6 @@ from apps.onec.views.onec_ttn_item import (
 )
 
 urlpatterns = [
-    path('1c/weight/', Weight1cView.as_view()),
     path('1c/onec_ttn/create/', OneCTTNCreateAPIView.as_view()),
     path('1c/onec_ttn/full_create/', OneCTTNFullCreateAPIView.as_view()),
     path('1c/onec_ttn/update/<int:pk>/', OneCTTNRetrieveUpdateDestroyAPIView.as_view()),

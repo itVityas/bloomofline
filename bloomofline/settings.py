@@ -60,6 +60,8 @@ INSTALLED_APPS = [
     'apps.warehouse',
     'apps.woffline',
     'apps.sync',
+    'apps.aonec',
+    'apps.ashtrih',
 ]
 
 MIDDLEWARE = [
