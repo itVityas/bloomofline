@@ -29,7 +29,7 @@ class FullSyncAllView(APIView):
             ShtrihFullSync().full_sync()
             return Response({'status': 'ok'})
         except Exception as e:
-            return Response({'error': str(e)})
+            return Response({'error': str(e)}, status=400)
 
 
 @extend_schema(tags=['Synchronization'])
@@ -53,4 +53,4 @@ class SyncAllView(APIView):
             ShtrihSync().sync()
             return Response({'status': 'ok'})
         except Exception as e:
-            return Response({'error': str(e)})
+            return Response({'error': str(e)}, status=400)

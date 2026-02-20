@@ -119,9 +119,9 @@ DATABASES = {
         }
     },
 }
-# DATABASE_ROUTERS = [
-#    'bloomofline.db_routers.ModelDatabaseRouter',
-# ]
+DATABASE_ROUTERS = [
+   'bloomofline.db_routers.ModelDatabaseRouter',
+]
 
 
 # Password validation

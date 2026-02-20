@@ -21,6 +21,6 @@ class ModelDatabaseRouter:
         return None
 
     def allow_migrate(self, db, app_label, model_name=None, **hints):
-        if app_label in self.route_app_labels:
+        if app_label in self.route_app_labels and self.route_app_labels.get(app_label, None) == 'default':
             return db == self.route_app_labels[app_label]
         return None
