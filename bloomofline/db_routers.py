@@ -11,12 +11,12 @@ class ModelDatabaseRouter:
         }
 
     def db_for_read(self, model, **hints):
-        if not self.route_app_labels.get(model._meta.app_label, None):
+        if self.route_app_labels.get(model._meta.app_label, None) is not None:
             return self.route_app_labels.get(model._meta.app_label, None)
         return None
 
     def db_for_write(self, model, **hints):
-        if not self.route_app_labels.get(model._meta.app_label, None):
+        if self.route_app_labels.get(model._meta.app_label, None) is not None:
             return self.route_app_labels.get(model._meta.app_label, None)
         return None
 

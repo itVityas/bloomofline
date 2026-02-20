@@ -10,7 +10,7 @@ class AccountFullSynchronization:
     def full_sync(self):
         self.full_role_sync()
         self.full_user_sync()
-        self.user_roles_sync()
+        self.full_user_roles_sync()
 
     def full_role_sync(self):
         Role_offline.objects.all().delete()
@@ -18,10 +18,10 @@ class AccountFullSynchronization:
         for role in roles:
             off_role = Role_offline.objects.create(
                 id=role.id,
-                defaults={
-                    'name': role.name,
-                    'description': role.description,
-                }
+                name=role.name,
+                description=role.description,
+                create_at=role.create_at,
+                update_at=role.update_at,
             )
             off_role.save()
 
@@ -51,4 +51,5 @@ class AccountFullSynchronization:
                 user_id=user_role.user_id,
                 role_id=user_role.role_id,
                 update_at=user_role.update_at,
+                create_at=user_role.create_at,
             )
