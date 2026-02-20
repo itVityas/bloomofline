@@ -1,7 +1,7 @@
 from apps.onec.models import OneCTTN, OneCTTNItem
 from apps.aonec.models import (
-    OneCTTN as offline_OneCTTN,
-    OneCTTNItem as offline_OneCTTItem
+    OfflineOneCTTN as offline_OneCTTN,
+    OfflineOneCTTNItem as offline_OneCTTItem
 )
 from apps.sync.models import SyncDate
 

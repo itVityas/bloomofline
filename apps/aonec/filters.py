@@ -1,6 +1,6 @@
 import django_filters as filters
 
-from apps.aonec.models import OneCTTN
+from apps.aonec.models import OfflineOneCTTN
 
 
 class OneCTTNFilter(filters.FilterSet):
@@ -23,7 +23,7 @@ class OneCTTNFilter(filters.FilterSet):
     )
 
     class Meta:
-        model = OneCTTN
+        model = OfflineOneCTTN
         fields = (
             'id',
             'number',

@@ -215,7 +215,7 @@ SIMPLE_JWT = {
 }
 
 # use auth class
-AUTH_USER_MODEL = 'aoffline.User'
+AUTH_USER_MODEL = 'aoffline.OfflineUser'
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Bloomofline backend",

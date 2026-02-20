@@ -1,17 +1,17 @@
 from rest_framework import serializers
 
-from apps.aonec.models import OneCTTNItem
+from apps.aonec.models import OfflineOneCTTNItem
 
 
-class OneCTTNItemSerializer(serializers.ModelSerializer):
+class OfflineOneCTTNItemSerializer(serializers.ModelSerializer):
     class Meta:
-        model = OneCTTNItem
+        model = OfflineOneCTTNItem
         fields = "__all__"
 
 
-class OneCTTNItemListSerializer(serializers.ModelSerializer):
+class OfflineOneCTTNItemListSerializer(serializers.ModelSerializer):
     class Meta:
-        model = OneCTTNItem
+        model = OfflineOneCTTNItem
         fields = [
             'name',
             'count'

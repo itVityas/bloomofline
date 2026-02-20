@@ -1,6 +1,6 @@
 import django_filters as filters
 
-from apps.aoffline.models import User
+from apps.aoffline.models import OfflineUser
 
 
 class UserFilter(filters.FilterSet):
@@ -50,7 +50,7 @@ class UserFilter(filters.FilterSet):
     )
 
     class Meta:
-        model = User
+        model = OfflineUser
         fields = [
             'id',
             'username',

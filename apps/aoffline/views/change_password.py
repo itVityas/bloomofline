@@ -4,8 +4,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from apps.aoffline.serializers.change_password import (
-    ChangePasswordSerializer, ChangeUserPasswordSerializer)
-from apps.aoffline.models import User
+    OfflineChangePasswordSerializer, OfflineChangeUserPasswordSerializer)
+from apps.aoffline.models import OfflineUser
 
 
 @extend_schema(tags=['user offline'])
@@ -17,7 +17,7 @@ from apps.aoffline.models import User
 )
 class ChangePasswordView(UpdateAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = ChangePasswordSerializer
+    serializer_class = OfflineChangePasswordSerializer
     http_method_names = ['patch']
 
     def get_object(self):
@@ -33,12 +33,12 @@ class ChangePasswordView(UpdateAPIView):
 )
 class ChangeUserPasswordView(UpdateAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = ChangeUserPasswordSerializer
+    serializer_class = OfflineChangeUserPasswordSerializer
     http_method_names = ['patch']
 
     def patch(self, request):
         id = request.data.get('id', None)
-        user = User.objects.filter(id=id).first()
+        user = OfflineUser.objects.filter(id=id).first()
         serializer = self.get_serializer(user)
         if user:
             user = serializer.update(user, request.data)

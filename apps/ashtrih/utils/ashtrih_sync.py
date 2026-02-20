@@ -4,9 +4,9 @@ from apps.shtrih.models import (
     Products,
 )
 from apps.ashtrih.models import (
-    Models as AshtrihModels,
-    Products as AshtrihProducts,
-    ModelNames as AshtrihModelNames,
+    OfflineModels as AshtrihModels,
+    OfflineProducts as AshtrihProducts,
+    OfflineModelNames as AshtrihModelNames,
 )
 from apps.sync.models import SyncDate
 

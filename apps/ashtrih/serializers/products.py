@@ -1,10 +1,10 @@
 from rest_framework import serializers
 
-from apps.ashtrih.models import Products
-from apps.ashtrih.serializers.model import ModelsSerializer
+from apps.ashtrih.models import OfflineProducts
+from apps.ashtrih.serializers.model import OfflineModelsSerializer
 
 
-class ProductGetSerializer(serializers.ModelSerializer):
+class OfflineProductGetSerializer(serializers.ModelSerializer):
     """
     Detailed product serializer for read operations with nested relationships.
 
@@ -21,26 +21,8 @@ class ProductGetSerializer(serializers.ModelSerializer):
     Read-only Fields:
         - All fields (since this is a GET-only serializer)
     """
-    model = ModelsSerializer(read_only=True)
+    model = OfflineModelsSerializer(read_only=True)
 
     class Meta:
-        model = Products
+        model = OfflineProducts
         fields = '__all__'
-
-
-class ProductUpdateClearedSerializer(serializers.ModelSerializer):
-    """
-    Update serializer for clearing products.
-
-    This serializer is used to update the 'cleared' field of a product.
-    It allows setting the 'cleared' field to a specific value.
-
-    Fields:
-        - cleared (IntegerField): The field to be updated with the new cleared value.
-
-    Read-only Fields:
-        - All fields (since this is an update-only serializer)
-    """
-    class Meta:
-        model = Products
-        fields = ['cleared']

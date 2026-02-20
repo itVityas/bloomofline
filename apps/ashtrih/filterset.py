@@ -1,6 +1,6 @@
 import django_filters as filter
 
-from .models import Products, ModelNames, Models
+from .models import OfflineProducts, OfflineModelNames, OfflineModels
 
 
 class ProductFilter(filter.FilterSet):
@@ -21,7 +21,7 @@ class ProductFilter(filter.FilterSet):
         help_text="Filter products by state (case insensitive)",)
 
     class Meta:
-        model = Products
+        model = OfflineProducts
         fields = [
             'id',
             'barcode',
@@ -74,7 +74,7 @@ class ModelNamesFilter(filter.FilterSet):
         help_text="Filter model names by short name containing (case insensitive)",)
 
     class Meta:
-        model = ModelNames
+        model = OfflineModelNames
         fields = [
             'id',
             'name',
@@ -139,7 +139,7 @@ class ModelFilter(filter.FilterSet):
         help_text="Filter models by short name containing (case insensitive)",)
 
     class Meta:
-        model = Models
+        model = OfflineModels
         fields = [
             'pk',
             'code',

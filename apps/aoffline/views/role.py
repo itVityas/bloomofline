@@ -2,8 +2,8 @@ from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 
-from apps.aoffline.models import Role
-from apps.aoffline.serializers.role import RoleSerializer
+from apps.aoffline.models import OfflineRole
+from apps.aoffline.serializers.role import OfflineRoleSerializer
 from apps.aoffline.permissions import AccountPermissions
 
 
@@ -20,8 +20,8 @@ from apps.aoffline.permissions import AccountPermissions
 )
 class RoleListCreateView(ListCreateAPIView):
     permission_classes = (IsAuthenticated, AccountPermissions)
-    serializer_class = RoleSerializer
-    queryset = Role.objects.all()
+    serializer_class = OfflineRoleSerializer
+    queryset = OfflineRole.objects.all()
 
 
 @extend_schema(tags=['Role offline'])
@@ -45,5 +45,5 @@ class RoleListCreateView(ListCreateAPIView):
 )
 class RoleDetailedView(RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, AccountPermissions)
-    serializer_class = RoleSerializer
-    queryset = Role.objects.all()
+    serializer_class = OfflineRoleSerializer
+    queryset = OfflineRole.objects.all()

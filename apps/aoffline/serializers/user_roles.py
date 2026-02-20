@@ -1,9 +1,9 @@
 from rest_framework import serializers
 
-from apps.aoffline.models import UserRoles
+from apps.aoffline.models import OfflineUserRoles
 
 
-class UserRolesSerializer(serializers.ModelSerializer):
+class OfflineUserRolesSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UserRoles
+        model = OfflineUserRoles
         fields = '__all__'

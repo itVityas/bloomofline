@@ -1,14 +1,14 @@
 from rest_framework import serializers
 
-from apps.aoffline.models import User, Role
-from apps.aoffline.serializers.role import RoleSerializer
+from apps.aoffline.models import OfflineUser, OfflineRole
+from apps.aoffline.serializers.role import OfflineRoleSerializer
 
 
-class UserSerializer(serializers.ModelSerializer):
+class OfflineUserSerializer(serializers.ModelSerializer):
     roles = serializers.SerializerMethodField()
 
     class Meta:
-        model = User
+        model = OfflineUser
         fields = [
             'id',
             'username',
@@ -23,19 +23,19 @@ class UserSerializer(serializers.ModelSerializer):
             ]
 
     def get_roles(self, obj) -> dict:
-        roles = Role.objects.filter(userroles__user=obj)
-        role_serializer = RoleSerializer(roles, many=True)
+        roles = OfflineRole.objects.filter(userroles__user=obj)
+        role_serializer = OfflineRoleSerializer(roles, many=True)
         return role_serializer.data
 
 
-class UserUpdateSerializer(serializers.ModelSerializer):
+class OfflineUserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = OfflineUser
         fields = [
-            'username',
-            'fio',
-            'is_active',
-            'departmant',
-            'room',
-            'position',
+                'username',
+                'fio',
+                'is_active',
+                'departmant',
+                'room',
+                'position',
             ]

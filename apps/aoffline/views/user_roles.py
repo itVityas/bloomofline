@@ -4,8 +4,8 @@ from rest_framework.generics import (
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 
-from apps.aoffline.models import UserRoles
-from apps.aoffline.serializers.user_roles import UserRolesSerializer
+from apps.aoffline.models import OfflineUserRoles
+from apps.aoffline.serializers.user_roles import OfflineUserRolesSerializer
 from apps.aoffline.permissions import AccountPermissions
 
 
@@ -22,8 +22,8 @@ from apps.aoffline.permissions import AccountPermissions
 )
 class UserRolesListView(ListCreateAPIView):
     permission_classes = (IsAuthenticated, AccountPermissions)
-    serializer_class = UserRolesSerializer
-    queryset = UserRoles.objects.all()
+    serializer_class = OfflineUserRolesSerializer
+    queryset = OfflineUserRoles.objects.all()
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('user', 'role')
 
@@ -49,5 +49,5 @@ class UserRolesListView(ListCreateAPIView):
 )
 class UserRolesDetailedView(RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, AccountPermissions)
-    serializer_class = UserRolesSerializer
-    queryset = UserRoles.objects.all()
+    serializer_class = OfflineUserRolesSerializer
+    queryset = OfflineUserRoles.objects.all()

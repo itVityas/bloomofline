@@ -3,17 +3,17 @@ from rest_framework import serializers
 
 from apps.aoffline.exceptions import (
     PasswordEmptyException, OldPasswordException, PasswordException)
-from apps.aoffline.models import User
+from apps.aoffline.models import OfflineUser
 
 
-class ChangePasswordSerializer(serializers.Serializer):
+class OfflineChangePasswordSerializer(serializers.Serializer):
     password = serializers.CharField(
         required=True, validators=[validate_password], write_only=True)
     password2 = serializers.CharField(required=True, write_only=True)
     old_password = serializers.CharField(required=True, write_only=True)
 
     class Meta:
-        model = User
+        model = OfflineUser
         fields = ['password', 'password2', 'old_password']
 
     def validate(self, attrs):
@@ -38,14 +38,14 @@ class ChangePasswordSerializer(serializers.Serializer):
         return instance
 
 
-class ChangeUserPasswordSerializer(serializers.Serializer):
+class OfflineChangeUserPasswordSerializer(serializers.Serializer):
     id = serializers.IntegerField(required=True)
     password = serializers.CharField(
         required=True, validators=[validate_password], write_only=True)
     password2 = serializers.CharField(required=True, write_only=True)
 
     class Meta:
-        model = User
+        model = OfflineUser
         fields = ['id', 'password', 'password2']
 
     def update(self, instance, attrs):

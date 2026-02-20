@@ -1,9 +1,9 @@
 from rest_framework import serializers
 
-from apps.ashtrih.models import ModelNames
+from apps.ashtrih.models import OfflineModelNames
 
 
-class ModelNamesSerializer(serializers.ModelSerializer):
+class OfflineModelNamesSerializer(serializers.ModelSerializer):
     """
     Serializer for the ModelNames model.
 
@@ -17,11 +17,11 @@ class ModelNamesSerializer(serializers.ModelSerializer):
         - short_name: Abbreviated model name (max_length=50)
     """
     class Meta:
-        model = ModelNames
+        model = OfflineModelNames
         fields = '__all__'
 
 
-class CountSerializer(serializers.Serializer):
+class OfflineCountSerializer(serializers.Serializer):
     """
     Generic count serializer for returning aggregated data with associated codes.
 

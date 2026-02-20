@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class OneCTTN(models.Model):
+class OfflineOneCTTN(models.Model):
     number = models.CharField(max_length=50)
     series = models.CharField(max_length=50, blank=True, null=True)
     create_at = models.DateTimeField(auto_now_add=True)
@@ -16,8 +16,8 @@ class OneCTTN(models.Model):
         return self.number
 
 
-class OneCTTNItem(models.Model):
-    onec_ttn = models.ForeignKey(OneCTTN, on_delete=models.CASCADE)
+class OfflineOneCTTNItem(models.Model):
+    onec_ttn = models.ForeignKey(OfflineOneCTTN, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     count = models.PositiveIntegerField(default=1)
     create_at = models.DateTimeField(auto_now_add=True)

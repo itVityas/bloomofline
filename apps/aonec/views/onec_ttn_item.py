@@ -5,12 +5,12 @@ from rest_framework.generics import (
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, extend_schema_view
 
-from apps.aonec.models import OneCTTNItem
-from apps.aonec.serializers.onec_ttn_item import OneCTTNItemSerializer
+from apps.aonec.models import OfflineOneCTTNItem
+from apps.aonec.serializers.onec_ttn_item import OfflineOneCTTNItemSerializer
 from apps.aonec.permissions import Warehouse1CPermission
 
 
-@extend_schema(tags=['OneCTTNItem'])
+@extend_schema(tags=['Offline OneCTTNItem'])
 @extend_schema_view(
     get=extend_schema(
         summary='Get OneC TTN item',
@@ -29,13 +29,13 @@ from apps.aonec.permissions import Warehouse1CPermission
         description='Permission: admin, warehouse_writer'
         ),
     )
-class OneCTTNItemRUDView(RetrieveUpdateDestroyAPIView):
-    queryset = OneCTTNItem.objects.all()
-    serializer_class = OneCTTNItemSerializer
+class OfflineOneCTTNItemRUDView(RetrieveUpdateDestroyAPIView):
+    queryset = OfflineOneCTTNItem.objects.all()
+    serializer_class = OfflineOneCTTNItemSerializer
     permission_classes = [IsAuthenticated, Warehouse1CPermission]
 
 
-@extend_schema(tags=['OneCTTNItem'])
+@extend_schema(tags=['Offline OneCTTNItem'])
 @extend_schema_view(
     get=extend_schema(
         summary='Get OneC TTN items',
@@ -46,7 +46,7 @@ class OneCTTNItemRUDView(RetrieveUpdateDestroyAPIView):
         description='Permission: admin, warehouse_writer'
         ),
     )
-class OneCTTNItemCreateListView(ListCreateAPIView):
-    queryset = OneCTTNItem.objects.all()
-    serializer_class = OneCTTNItemSerializer
+class OfflineOneCTTNItemCreateListView(ListCreateAPIView):
+    queryset = OfflineOneCTTNItem.objects.all()
+    serializer_class = OfflineOneCTTNItemSerializer
     permission_classes = [IsAuthenticated, Warehouse1CPermission]

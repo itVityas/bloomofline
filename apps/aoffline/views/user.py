@@ -8,8 +8,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from django_filters.rest_framework import DjangoFilterBackend
 
-from apps.aoffline.models import User, UserRoles
-from apps.aoffline.serializers.user import UserSerializer, UserUpdateSerializer
+from apps.aoffline.models import OfflineUser, OfflineUserRoles
+from apps.aoffline.serializers.user import OfflineUserSerializer, OfflineUserUpdateSerializer
 from apps.aoffline.permissions import AccountPermissions
 from bloomofline.paginator import StandartResultPaginator
 from apps.aoffline.filterset import UserFilter
@@ -24,8 +24,8 @@ from apps.aoffline.filterset import UserFilter
 )
 class UserListView(ListAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = UserSerializer
-    queryset = User.objects.all()
+    serializer_class = OfflineUserSerializer
+    queryset = OfflineUser.objects.all()
     pagination_class = StandartResultPaginator
     filter_backends = (DjangoFilterBackend,)
     filterset_class = UserFilter
@@ -48,8 +48,8 @@ class UserListView(ListAPIView):
 )
 class UserDetailedView(DestroyAPIView, UpdateAPIView):
     permission_classes = (IsAuthenticated, AccountPermissions)
-    serializer_class = UserUpdateSerializer
-    queryset = User.objects.all()
+    serializer_class = OfflineUserUpdateSerializer
+    queryset = OfflineUser.objects.all()
 
 
 @extend_schema(tags=['user offline'])
@@ -61,8 +61,8 @@ class UserDetailedView(DestroyAPIView, UpdateAPIView):
 )
 class UserRetrieveView(RetrieveAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = UserSerializer
-    queryset = User.objects.all()
+    serializer_class = OfflineUserSerializer
+    queryset = OfflineUser.objects.all()
 
 
 @extend_schema(tags=['user offline'])
@@ -90,8 +90,8 @@ class UserRetrieveView(RetrieveAPIView):
 )
 class UserRoleDeleteView(GenericAPIView):
     permission_classes = (IsAuthenticated, AccountPermissions)
-    serializer_class = UserSerializer
-    queryset = User.objects.all()
+    serializer_class = OfflineUserSerializer
+    queryset = OfflineUser.objects.all()
 
     def delete(self, request):
         id_role = request.query_params.get('role', None)
@@ -100,9 +100,9 @@ class UserRoleDeleteView(GenericAPIView):
             print(id_role, id_user)
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        UserRoles.objects.filter(
+        OfflineUserRoles.objects.filter(
             user_id=id_user, role_id=id_role
         ).delete()
         return Response(
-            UserSerializer(User.objects.get(id=id_user)).data,
+            OfflineUserSerializer(OfflineUser.objects.get(id=id_user)).data,
             status=status.HTTP_200_OK)

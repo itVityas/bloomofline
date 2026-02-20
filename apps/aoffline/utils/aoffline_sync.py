@@ -1,6 +1,6 @@
 from apps.account.models import Role, User, UserRoles
 from apps.aoffline.models import (
-    Role as Role_offline, User as User_offline, UserRoles as UserRoles_offline)
+    OfflineRole as Role_offline, OfflineUser as User_offline, OfflineUserRoles as UserRoles_offline)
 
 
 class AccountFullSynchronization:

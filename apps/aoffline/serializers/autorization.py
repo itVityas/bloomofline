@@ -3,7 +3,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import get_user_model
 
 from apps.aoffline.exceptions import EmptyUserException
-from apps.aoffline.serializers.user import UserSerializer
+from apps.aoffline.serializers.user import OfflineUserSerializer
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -17,7 +17,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         if user:
             user.last_login = timezone.now()
             user.save()
-        data['user'] = UserSerializer(user).data
+        data['user'] = OfflineUserSerializer(user).data
         return data
 
     @classmethod

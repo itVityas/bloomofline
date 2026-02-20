@@ -5,7 +5,7 @@ from .account_manager import AccountManager
 
 
 # Create your models here.
-class Role(models.Model):
+class OfflineRole(models.Model):
     id = models.BigIntegerField(primary_key=True)
     name = models.CharField(max_length=30, unique=True)
     description = models.CharField(max_length=200, blank=True, null=True)
@@ -20,7 +20,7 @@ class Role(models.Model):
         ordering = ['id']
 
 
-class User(AbstractBaseUser):
+class OfflineUser(AbstractBaseUser):
     id = models.BigIntegerField(primary_key=True)
     username = models.CharField(db_index=True, max_length=30, unique=True)
     password = models.CharField(max_length=128)
@@ -44,11 +44,11 @@ class User(AbstractBaseUser):
         ordering = ['id']
 
 
-class UserRoles(models.Model):
+class OfflineUserRoles(models.Model):
     id = models.BigIntegerField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(OfflineUser, on_delete=models.CASCADE)
     role = models.ForeignKey(
-        Role, on_delete=models.SET_NULL, blank=True, null=True)
+        OfflineRole, on_delete=models.SET_NULL, blank=True, null=True)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField()
 

@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class ModelNames(models.Model):
+class OfflineModelNames(models.Model):
     """
     Represents model names with their full and short versions.
     Used as a reference table for product models.
@@ -20,13 +20,13 @@ class ModelNames(models.Model):
         return self.name
 
 
-class Models(models.Model):
+class OfflineModels(models.Model):
     """
     Main product model containing all technical specifications and attributes.
     Relates to ModelNames and Production_codes.
     """
     code = models.IntegerField()
-    name = models.ForeignKey(ModelNames, on_delete=models.CASCADE, db_column='name_id')
+    name = models.ForeignKey(OfflineModelNames, on_delete=models.CASCADE, db_column='name_id')
     diagonal = models.FloatField()
     weight = models.IntegerField()
     quantity = models.IntegerField()
@@ -46,12 +46,12 @@ class Models(models.Model):
         return f"{self.name} (Code: {self.code})"
 
 
-class Products(models.Model):
+class OfflineProducts(models.Model):
     """
     Individual product items with barcodes, colors, and inventory information.
     """
     barcode = models.CharField(max_length=18)
-    model = models.ForeignKey(Models, on_delete=models.CASCADE, db_column='model_id')
+    model = models.ForeignKey(OfflineModels, on_delete=models.CASCADE, db_column='model_id')
     state = models.IntegerField()
     quantity = models.IntegerField()
 

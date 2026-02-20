@@ -6,21 +6,21 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.response import Response
 
-from apps.ashtrih.models import ModelNames, Models, Products
-from apps.ashtrih.serializers.model_name import ModelNamesSerializer, CountSerializer
+from apps.ashtrih.models import OfflineModelNames, OfflineModels, OfflineProducts
+from apps.ashtrih.serializers.model_name import OfflineModelNamesSerializer, OfflineCountSerializer
 from apps.ashtrih.permission import StrihPermission
 from bloomofline.paginator import StandartResultPaginator
 from apps.ashtrih.filterset import ModelNamesFilter
 
 
-@extend_schema(tags=['Shtrih'])
+@extend_schema(tags=['Offline Shtrih'])
 @extend_schema_view(
     get=extend_schema(
         summary='Get list Model',
         description="description='Permission: admin, strih"
     )
 )
-class ModelNameListView(ListAPIView):
+class OfflineModelNameListView(ListAPIView):
     """
     API endpoint that allows model names to be viewed.
 
@@ -31,15 +31,15 @@ class ModelNameListView(ListAPIView):
 
     Returns paginated results using standard Bloom pagination format.
     """
-    queryset = ModelNames.objects.all()
-    serializer_class = ModelNamesSerializer
+    queryset = OfflineModelNames.objects.all()
+    serializer_class = OfflineModelNamesSerializer
     permission_classes = (IsAuthenticated, StrihPermission)
     pagination_class = StandartResultPaginator
     filter_backends = (DjangoFilterBackend,)
     filterset_class = ModelNamesFilter
 
 
-@extend_schema(tags=['Shtrih'])
+@extend_schema(tags=['Offline Shtrih'])
 @extend_schema_view(
     get=extend_schema(
         summary='Get list Model by product_code',
@@ -55,15 +55,15 @@ class ModelNameListView(ListAPIView):
         ],
     )
 )
-class ModelNameByProductCodeListView(ListAPIView):
+class OfflineModelNameByProductCodeListView(ListAPIView):
     """
     API endpoint that returns model names filtered by production code.
 
     Requires production_code_id query parameter.
     Returns paginated results using standard Bloom pagination format.
     """
-    queryset = ModelNames.objects.all()
-    serializer_class = ModelNamesSerializer
+    queryset = OfflineModelNames.objects.all()
+    serializer_class = OfflineModelNamesSerializer
     permission_classes = (IsAuthenticated, StrihPermission)
     pagination_class = StandartResultPaginator
     filter_backends = (DjangoFilterBackend,)
@@ -76,20 +76,20 @@ class ModelNameByProductCodeListView(ListAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
                 data={'error': 'product_code not fount'}
             )
-        queryset = ModelNames.objects.filter(models__production_code=production_code_id)
+        queryset = OfflineModelNames.objects.filter(models__production_code=production_code_id)
         page = self.paginate_queryset(queryset)
-        serializer = ModelNamesSerializer(page, many=True)
+        serializer = OfflineModelNamesSerializer(page, many=True)
         return self.get_paginated_response(serializer.data)
 
 
-@extend_schema(tags=['Shtrih'])
+@extend_schema(tags=['Offline Shtrih'])
 @extend_schema_view(
     get=extend_schema(
         summary='count product by model_name.id',
         description="description='Permission: admin, strih",
     ),
 )
-class ProductCountByModelNameView(APIView):
+class OfflineProductCountByModelNameView(APIView):
     """
     API endpoint that returns product count for a specific model name.
 
@@ -98,11 +98,11 @@ class ProductCountByModelNameView(APIView):
     - code: Internal model code (0 if model not found)
     """
     permission_classes = (IsAuthenticated, StrihPermission)
-    serializer_class = CountSerializer
+    serializer_class = OfflineCountSerializer
 
     def get(self, request, pk):
-        count = Products.objects.filter(model__name_id=pk).exclude(state=1).count()
-        model = Models.objects.filter(name_id=pk).first()
+        count = OfflineProducts.objects.filter(model__name_id=pk).exclude(state=1).count()
+        model = OfflineModels.objects.filter(name_id=pk).first()
         model_code = 0
         if model:
             model_code = model.code

@@ -2,20 +2,20 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from apps.aoffline.models import User
+from apps.aoffline.models import OfflineUser
 from apps.aoffline.exceptions import PasswordException, PasswordEmptyException
 
 
-class UserRegisterSerializer(serializers.ModelSerializer):
+class OfflineUserRegisterSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
         required=True, write_only=True,
-        validators=[UniqueValidator(queryset=User.objects.all())])
+        validators=[UniqueValidator(queryset=OfflineUser.objects.all())])
     password = serializers.CharField(
         required=True, validators=[validate_password], write_only=True)
     password2 = serializers.CharField(required=True, write_only=True)
 
     class Meta:
-        model = User
+        model = OfflineUser
         fields = [
             'id',
             'username',
@@ -39,7 +39,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        user = User.objects.create_user(
+        user = OfflineUser.objects.create_user(
             username=validated_data['username'],
             password=validated_data['password'],
             fio=validated_data.get('fio', None),

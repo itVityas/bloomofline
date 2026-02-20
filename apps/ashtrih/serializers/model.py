@@ -1,10 +1,10 @@
 from rest_framework import serializers
 
-from apps.ashtrih.models import Models
-from apps.ashtrih.serializers.model_name import ModelNamesSerializer
+from apps.ashtrih.models import OfflineModels
+from apps.ashtrih.serializers.model_name import OfflineModelNamesSerializer
 
 
-class ModelsSerializer(serializers.ModelSerializer):
+class OfflineModelsSerializer(serializers.ModelSerializer):
     """
     Serializer for the Models entity representing product specifications.
 
@@ -18,8 +18,8 @@ class ModelsSerializer(serializers.ModelSerializer):
     - production_code (ProductionCodeSerializer)
     - name (ModelNamesSerializer)
     """
-    name = ModelNamesSerializer(read_only=True)
+    name = OfflineModelNamesSerializer(read_only=True)
 
     class Meta:
-        model = Models
-        fields = ['__all__']
+        model = OfflineModels
+        fields = '__all__'
