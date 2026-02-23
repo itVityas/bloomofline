@@ -8,7 +8,6 @@ class OfflineOneCTTN(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        managed = False
         app_label = "aonec"
         ordering = ['-id']
 
@@ -24,7 +23,6 @@ class OfflineOneCTTNItem(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        managed = False
         app_label = "aonec"
         ordering = ['-id']
 

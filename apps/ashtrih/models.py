@@ -11,7 +11,6 @@ class OfflineModelNames(models.Model):
     short_name = models.CharField(max_length=50)
 
     class Meta:
-        managed = False
         db_table = 'model_names'
         ordering = ['-id']
         app_label = "ashtrih"
@@ -37,7 +36,6 @@ class OfflineModels(models.Model):
     update_at = models.DateTimeField()
 
     class Meta:
-        managed = False
         db_table = 'models'
         ordering = ['-id']
         app_label = "ashtrih"
@@ -56,7 +54,6 @@ class OfflineProducts(models.Model):
     quantity = models.IntegerField()
 
     class Meta:
-        managed = False
         db_table = 'products'
         ordering = ['-id']
         app_label = "ashtrih"
