@@ -36,7 +36,7 @@ CipherString = DEFAULT:@SECLEVEL=0
 + cd project/dj
 + python3 -m venv venv
 + source venv/bin/activate (activate virtual enviroment)
-+ pip3 install -r requirements.txt (install dependencies)
++ pip3 install -r requirements.txt (install dependencies) .\venv\Scripts\activate.bat
 + python3 manage.py migrate
 + python3 manage.py createsuperuser
 + python3 manage.py runserver {ip:port|port}

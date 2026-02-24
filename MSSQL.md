@@ -47,6 +47,9 @@ DB_DRIVER='ODBC Driver 17 for SQL Server'
 Linux
 Установить mssql драйвер. Создаем скрипт sh для установки (возможно необходимо будет изменить версию linux и версию драйвера, в зависимости от используемой ос)
 
+Windows
+Установить mssql 17 odbs драйвера и python 3.12
+
 # Download the package to configure the Microsoft repo
 #curl -sSL -O https://packages.microsoft.com/config/ubuntu/$(grep VERSION_ID /etc/os-release | cut -d '"' -f 2)/packages-microsoft-prod.deb
 curl -sSL -O https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb
