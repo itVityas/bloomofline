@@ -15,7 +15,7 @@ class RoleBasedPermission(BasePermission):
     def has_permission(self, request, view):
         user = request.user
         # Get set of role names assigned to the user.
-        user_roles = {user_role.role.name for user_role in user.userroles_set.all()}
+        user_roles = {user_role.role.name for user_role in user.offlineuserroles_set.all()}
 
         if request.method == 'GET':
             if not self.allowed_roles_get:
