@@ -23,7 +23,7 @@ class OfflineUserSerializer(serializers.ModelSerializer):
             ]
 
     def get_roles(self, obj) -> dict:
-        roles = OfflineRole.objects.filter(userroles__user=obj)
+        roles = OfflineRole.objects.filter(offlineuserroles__user=obj)
         role_serializer = OfflineRoleSerializer(roles, many=True)
         return role_serializer.data
 
