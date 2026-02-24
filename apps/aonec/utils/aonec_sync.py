@@ -1,3 +1,4 @@
+import datetime
 import time
 
 from apps.onec.models import OneCTTN, OneCTTNItem
@@ -5,6 +6,7 @@ from apps.aonec.models import (
     OfflineOneCTTN as offline_OneCTTN,
     OfflineOneCTTNItem as offline_OneCTTItem
 )
+from apps.ashtrih.models import OfflineModels
 from apps.sync.models import SyncDate
 
 
@@ -55,6 +57,12 @@ def onec_ttn_item_sync(sync_data: SyncDate):
 class OneCFullSync:
     def __init__(self):
         self.sync_date = SyncDate.objects.order_by('-last_sync').first()
+        if not self.sync_date:
+            last_models = OfflineModels.objects.order_by('id').last()
+            sync_date = SyncDate.objects.create()
+            sync_date.last_sync = last_models.update_at if last_models else datetime.datetime(2000, 1, 1)
+            sync_date.save()
+            self.sync_date = sync_date
 
     def full_sync(self) -> dict:
         time_full = dict()
@@ -102,6 +110,12 @@ class OneCFullSync:
 class OneCSync:
     def __init__(self):
         self.sync_date = SyncDate.objects.order_by('-last_sync').first()
+        if not self.sync_date:
+            last_models = OfflineModels.objects.order_by('id').last()
+            sync_date = SyncDate.objects.create()
+            sync_date.last_sync = last_models.update_at if last_models else datetime.datetime(2000, 1, 1)
+            sync_date.save()
+            self.sync_date = sync_date
 
     def sync(self) -> dict:
         time_full = dict()
@@ -137,7 +151,7 @@ class OneCSync:
 
     def onec_ttn_item_sync(self) -> float:
         start_time = time.time()
-        onec_ttn_item_sync()
+        onec_ttn_item_sync(self.sync_date)
         onec_ttn_item = OneCTTNItem.objects.filter(update_at__gt=self.sync_date.last_sync)
         for i in onec_ttn_item:
             if offline_OneCTTItem.objects.filter(id=i.id).exists():

@@ -1,3 +1,4 @@
+import datetime
 import time
 
 from django.db import transaction
@@ -19,6 +20,12 @@ class ShtrihFullSync:
     def __init__(self, batch_size=1000):
         self.batch_size = batch_size
         self.sync_date = SyncDate.objects.order_by('-last_sync').first()
+        if not self.sync_date:
+            last_models = AshtrihModels.objects.order_by('id').last()
+            sync_date = SyncDate.objects.create()
+            sync_date.last_sync = last_models.update_at if last_models else datetime.datetime(2000, 1, 1)
+            sync_date.save()
+            self.sync_date = sync_date
 
     def full_sync(self) -> dict:
         time_full = dict()
@@ -99,6 +106,12 @@ class ShtrihFullSync:
 class ShtrihSync:
     def __init__(self):
         self.sync_date = SyncDate.objects.order_by('-last_sync').first()
+        if not self.sync_date:
+            last_models = AshtrihModels.objects.order_by('id').last()
+            sync_date = SyncDate.objects.create()
+            sync_date.last_sync = last_models.update_at if last_models else datetime.datetime(2000, 1, 1)
+            sync_date.save()
+            self.sync_date = sync_date
 
     def sync(self) -> dict:
         time_full = dict()
