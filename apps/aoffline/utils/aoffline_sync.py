@@ -6,8 +6,8 @@ from apps.aoffline.models import (
 
 
 class AccountFullSynchronization:
-    def __init__(self):
-        pass
+    def __init__(self, batch_size=1000):
+        self.batch_size = batch_size
 
     def full_sync(self) -> dict:
         """
@@ -62,8 +62,8 @@ class AccountFullSynchronization:
     def full_user_roles_sync(self) -> float:
         start_time = time.time()
         UserRoles_offline.objects.all().delete()
-        user_roles = UserRoles.objects.all()
-        for user_role in user_roles:
+        user_roles = UserRoles.objects.select_related('user', 'role').all()
+        for user_role in user_roles.iterator(chunk_size=self.batch_size):
             UserRoles_offline.objects.update_or_create(
                 id=user_role.id,
                 user_id=user_role.user_id,

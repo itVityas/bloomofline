@@ -1,5 +1,7 @@
 import time
 
+from django.db import transaction
+
 from apps.shtrih.models import (
     ModelNames,
     Models,
@@ -14,14 +16,16 @@ from apps.sync.models import SyncDate
 
 
 class ShtrihFullSync:
-    def __init__(self):
+    def __init__(self, batch_size=1000):
+        self.batch_size = batch_size
         self.sync_date = SyncDate.objects.order_by('-last_sync').first()
 
     def full_sync(self) -> dict:
         time_full = dict()
-        time_names = self.model_names_full_sync()
-        time_model = self.models_full_sync()
-        time_products = self.products_full_sync()
+        with transaction.atomic():
+            time_names = self.model_names_full_sync()
+            time_model = self.models_full_sync()
+            time_products = self.products_full_sync()
         time_full['names'] = time_names
         time_full['models'] = time_model
         time_full['products'] = time_products
@@ -46,9 +50,9 @@ class ShtrihFullSync:
     def models_full_sync(self) -> float:
         time_start = time.time()
         AshtrihModels.objects.all().delete()
-        models = Models.objects.all()
+        models = Models.objects.select_related('name').all().order_by('id')
         list_models = []
-        for i in models:
+        for i in models.iterator(chunk_size=self.batch_size):
             list_models.append(AshtrihModels(
                 code=i.code,
                 name_id=i.name.id,
@@ -60,17 +64,21 @@ class ShtrihFullSync:
                 create_at=i.create_at,
                 update_at=i.update_at,
             ))
-        AshtrihModels.objects.bulk_create(list_models)
+            if len(list_models) >= self.batch_size:
+                AshtrihModels.objects.bulk_create(list_models)
+                list_models.clear()
+        if list_models:
+            AshtrihModels.objects.bulk_create(list_models)
         time_stop = time.time()
         return time_stop - time_start
 
     def products_full_sync(self) -> float:
         time_start = time.time()
         AshtrihProducts.objects.all().delete()
-        products = Products.objects.all()
+        products = Products.objects.select_related('model').all().order_by('id')
         list_products = []
         buf = 0
-        for i in products:
+        for i in products.iterator(chunk_size=self.batch_size):
             buf += 1
             list_products.append(AshtrihProducts(
                 id=i.id,
@@ -79,11 +87,11 @@ class ShtrihFullSync:
                 state=i.state,
                 quantity=i.quantity,
             ))
-            if buf == 100000:
+            if len(list_products) >= self.batch_size:
                 AshtrihProducts.objects.bulk_create(list_products)
                 list_products.clear()
-                buf = 0
-        AshtrihProducts.objects.bulk_create(list_products)
+        if list_products:
+            AshtrihProducts.objects.bulk_create(list_products)
         time_stop = time.time()
         return time_stop - time_start
 

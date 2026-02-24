@@ -36,7 +36,7 @@ def onec_ttn_item_sync(sync_data: SyncDate):
     """
     if not sync_data:
         return
-    offline = offline_OneCTTItem.objects.filter(update_at__gt=sync_data.last_sync)
+    offline = offline_OneCTTItem.objects.select_related('onec_ttn').filter(update_at__gt=sync_data.last_sync)
     list_ttn_item = []
     for i in offline:
         ttn_item = OneCTTNItem(
@@ -85,7 +85,7 @@ class OneCFullSync:
         start_time = time.time()
         onec_ttn_item_sync(self.sync_date)
         offline_OneCTTItem.objects.all().delete()
-        onec_ttn_items = OneCTTNItem.objects.all()
+        onec_ttn_items = OneCTTNItem.objects.select_related('onec_ttn').all()
         for i in onec_ttn_items:
             offline_OneCTTItem.objects.create(
                 id=i.id,
