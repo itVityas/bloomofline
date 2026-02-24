@@ -46,7 +46,7 @@ class SyncShtrihView(APIView):
     def get(self, request):
         try:
             acc_sync = ShtrihSync()
-            acc_sync.full_sync()
+            acc_sync.sync()
             return Response({'status': 'ok'})
         except Exception as e:
             return Response({'error': str(e)})
