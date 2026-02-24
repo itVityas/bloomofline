@@ -24,10 +24,16 @@ class FullSyncAllView(APIView):
 
     def get(self, request):
         try:
-            AccountFullSynchronization().full_sync()
-            OneCFullSync().full_sync()
-            ShtrihFullSync().full_sync()
-            return Response({'status': 'ok'})
+            time_account = AccountFullSynchronization().full_sync()
+            time_ttn = OneCFullSync().full_sync()
+            time_shtrih = ShtrihFullSync().full_sync()
+            full_time = time_account.get('full', 0) + time_shtrih.get('full', 0) + time_ttn.get('full', 0)
+            return Response({
+                'account': time_account,
+                'onec': time_ttn,
+                'shtrih': time_shtrih,
+                'full_time': full_time,
+                'status': 'ok'})
         except Exception as e:
             return Response({'error': str(e)}, status=400)
 
@@ -48,9 +54,15 @@ class SyncAllView(APIView):
 
     def get(self, request):
         try:
-            AccountFullSynchronization().full_sync()
-            OneCSync().sync()
-            ShtrihSync().sync()
-            return Response({'status': 'ok'})
+            time_account = AccountFullSynchronization().full_sync()
+            time_ttn = OneCSync().sync()
+            time_shtrih = ShtrihSync().sync()
+            full_time = time_account.get('full', 0) + time_shtrih.get('full', 0) + time_ttn.get('full', 0)
+            return Response({
+                'account': time_account,
+                'onec': time_ttn,
+                'shtrih': time_shtrih,
+                'full_time': full_time,
+                'status': 'ok'})
         except Exception as e:
             return Response({'error': str(e)}, status=400)

@@ -1,3 +1,5 @@
+import time
+
 from apps.onec.models import OneCTTN, OneCTTNItem
 from apps.aonec.models import (
     OfflineOneCTTN as offline_OneCTTN,
@@ -39,7 +41,7 @@ def onec_ttn_item_sync(sync_data: SyncDate):
     for i in offline:
         ttn_item = OneCTTNItem(
             id=i.id,
-            onec_ttn_id=i.onec_ttn_id,
+            onec_ttn_id=i.onec_ttn.id,
             name=i.name,
             count=i.count,
             create_at=i.create_at,
@@ -54,11 +56,17 @@ class OneCFullSync:
     def __init__(self):
         self.sync_date = SyncDate.objects.order_by('-last_sync').first()
 
-    def full_sync(self):
-        self.onec_ttn_full_sync()
-        self.onec_ttn_item_full_sync()
+    def full_sync(self) -> dict:
+        time_full = dict()
+        time_ttn = self.onec_ttn_full_sync()
+        time_item = self.onec_ttn_item_full_sync()
+        time_full['ttn'] = time_ttn
+        time_full['ttn_item'] = time_item
+        time_full['full'] = time_ttn + time_item
+        return time_full
 
-    def onec_ttn_full_sync(self):
+    def onec_ttn_full_sync(self) -> float:
+        start_time = time.time()
         onec_offline_sync(self.sync_date)
         offline_OneCTTN.objects.all().delete()
         onec_ttn = OneCTTN.objects.all()
@@ -70,8 +78,11 @@ class OneCFullSync:
                 created_at=i.created_at,
                 updated_at=i.updated_at,
             )
+        stop_time = time.time()
+        return stop_time - start_time
 
-    def onec_ttn_item_full_sync(self):
+    def onec_ttn_item_full_sync(self) -> float:
+        start_time = time.time()
         onec_ttn_item_sync(self.sync_date)
         offline_OneCTTItem.objects.all().delete()
         onec_ttn_items = OneCTTNItem.objects.all()
@@ -84,17 +95,25 @@ class OneCFullSync:
                 created_at=i.created_at,
                 updated_at=i.updated_at,
             )
+        stop_time = time.time()
+        return stop_time - start_time
 
 
 class OneCSync:
     def __init__(self):
         self.sync_date = SyncDate.objects.order_by('-last_sync').first()
 
-    def sync(self):
-        self.onec_ttn_sync()
-        self.onec_ttn_item_sync()
+    def sync(self) -> dict:
+        time_full = dict()
+        time_ttn = self.onec_ttn_sync()
+        time_item = self.onec_ttn_item_sync()
+        time_full['ttn'] = time_ttn
+        time_full['ttn_item'] = time_item
+        time_full['full'] = time_ttn + time_item
+        return time_full
 
-    def onec_ttn_sync(self):
+    def onec_ttn_sync(self) -> float:
+        start_time = time.time()
         onec_offline_sync(self.sync_date)
         onec_tnn = OneCTTN.objects.filter(update_at__gt=self.sync_date.last_sync)
         for i in onec_tnn:
@@ -113,8 +132,11 @@ class OneCSync:
                     created_at=i.created_at,
                     updated_at=i.updated_at,
                 )
+        stop_time = time.time()
+        return stop_time - start_time
 
-    def onec_ttn_item_sync(self):
+    def onec_ttn_item_sync(self) -> float:
+        start_time = time.time()
         onec_ttn_item_sync()
         onec_ttn_item = OneCTTNItem.objects.filter(update_at__gt=self.sync_date.last_sync)
         for i in onec_ttn_item:
@@ -135,3 +157,5 @@ class OneCSync:
                     created_at=i.created_at,
                     updated_at=i.updated_at,
                 )
+        stop_time = time.time()
+        return stop_time - start_time

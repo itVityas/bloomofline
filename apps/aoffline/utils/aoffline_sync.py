@@ -1,3 +1,5 @@
+import time
+
 from apps.account.models import Role, User, UserRoles
 from apps.aoffline.models import (
     OfflineRole as Role_offline, OfflineUser as User_offline, OfflineUserRoles as UserRoles_offline)
@@ -7,12 +9,22 @@ class AccountFullSynchronization:
     def __init__(self):
         pass
 
-    def full_sync(self):
-        self.full_role_sync()
-        self.full_user_sync()
-        self.full_user_roles_sync()
+    def full_sync(self) -> dict:
+        """
+        Full synchronization of account app
+        """
+        time_dict = {}
+        time_roles = self.full_role_sync()
+        time_users = self.full_user_sync()
+        time_m2m = self.full_user_roles_sync()
+        time_dict['roles'] = time_roles
+        time_dict['users'] = time_users
+        time_dict['m2m'] = time_m2m
+        time_dict['full'] = time_roles + time_users + time_m2m
+        return time_dict
 
-    def full_role_sync(self):
+    def full_role_sync(self) -> float:
+        start_time = time.time()
         Role_offline.objects.all().delete()
         roles = Role.objects.all()
         for role in roles:
@@ -24,8 +36,11 @@ class AccountFullSynchronization:
                 update_at=role.update_at,
             )
             off_role.save()
+        stop_time = time.time()
+        return stop_time - start_time
 
-    def full_user_sync(self):
+    def full_user_sync(self) -> float:
+        start_time = time.time()
         User_offline.objects.all().delete()
         users = User.objects.all()
         for user in users:
@@ -41,8 +56,11 @@ class AccountFullSynchronization:
                 position=user.position,
                 room=user.room,
             )
+        stop_time = time.time()
+        return stop_time - start_time
 
-    def full_user_roles_sync(self):
+    def full_user_roles_sync(self) -> float:
+        start_time = time.time()
         UserRoles_offline.objects.all().delete()
         user_roles = UserRoles.objects.all()
         for user_role in user_roles:
@@ -53,3 +71,5 @@ class AccountFullSynchronization:
                 update_at=user_role.update_at,
                 create_at=user_role.create_at,
             )
+        stop_time = time.time()
+        return stop_time - start_time
