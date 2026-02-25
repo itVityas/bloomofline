@@ -25,9 +25,12 @@ class FullSyncAllView(APIView):
 
     def get(self, request):
         try:
+            sync_date = SyncDate.objects.all().order_by('-last_sync').first()
+            if not sync_date:
+                sync_date = SyncDate(last_sync='1970-01-01 00:00:00')
             time_account = AccountFullSynchronization().full_sync()
-            time_ttn = OneCFullSync().full_sync()
-            time_shtrih = ShtrihFullSync().full_sync()
+            time_ttn = OneCFullSync(sync_date=sync_date).full_sync()
+            time_shtrih = ShtrihFullSync(sync_date=sync_date).full_sync()
             full_time = time_account.get('full', 0) + time_shtrih.get('full', 0) + time_ttn.get('full', 0)
             SyncDate.objects.create()
             return Response({
@@ -56,9 +59,12 @@ class SyncAllView(APIView):
 
     def get(self, request):
         try:
+            sync_date = SyncDate.objects.all().order_by('-last_sync').first()
+            if not sync_date:
+                sync_date = SyncDate(last_sync='1970-01-01 00:00:00')
             time_account = AccountFullSynchronization().full_sync()
-            time_ttn = OneCSync().sync()
-            time_shtrih = ShtrihSync().sync()
+            time_ttn = OneCSync(sync_date=sync_date).sync()
+            time_shtrih = ShtrihSync(sync_date=sync_date).sync()
             full_time = time_account.get('full', 0) + time_shtrih.get('full', 0) + time_ttn.get('full', 0)
             SyncDate.objects.create()
             return Response({
