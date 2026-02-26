@@ -36,14 +36,14 @@ class AccountFullSynchronization:
         try:
             start_time = time.time()
             Role_offline.objects.all().delete()
-            roles = Role.objects.all()
+            roles = Role.objects.all().values('id', 'name', 'description', 'create_at', 'update_at')
             for role in roles:
                 off_role = Role_offline.objects.create(
-                    id=role.id,
-                    name=role.name,
-                    description=role.description,
-                    create_at=role.create_at,
-                    update_at=role.update_at,
+                    id=role['id'],
+                    name=role['name'],
+                    description=role['description'],
+                    create_at=role['create_at'],
+                    update_at=role['update_at'],
                 )
                 off_role.save()
             stop_time = time.time()
@@ -56,19 +56,20 @@ class AccountFullSynchronization:
         try:
             start_time = time.time()
             User_offline.objects.all().delete()
-            users = User.objects.all()
+            users = User.objects.all().values('id', 'username', 'password', 'fio', 'is_active',
+                                              'created_at', 'updated_at', 'departmant', 'position', 'room')
             for user in users:
                 User_offline.objects.update_or_create(
-                    id=user.id,
-                    fio=user.fio,
-                    username=user.username,
-                    password=user.password,
-                    is_active=user.is_active,
-                    created_at=user.created_at,
-                    updated_at=user.updated_at,
-                    departmant=user.departmant,
-                    position=user.position,
-                    room=user.room,
+                    id=user['id'],
+                    fio=user['fio'],
+                    username=user['username'],
+                    password=user['password'],
+                    is_active=user['is_active'],
+                    created_at=user['created_at'],
+                    updated_at=user['updated_at'],
+                    departmant=user['departmant'],
+                    position=user['position'],
+                    room=user['room'],
                 )
             stop_time = time.time()
             return stop_time - start_time
@@ -80,14 +81,15 @@ class AccountFullSynchronization:
         try:
             start_time = time.time()
             UserRoles_offline.objects.all().delete()
-            user_roles = UserRoles.objects.select_related('user', 'role').all()
+            user_roles = UserRoles.objects.select_related('user', 'role').all().values(
+                'id', 'user_id', 'role_id', 'create_at', 'update_at')
             for user_role in user_roles.iterator(chunk_size=self.batch_size):
                 UserRoles_offline.objects.update_or_create(
-                    id=user_role.id,
-                    user_id=user_role.user_id,
-                    role_id=user_role.role_id,
-                    update_at=user_role.update_at,
-                    create_at=user_role.create_at,
+                    id=user_role['id'],
+                    user_id=user_role['user_id'],
+                    role_id=user_role['role_id'],
+                    update_at=user_role['update_at'],
+                    create_at=user_role['create_at'],
                 )
             stop_time = time.time()
             return stop_time - start_time

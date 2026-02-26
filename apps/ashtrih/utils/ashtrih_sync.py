@@ -44,13 +44,13 @@ class ShtrihFullSync:
         try:
             time_start = time.time()
             AshtrihModelNames.objects.all().delete()
-            model_names = ModelNames.objects.all()
+            model_names = ModelNames.objects.all().values('id', 'name', 'short_name')
             list_names = []
             for i in model_names:
                 list_names.append(AshtrihModelNames(
-                    id=i.id,
-                    name=i.name,
-                    short_name=i.short_name,
+                    id=i['id'],
+                    name=i['name'],
+                    short_name=i['short_name'],
                 ))
             AshtrihModelNames.objects.bulk_create(list_names)
             time_stop = time.time()
@@ -63,19 +63,22 @@ class ShtrihFullSync:
         try:
             time_start = time.time()
             AshtrihModels.objects.all().delete()
-            models = Models.objects.select_related('name').all().order_by('id')
+            models = Models.objects.select_related('name').all().order_by('id').values(
+                'id', 'code', 'name_id', 'diagonal', 'weight', 'quantity',
+                'product_warranty', 'storage_warranty',
+                'create_at', 'update_at')
             list_models = []
             for i in models.iterator(chunk_size=self.batch_size):
                 list_models.append(AshtrihModels(
-                    code=i.code,
-                    name_id=i.name.id,
-                    diagonal=i.diagonal,
-                    weight=i.weight,
-                    quantity=i.quantity,
-                    product_warranty=i.product_warranty,
-                    storage_warranty=i.storage_warranty,
-                    create_at=i.create_at,
-                    update_at=i.update_at,
+                    code=i['code'],
+                    name_id=i['name_id'],
+                    diagonal=i['diagonal'],
+                    weight=i['weight'],
+                    quantity=i['quantity'],
+                    product_warranty=i['product_warranty'],
+                    storage_warranty=i['storage_warranty'],
+                    create_at=i['create_at'],
+                    update_at=i['update_at'],
                 ))
                 if len(list_models) >= self.batch_size:
                     AshtrihModels.objects.bulk_create(list_models)
@@ -92,17 +95,16 @@ class ShtrihFullSync:
         try:
             time_start = time.time()
             AshtrihProducts.objects.all().delete()
-            products = Products.objects.select_related('model').all().order_by('id')
+            products = Products.objects.select_related('model').all().order_by('id').values(
+                'id', 'model_id', 'barcode', 'state', 'quantity')
             list_products = []
-            buf = 0
             for i in products.iterator(chunk_size=self.batch_size):
-                buf += 1
                 list_products.append(AshtrihProducts(
-                    id=i.id,
-                    model_id=i.model.id,
-                    barcode=i.barcode,
-                    state=i.state,
-                    quantity=i.quantity,
+                    id=i['id'],
+                    model_id=i['model_id'],
+                    barcode=i['barcode'],
+                    state=i['state'],
+                    quantity=i['quantity'],
                 ))
                 if len(list_products) >= self.batch_size:
                     AshtrihProducts.objects.bulk_create(list_products)
@@ -141,25 +143,33 @@ class ShtrihSync:
             time_start = time.time()
             last_model_name = AshtrihModelNames.objects.order_by('id').last()
             existing_ids = set(AshtrihModelNames.objects.values_list('id', flat=True))
-            model_names = ModelNames.objects.filter(id__gt=last_model_name.id).order_by('id')
+            model_names = ModelNames.objects.filter(id__gt=last_model_name.id).order_by('id').values(
+                'id', 'name', 'short_name')
             list_models = []
+            list_update = []
+            buf = 0
             for i in model_names.iterator(chunk_size=self.batch_size):
-                if i.id in existing_ids:
-                    AshtrihModelNames.objects.filter(id=i.id).update(
-                        name=i.name,
-                        short_name=i.short_name,
-                    )
+                buf += 1
+                if i['id'] in existing_ids:
+                    list_update.append(i)
                 else:
                     list_models.append(AshtrihModelNames(
-                        id=i.id,
-                        name=i.name,
-                        short_name=i.short_name,
+                        id=i['id'],
+                        name=i['name'],
+                        short_name=i['short_name'],
                     ))
-                if len(list_models) >= self.batch_size:
+                if buf >= self.batch_size:
                     AshtrihModelNames.objects.bulk_create(list_models)
                     list_models.clear()
+                    buf = 0
             if list_models:
                 AshtrihModelNames.objects.bulk_create(list_models)
+            if list_update:
+                for i in list_update:
+                    AshtrihModelNames.objects.filter(id=i['id']).update(
+                        name=i['name'],
+                        short_name=i['short_name'],
+                    )
             time_stop = time.time()
             return time_stop - time_start
         except Exception as e:
@@ -170,39 +180,50 @@ class ShtrihSync:
         try:
             time_start = time.time()
             last_model = AshtrihModels.objects.order_by('-id').first()
-            models = Models.objects.filter(id__gt=last_model.id if last_model else 0).order_by('id')
+            models = Models.objects.filter(id__gt=last_model.id if last_model else 0).order_by('id').values(
+                'id', 'code', 'name_id', 'diagonal', 'weight', 'quantity',
+                'product_warranty', 'storage_warranty',
+                'create_at', 'update_at'
+            )
             existing_ids = set(AshtrihModels.objects.values_list('id', flat=True))
             list_models = []
+            list_update = []
+            buf = 0
             for i in models.iterator(chunk_size=self.batch_size):
-                if i.id in existing_ids:
-                    AshtrihModels.objects.filter(id=i.id).update(
-                        code=i.code,
-                        name_id=i.name.id,
-                        diagonal=i.diagonal,
-                        weight=i.weight,
-                        quantity=i.quantity,
-                        product_warranty=i.product_warranty,
-                        storage_warranty=i.storage_warranty,
-                        create_at=i.create_at,
-                        update_at=i.update_at,
-                    )
+                buf += 1
+                if i['id'] in existing_ids:
+                    list_update.append(i)
                 else:
                     list_models.append(AshtrihModels(
-                        code=i.code,
-                        name_id=i.name.id,
-                        diagonal=i.diagonal,
-                        weight=i.weight,
-                        quantity=i.quantity,
-                        product_warranty=i.product_warranty,
-                        storage_warranty=i.storage_warranty,
-                        create_at=i.create_at,
-                        update_at=i.update_at,
+                        code=i['code'],
+                        name_id=i['name_id'],
+                        diagonal=i['diagonal'],
+                        weight=i['weight'],
+                        quantity=i['quantity'],
+                        product_warranty=i['product_warranty'],
+                        storage_warranty=i['storage_warranty'],
+                        create_at=i['create_at'],
+                        update_at=i['update_at'],
                     ))
-                if len(list_models) >= self.batch_size:
+                if buf >= self.batch_size:
                     AshtrihModels.objects.bulk_create(list_models)
                     list_models.clear()
+                    buf = 0
             if list_models:
                 AshtrihModels.objects.bulk_create(list_models)
+            if list_update:
+                for i in list_update:
+                    AshtrihModels.objects.filter(id=i['id']).update(
+                        code=i['code'],
+                        name_id=i['name_id'],
+                        diagonal=i['diagonal'],
+                        weight=i['weight'],
+                        quantity=i['quantity'],
+                        product_warranty=i['product_warranty'],
+                        storage_warranty=i['storage_warranty'],
+                        create_at=i['create_at'],
+                        update_at=i['update_at'],
+                    )
             time_stop = time.time()
             return time_stop - time_start
         except Exception as e:
@@ -218,14 +239,10 @@ class ShtrihSync:
             )
             existing_ids = set(AshtrihProducts.objects.values_list('id', flat=True))
             list_products = []
+            list_update = []
             for i in products.iterator(chunk_size=self.batch_size):
                 if i['id'] in existing_ids:
-                    AshtrihProducts.objects.filter(id=i.id).update(
-                        model_id=i.model.id,
-                        barcode=i.barcode,
-                        state=i.state,
-                        quantity=i.quantity,
-                    )
+                    list_update.append([i])
                 else:
                     list_products.append(AshtrihProducts(
                         id=i['id'],
@@ -235,11 +252,18 @@ class ShtrihSync:
                         quantity=i['quantity'],
                     ))
                 if len(list_products) >= self.batch_size:
-                    print(len(list_products))
                     AshtrihProducts.objects.bulk_create(list_products)
                     list_products.clear()
             if list_products:
                 AshtrihProducts.objects.bulk_create(list_products)
+            if list_update:
+                for i in list_update:
+                    AshtrihProducts.objects.filter(id=i[0]['id']).update(
+                        model_id=i[0]['model_id'],
+                        barcode=i[0]['barcode'],
+                        state=i[0]['state'],
+                        quantity=i[0]['quantity'],
+                    )
             time_stop = time.time()
             return time_stop - time_start
         except Exception as e:
