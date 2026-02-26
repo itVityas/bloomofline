@@ -25,7 +25,7 @@ echo [1/3] Активация виртуального окружения...
 call "%PROJECT_ROOT%\venv\Scripts\activate.bat"
 if !errorlevel! neq 0 (
     echo [ERROR] Ошибка при активации виртуального окружения
-    pause
+    pausepause
     exit /b 1
 )
 echo [OK] Виртуальное окружение активировано
@@ -37,12 +37,8 @@ if not exist "%PROJECT_ROOT%\manage.py" (
     exit /b 1
 )
 
-REM Запрос параметров запуска
-set /p PORT="[2/3] Введите порт для запуска (по умолчанию 8000): "
-if "%PORT%"=="" set PORT=8000
-
-set /p HOST="[3/3] Введите хост для запуска (по умолчанию 127.0.0.1): "
-if "%HOST%"=="" set HOST=127.0.0.1
+set PORT=8000
+set HOST=127.0.0.1
 
 echo.
 echo ========================================
