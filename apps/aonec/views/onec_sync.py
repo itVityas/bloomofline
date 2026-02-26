@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiResponse
 
 from apps.aonec.utils.aonec_sync import OneCFullSync, OneCSync
+from apps.sync.models import SyncDate
 
 
 @extend_schema(tags=['Synchronization'])
@@ -22,7 +23,10 @@ class SyncFullOneCView(APIView):
 
     def get(self, request):
         try:
-            acc_sync = OneCFullSync()
+            sync_date = SyncDate.objects.all().order_by('-last_sync').first()
+            if not sync_date:
+                sync_date = SyncDate(last_sync='1970-01-01 00:00:00')
+            acc_sync = OneCFullSync(sync_date=sync_date)
             acc_sync.full_sync()
             return Response({'status': 'ok'})
         except Exception as e:
@@ -45,8 +49,11 @@ class SyncOneCView(APIView):
 
     def get(self, request):
         try:
-            acc_sync = OneCSync()
-            acc_sync.full_sync()
+            sync_date = SyncDate.objects.all().order_by('-last_sync').first()
+            if not sync_date:
+                sync_date = SyncDate(last_sync='1970-01-01 00:00:00')
+            acc_sync = OneCSync(sync_date=sync_date)
+            acc_sync.sync()
             return Response({'status': 'ok'})
         except Exception as e:
             return Response({'error': str(e)})

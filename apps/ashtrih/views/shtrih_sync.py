@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiResponse
 
 from apps.ashtrih.utils.ashtrih_sync import ShtrihFullSync, ShtrihSync
+from apps.sync.models import SyncDate
 
 
 @extend_schema(tags=['Synchronization'])
@@ -22,7 +23,10 @@ class SyncFullStrihView(APIView):
 
     def get(self, request):
         try:
-            acc_sync = ShtrihFullSync()
+            sync_date = SyncDate.objects.all().order_by('-last_sync').first()
+            if not sync_date:
+                sync_date = SyncDate(last_sync='1970-01-01 00:00:00')
+            acc_sync = ShtrihFullSync(sync_date=sync_date)
             acc_sync.full_sync()
             return Response({'status': 'ok'})
         except Exception as e:
@@ -45,7 +49,10 @@ class SyncShtrihView(APIView):
 
     def get(self, request):
         try:
-            acc_sync = ShtrihSync()
+            sync_date = SyncDate.objects.all().order_by('-last_sync').first()
+            if not sync_date:
+                sync_date = SyncDate(last_sync='1970-01-01 00:00:00')
+            acc_sync = ShtrihSync(sync_date=sync_date)
             acc_sync.sync()
             return Response({'status': 'ok'})
         except Exception as e:
