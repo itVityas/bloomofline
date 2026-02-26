@@ -43,7 +43,7 @@ REM if !errorlevel! neq 0 (
 REM    echo [ERROR] Ошибка при обновлении pip
 REM    pause
 REM    exit /b 1
-REM)
+REM )
 
 REM Установка зависимостей
 echo.
