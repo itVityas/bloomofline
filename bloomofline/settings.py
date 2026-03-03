@@ -115,14 +115,17 @@ DATABASES = {
         'PORT': env('DB_PORT'),
         'OPTIONS': {
             'driver': env("DB_DRIVER"),
-            'extra_params': 'Encrypt=yes;TrustServerCertificate=yes',
+            'extra_params': 'Encrypt=yes;TrustServerCertificate=yes;Timeout=3',
         }
     },
 }
+
+DATABASES['bloom']['CONN_MAX_AGE'] = 0  # Отключаем персистентные соединения
+DATABASES['bloom']['OPTIONS']['connect_timeout'] = 3
+
 DATABASE_ROUTERS = [
    'bloomofline.db_routers.ModelDatabaseRouter',
 ]
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
