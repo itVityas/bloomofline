@@ -4,10 +4,13 @@ from drf_spectacular.utils import extend_schema, extend_schema_view
 from django_filters.rest_framework import DjangoFilterBackend
 
 from apps.ashtrih.models import OfflineProducts
+from apps.shtrih.models import Products
 # from apps.sez.models import ClearanceInvoice
 from apps.ashtrih.serializers.products import OfflineProductGetSerializer
 from apps.ashtrih.permission import StrihPermission
 from apps.ashtrih.filterset import ProductFilter
+from bloomofline.db_routers import ModelDatabaseRouter
+from rest_framework.response import Response
 
 
 @extend_schema(tags=['Offline Shtrih'])
@@ -39,3 +42,18 @@ class OfflineProductListView(ListAPIView):
     permission_classes = (IsAuthenticated, StrihPermission)
     filter_backends = [DjangoFilterBackend]
     filterset_class = ProductFilter
+
+    def get(self, request):
+        try:
+            if ModelDatabaseRouter().check_mssql_connection():
+                query = Products.objects.all()
+                serializer = self.serializer_class
+                page = self.paginate_queryset(query)
+                return self.get_paginated_response(serializer(page, many=True).data)
+            else:
+                serializer = self.serializer_class
+                query = self.queryset
+                page = self.paginate_queryset(query)
+                return self.get_paginated_response(serializer(page, many=True).data)
+        except Exception as e:
+            return Response({'error': str(e)})

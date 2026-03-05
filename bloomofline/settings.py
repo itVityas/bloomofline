@@ -121,7 +121,7 @@ DATABASES = {
 }
 
 DATABASES['bloom']['CONN_MAX_AGE'] = 0  # Отключаем персистентные соединения
-DATABASES['bloom']['OPTIONS']['connect_timeout'] = 3
+DATABASES['bloom']['OPTIONS']['connect_timeout'] = 2
 
 DATABASE_ROUTERS = [
    'bloomofline.db_routers.ModelDatabaseRouter',
