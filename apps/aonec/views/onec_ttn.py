@@ -1,24 +1,23 @@
 from rest_framework.generics import (
     ListAPIView,
-    CreateAPIView,
-    RetrieveUpdateDestroyAPIView,
     RetrieveAPIView,
 )
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.response import Response
 
 from apps.aonec.models import OfflineOneCTTN
+from apps.onec.models import OneCTTN
 from apps.aonec.serializers.onec_ttn import (
     OfflineOneCTTNGetSerializer,
-    OfflineOneCTTNPostSerializer,
-    OfflineOneCTTNFullSerializer
 )
 from apps.aonec.permissions import Warehouse1CPermission
 from apps.aonec.filters import OneCTTNFilter
+from bloomofline.db_routers import ModelDatabaseRouter
 
 
-@extend_schema(tags=['Offline OfflineOneCTTN'])
+@extend_schema(tags=['Offline OneCTTN'])
 @extend_schema_view(
     get=extend_schema(
         summary='Get OneC TTNs',
@@ -32,46 +31,23 @@ class OfflineOneCTTNListAPIView(ListAPIView):
     filter_backends = [DjangoFilterBackend]
     filterset_class = OneCTTNFilter
 
-
-@extend_schema(tags=["Offline OfflineOneCTTN"])
-@extend_schema_view(
-    post=extend_schema(
-        summary='Create OneC TTN',
-        description='Permission: admin, warehouse_writer'
-        ),
-)
-class OfflineOneCTTNCreateAPIView(CreateAPIView):
-    queryset = OfflineOneCTTN.objects.all()
-    serializer_class = OfflineOneCTTNPostSerializer
-    permission_classes = [IsAuthenticated, Warehouse1CPermission]
-
-
-@extend_schema(tags=['Offline OfflineOneCTTN'])
-@extend_schema_view(
-    get=extend_schema(
-        summary='Get OneC TTN',
-        description='Permission: admin, warehouse, warehouse_writer'
-        ),
-    put=extend_schema(
-        summary='Update OneC TTN',
-        description='Permission: admin, warehouse_writer'
-        ),
-    patch=extend_schema(
-        summary='Update OneC TTN',
-        description='Permission: admin, warehouse_writer'
-        ),
-    delete=extend_schema(
-        summary='Delete OneC TTN',
-        description='Permission: admin, warehouse_writer'
-        ),
-)
-class OfflineOneCTTNRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
-    queryset = OfflineOneCTTN.objects.all()
-    serializer_class = OfflineOneCTTNPostSerializer
-    permission_classes = [IsAuthenticated, Warehouse1CPermission]
+    def get(self, request):
+        try:
+            if ModelDatabaseRouter().check_mssql_connection():
+                query = OneCTTN.objects.all()
+                serializer = self.serializer_class
+                page = self.paginate_queryset(query)
+                return self.get_paginated_response(serializer(page, many=True).data)
+            else:
+                serializer = self.serializer_class
+                query = self.queryset
+                page = self.paginate_queryset(query)
+                return self.get_paginated_response(serializer(page, many=True).data)
+        except Exception as e:
+            return Response({'error': str(e)})
 
 
-@extend_schema(tags=['Offline OfflineOneCTTN'])
+@extend_schema(tags=['Offline OneCTTN'])
 @extend_schema_view(
     get=extend_schema(
         summary='Get OneC TTN',
@@ -83,15 +59,17 @@ class OfflineOneCTTNRetrieveAPIView(RetrieveAPIView):
     serializer_class = OfflineOneCTTNGetSerializer
     permission_classes = [IsAuthenticated, Warehouse1CPermission]
 
-
-@extend_schema(tags=['Offline OfflineOneCTTN'])
-@extend_schema_view(
-    post=extend_schema(
-        summary='create OneC TTN and list OfflineOneCTTNitems',
-        description='Permission: admin, warehouse_writer'
-        ),
-)
-class OfflineOneCTTNFullCreateAPIView(CreateAPIView):
-    queryset = OfflineOneCTTN.objects.all()
-    serializer_class = OfflineOneCTTNFullSerializer
-    permission_classes = [IsAuthenticated, Warehouse1CPermission]
+    def get(self, request):
+        try:
+            if ModelDatabaseRouter().check_mssql_connection():
+                query = OneCTTN.objects.all()
+                serializer = self.serializer_class
+                page = self.paginate_queryset(query)
+                return self.get_paginated_response(serializer(page, many=True).data)
+            else:
+                serializer = self.serializer_class
+                query = self.queryset
+                page = self.paginate_queryset(query)
+                return self.get_paginated_response(serializer(page, many=True).data)
+        except Exception as e:
+            return Response({'error': str(e)})
