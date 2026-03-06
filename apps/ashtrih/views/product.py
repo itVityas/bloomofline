@@ -5,7 +5,6 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from apps.ashtrih.models import OfflineProducts
 from apps.shtrih.models import Products
-# from apps.sez.models import ClearanceInvoice
 from apps.ashtrih.serializers.products import OfflineProductGetSerializer
 from apps.ashtrih.permission import StrihPermission
 from apps.ashtrih.filterset import ProductFilter

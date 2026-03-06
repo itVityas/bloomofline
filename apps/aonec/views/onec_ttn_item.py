@@ -18,10 +18,6 @@ from bloomofline.db_routers import ModelDatabaseRouter
         summary='Get OneC TTN items',
         description='Permission: admin, warehouse, warehouse_writer'
         ),
-    post=extend_schema(
-        summary='Create OneC TTN items',
-        description='Permission: admin, warehouse_writer'
-        ),
     )
 class OfflineOneCTTNItemListView(ListAPIView):
     queryset = OfflineOneCTTNItem.objects.all()

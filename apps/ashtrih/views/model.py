@@ -2,12 +2,15 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.response import Response
 
 from apps.ashtrih.models import OfflineModels
+from apps.shtrih.models import Models
 from apps.ashtrih.serializers.model import OfflineModelsSerializer
 from apps.ashtrih.permission import StrihPermission
 from bloomofline.paginator import StandartResultPaginator
 from apps.ashtrih.filterset import ModelFilter
+from bloomofline.db_routers import ModelDatabaseRouter
 
 
 @extend_schema(tags=['Offline Shtrih'])
@@ -38,3 +41,18 @@ class OfflineModelListView(ListAPIView):
     pagination_class = StandartResultPaginator
     filter_backends = (DjangoFilterBackend,)
     filterset_class = ModelFilter
+
+    def get(self, request):
+        try:
+            if ModelDatabaseRouter().check_mssql_connection():
+                query = Models.objects.all()
+                serializer = self.serializer_class
+                page = self.paginate_queryset(query)
+                return self.get_paginated_response(serializer(page, many=True).data)
+            else:
+                serializer = self.serializer_class
+                query = self.queryset
+                page = self.paginate_queryset(query)
+                return self.get_paginated_response(serializer(page, many=True).data)
+        except Exception as e:
+            return Response({'error': str(e)})
