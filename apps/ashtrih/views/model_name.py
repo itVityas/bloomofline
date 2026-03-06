@@ -1,11 +1,9 @@
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
+from drf_spectacular.utils import extend_schema, extend_schema_view
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import status
 from rest_framework.response import Response
-from django.db.models import F
 
 from apps.ashtrih.models import OfflineModelNames, OfflineModels, OfflineProducts
 from apps.shtrih.models import Products, Models, ModelNames
@@ -55,7 +53,6 @@ class OfflineModelNameListView(ListAPIView):
                 return self.get_paginated_response(serializer(page, many=True).data)
         except Exception as e:
             return Response({'error': str(e)})
-
 
 
 @extend_schema(tags=['Offline Shtrih'])
