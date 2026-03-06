@@ -1,7 +1,8 @@
 import logging
+import threading
+import queue
 
 from django.db import connections
-from django.db.utils import OperationalError
 
 logger = logging.getLogger(__name__)
 
@@ -20,20 +21,27 @@ class ModelDatabaseRouter:
 
     def check_mssql_connection(self):
         """
-        Проверяет доступность MSSQL базы данных
+        Проверяет доступность MSSQL базы данных с таймаутом
         """
+        result_queue = queue.Queue()
+
+        def _check():
+            try:
+                with connections['bloom'].cursor() as cursor:
+                    cursor.execute("SELECT 1")
+                    cursor.fetchone()
+                    result_queue.put(True)
+            except Exception:
+                result_queue.put(False)
+
+        thread = threading.Thread(target=_check)
+        thread.daemon = True
+        thread.start()
+
         try:
-            # Пробуем выполнить простой запрос к MSSQL
-            with connections['bloom'].cursor() as cursor:
-                cursor.execute("SET LOCK_TIMEOUT 2000;")
-                cursor.execute("SELECT 1")
-                cursor.fetchone()
-            return True
-        except OperationalError as e:
-            logger.info(f"MSSQL connection failed: {e}")
-            return False
-        except Exception as e:
-            logger.error(f"Unexpected error checking MSSQL: {e}")
+            result = result_queue.get(timeout=2)
+            return result
+        except queue.Empty:
             return False
 
     def db_for_read(self, model, **hints):
