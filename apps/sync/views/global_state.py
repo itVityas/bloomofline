@@ -15,6 +15,5 @@ from bloomofline.global_state import global_state
     ),
 )
 class GlobalStateView(APIView):
-    @staticmethod
-    def get(request):
+    def get(self, request):
         return Response({'global_state': global_state.set()})
