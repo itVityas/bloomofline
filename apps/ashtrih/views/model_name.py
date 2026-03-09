@@ -86,4 +86,5 @@ class OfflineProductCountByModelNameView(APIView):
                 model_code = model.code
             return Response({'count': count, 'code': model_code})
         except Exception as e:
+            global_state.get()
             return Response({'error': str(e)})

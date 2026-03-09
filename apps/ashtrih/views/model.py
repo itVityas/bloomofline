@@ -55,4 +55,5 @@ class OfflineModelListView(ListAPIView):
                 page = self.paginate_queryset(query)
                 return self.get_paginated_response(serializer(page, many=True).data)
         except Exception as e:
+            global_state.get()
             return Response({'error': str(e)})
