@@ -10,7 +10,7 @@ from apps.ashtrih.serializers.model import OfflineModelsSerializer
 from apps.ashtrih.permission import StrihPermission
 from bloomofline.paginator import StandartResultPaginator
 from apps.ashtrih.filterset import ModelFilter
-from bloomofline.db_routers import ModelDatabaseRouter
+from bloomofline.global_state import global_state
 
 
 @extend_schema(tags=['Offline Shtrih'])
@@ -44,7 +44,7 @@ class OfflineModelListView(ListAPIView):
 
     def get(self, request):
         try:
-            if ModelDatabaseRouter().check_mssql_connection():
+            if global_state.get():
                 query = Models.objects.all()
                 serializer = self.serializer_class
                 page = self.paginate_queryset(query)

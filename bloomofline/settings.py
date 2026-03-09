@@ -127,6 +127,16 @@ DATABASE_ROUTERS = [
    'bloomofline.db_routers.ModelDatabaseRouter',
 ]
 
+
+CACHES = {
+    "default": {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+        # Default TIMEOUT is 300 seconds (5 minutes). Can be adjusted.
+        "TIMEOUT": None,
+    }
+}
+
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 

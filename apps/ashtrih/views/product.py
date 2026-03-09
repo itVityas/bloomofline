@@ -8,7 +8,7 @@ from apps.shtrih.models import Products
 from apps.ashtrih.serializers.products import OfflineProductGetSerializer
 from apps.ashtrih.permission import StrihPermission
 from apps.ashtrih.filterset import ProductFilter
-from bloomofline.db_routers import ModelDatabaseRouter
+from bloomofline.global_state import global_state
 from rest_framework.response import Response
 
 
@@ -44,7 +44,7 @@ class OfflineProductListView(ListAPIView):
 
     def get(self, request):
         try:
-            if ModelDatabaseRouter().check_mssql_connection():
+            if global_state.get():
                 query = Products.objects.all()
                 serializer = self.serializer_class
                 page = self.paginate_queryset(query)

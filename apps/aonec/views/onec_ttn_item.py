@@ -9,7 +9,7 @@ from apps.aonec.models import OfflineOneCTTNItem
 from apps.onec.models import OneCTTNItem
 from apps.aonec.serializers.onec_ttn_item import OfflineOneCTTNItemSerializer
 from apps.aonec.permissions import Warehouse1CPermission
-from bloomofline.db_routers import ModelDatabaseRouter
+from bloomofline.global_state import global_state
 
 
 @extend_schema(tags=['Offline OneCTTNItem'])
@@ -26,7 +26,7 @@ class OfflineOneCTTNItemListView(ListAPIView):
 
     def get(self, request):
         try:
-            if ModelDatabaseRouter().check_mssql_connection():
+            if global_state.get():
                 query = OneCTTNItem.objects.all()
                 serializer = self.serializer_class
                 page = self.paginate_queryset(query)

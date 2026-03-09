@@ -14,7 +14,7 @@ from apps.aonec.serializers.onec_ttn import (
 )
 from apps.aonec.permissions import Warehouse1CPermission
 from apps.aonec.filters import OneCTTNFilter
-from bloomofline.db_routers import ModelDatabaseRouter
+from bloomofline.global_state import global_state
 
 
 @extend_schema(tags=['Offline OneCTTN'])
@@ -33,7 +33,7 @@ class OfflineOneCTTNListAPIView(ListAPIView):
 
     def get(self, request):
         try:
-            if ModelDatabaseRouter().check_mssql_connection():
+            if global_state.get():
                 query = OneCTTN.objects.all()
                 serializer = self.serializer_class
                 page = self.paginate_queryset(query)
@@ -61,7 +61,7 @@ class OfflineOneCTTNRetrieveAPIView(RetrieveAPIView):
 
     def get(self, request):
         try:
-            if ModelDatabaseRouter().check_mssql_connection():
+            if global_state.get():
                 query = OneCTTN.objects.all()
                 serializer = self.serializer_class
                 page = self.paginate_queryset(query)

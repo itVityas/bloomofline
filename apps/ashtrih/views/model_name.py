@@ -11,7 +11,7 @@ from apps.ashtrih.serializers.model_name import OfflineModelNamesSerializer, Off
 from apps.ashtrih.permission import StrihPermission
 from bloomofline.paginator import StandartResultPaginator
 from apps.ashtrih.filterset import ModelNamesFilter
-from bloomofline.db_routers import ModelDatabaseRouter
+from bloomofline.global_state import global_state
 
 
 @extend_schema(tags=['Offline Shtrih'])
@@ -41,7 +41,7 @@ class OfflineModelNameListView(ListAPIView):
 
     def get(self, request):
         try:
-            if ModelDatabaseRouter().check_mssql_connection():
+            if global_state.get():
                 query = ModelNames.objects.all()
                 serializer = self.serializer_class
                 page = self.paginate_queryset(query)
@@ -75,7 +75,7 @@ class OfflineProductCountByModelNameView(APIView):
 
     def get(self, request, pk):
         try:
-            if ModelDatabaseRouter().check_mssql_connection():
+            if global_state.get():
                 count = Products.objects.filter(model__name_id=pk).exclude(state=1).count()
                 model = Models.objects.filter(name_id=pk).first()
             else:
