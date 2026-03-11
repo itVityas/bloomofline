@@ -21,6 +21,11 @@ class GlobalState:
         cache.set(self.MSSQL_AVAILABLE, state, None)
         return state
 
+    def set_false(self):
+        state = False
+        cache.set(self.MSSQL_AVAILABLE, state, None)
+        return state
+
     def get(self):
         state = cache.get(self.MSSQL_AVAILABLE, None)
         if state is None:
