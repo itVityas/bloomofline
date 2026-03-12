@@ -133,3 +133,28 @@ class Shipment(models.Model):
 
     def __str__(self):
         return f'{self.id}'
+
+
+class OldProduct(models.Model):
+    """
+    Individual old_product items with barcodes, colors, and inventory information.
+    """
+    barcode = models.CharField(max_length=18)
+    color_id = models.ForeignKey(
+        'shtrih.Colors',
+        on_delete=models.CASCADE,
+        db_column='color_id',
+        db_constraint=False,
+        null=True,
+        blank=True)
+    model = models.ForeignKey('shtrih.Models', on_delete=models.CASCADE, db_column='model_id', db_constraint=False)
+    state = models.IntegerField()
+    quantity = models.IntegerField()
+
+    class Meta:
+        ordering = ['-id']
+        managed = False
+        app_label = "warehouse"
+
+    def __str__(self):
+        return f"old_product {self.id} {self.barcode}"
