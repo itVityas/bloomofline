@@ -7,6 +7,7 @@ from apps.aoffline.utils.aoffline_sync import AccountFullSynchronization
 from apps.aonec.utils.aonec_sync import OneCFullSync, OneCSync
 from apps.ashtrih.utils.ashtrih_sync import ShtrihFullSync, ShtrihSync
 from apps.sync.models import SyncDate
+from bloomofline.db_routers import ModelDatabaseRouter
 
 
 @extend_schema(tags=['Synchronization'])
@@ -25,6 +26,8 @@ class FullSyncAllView(APIView):
 
     def get(self, request):
         try:
+            if ModelDatabaseRouter().check_mssql_connection() is False:
+                return Response({'error': 'No connect db'}, status=400)
             sync_date = SyncDate.objects.all().order_by('-last_sync').first()
             if not sync_date:
                 sync_date = SyncDate(last_sync='1970-01-01 00:00:00')
@@ -59,6 +62,8 @@ class SyncAllView(APIView):
 
     def get(self, request):
         try:
+            if ModelDatabaseRouter().check_mssql_connection() is False:
+                return Response({'error': 'No connect db'}, status=400)
             sync_date = SyncDate.objects.all().order_by('-last_sync').first()
             if not sync_date:
                 sync_date = SyncDate(last_sync='1970-01-01 00:00:00')
