@@ -1,7 +1,7 @@
 from django.db import models
 
 from apps.shtrih.models import Products
-from apps.aoffline.models import OfflineUser
+from apps.account.models import User
 from apps.onec.models import OneCTTN
 
 
@@ -87,7 +87,7 @@ class WarehouseTTN(models.Model):
     warehouse = models.ForeignKey(Warehouse, on_delete=models.PROTECT)
     warehouse_action = models.ForeignKey(WarehouseAction, on_delete=models.PROTECT)
     pallet = models.ForeignKey(Pallet, on_delete=models.SET_NULL, null=True, blank=True)
-    user = models.ForeignKey(OfflineUser, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 
@@ -104,7 +104,7 @@ class WarehouseDo(models.Model):
     warehouse_ttn = models.ForeignKey(WarehouseTTN, on_delete=models.PROTECT)
     warehouse_product = models.ForeignKey(WarehouseProduct, on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField(default=1)
-    user = models.ForeignKey(OfflineUser, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 
@@ -122,7 +122,7 @@ class Shipment(models.Model):
     warehouse = models.ForeignKey(Warehouse, on_delete=models.PROTECT)
     warehouse_product = models.ForeignKey(WarehouseProduct, on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField(default=1)
-    user = models.ForeignKey(OfflineUser, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 

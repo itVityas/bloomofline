@@ -6,7 +6,7 @@ from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiResp
 from apps.aoffline.utils.aoffline_sync import AccountFullSynchronization
 from apps.aonec.utils.aonec_sync import OneCFullSync, OneCSync
 from apps.ashtrih.utils.ashtrih_sync import ShtrihFullSync, ShtrihSync
-from apps.woffline.utils.woffline_sync import WarehouseFullSync
+from apps.woffline.utils.woffline_sync import WarehouseFullSync, WarehouseSync
 from apps.sync.models import SyncDate
 from bloomofline.db_routers import ModelDatabaseRouter
 
@@ -74,12 +74,15 @@ class SyncAllView(APIView):
             time_account = AccountFullSynchronization().full_sync()
             time_ttn = OneCSync(sync_date=sync_date).sync()
             time_shtrih = ShtrihSync(sync_date=sync_date).sync()
-            full_time = time_account.get('full', 0) + time_shtrih.get('full', 0) + time_ttn.get('full', 0)
+            time_warehouse = WarehouseSync(sync_date=sync_date).sync()
+            full_time = time_account.get('full', 0) + time_shtrih.get('full', 0) +\
+                time_ttn.get('full', 0) + time_warehouse.get('full', 0)
             SyncDate.objects.create()
             return Response({
                 'account': time_account,
                 'onec': time_ttn,
                 'shtrih': time_shtrih,
+                'warehouse': time_warehouse,
                 'full_time': full_time,
                 'status': 'ok'})
         except Exception as e:
