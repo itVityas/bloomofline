@@ -5,7 +5,7 @@ from apps.aoffline.models import OfflineUser
 from apps.aonec.models import OfflineOneCTTN
 
 
-class Warehouse(models.Model):
+class OfflineWarehouse(models.Model):
     name = models.CharField(max_length=100)
     is_active = models.BooleanField(default=True)
     date = models.DateField(null=True, blank=True)
@@ -20,7 +20,7 @@ class Warehouse(models.Model):
         return f'{self.id}:{self.name}'
 
 
-class TypeOfWork(models.Model):
+class OfflineTypeOfWork(models.Model):
     name = models.CharField(max_length=100)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
@@ -33,9 +33,9 @@ class TypeOfWork(models.Model):
         return f'{self.id}:{self.name}'
 
 
-class WarehouseAction(models.Model):
+class OfflineWarehouseAction(models.Model):
     name = models.CharField(max_length=100)
-    type_of_work = models.ForeignKey(TypeOfWork, on_delete=models.CASCADE)
+    type_of_work = models.ForeignKey(OfflineTypeOfWork, on_delete=models.CASCADE)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 
@@ -47,7 +47,7 @@ class WarehouseAction(models.Model):
         return f'{self.id}:{self.name}'
 
 
-class Pallet(models.Model):
+class OfflinePallet(models.Model):
     barcode = models.CharField(max_length=50)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
@@ -61,7 +61,7 @@ class Pallet(models.Model):
         return f'{self.id}:{self.barcode}'
 
 
-class WarehouseProduct(models.Model):
+class OfflineWarehouseProduct(models.Model):
     product = models.ForeignKey(
         OfflineProducts,
         on_delete=models.CASCADE,
@@ -77,14 +77,14 @@ class WarehouseProduct(models.Model):
         ordering = ['-id']
 
 
-class WarehouseTTN(models.Model):
+class OfflineWarehouseTTN(models.Model):
     ttn_number = models.CharField(max_length=50, primary_key=True)
     is_close = models.BooleanField(default=False)
     is_offline = models.BooleanField(default=True)
     date = models. DateField(null=True, blank=True)
-    warehouse = models.ForeignKey(Warehouse, on_delete=models.PROTECT)
-    warehouse_action = models.ForeignKey(WarehouseAction, on_delete=models.PROTECT)
-    pallet = models.ForeignKey(Pallet, on_delete=models.SET_NULL, null=True, blank=True)
+    warehouse = models.ForeignKey(OfflineWarehouse, on_delete=models.PROTECT)
+    warehouse_action = models.ForeignKey(OfflineWarehouseAction, on_delete=models.PROTECT)
+    pallet = models.ForeignKey(OfflinePallet, on_delete=models.SET_NULL, null=True, blank=True)
     user = models.ForeignKey(OfflineUser, on_delete=models.PROTECT)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
@@ -97,9 +97,9 @@ class WarehouseTTN(models.Model):
         return f'{self.ttn_number}'
 
 
-class WarehouseDo(models.Model):
-    warehouse_ttn = models.ForeignKey(WarehouseTTN, on_delete=models.PROTECT)
-    warehouse_product = models.ForeignKey(WarehouseProduct, on_delete=models.PROTECT)
+class OfflineWarehouseDo(models.Model):
+    warehouse_ttn = models.ForeignKey(OfflineWarehouseTTN, on_delete=models.PROTECT)
+    warehouse_product = models.ForeignKey(OfflineWarehouseProduct, on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField(default=1)
     user = models.ForeignKey(OfflineUser, on_delete=models.PROTECT)
     is_offline = models.BooleanField(default=True)
@@ -114,10 +114,10 @@ class WarehouseDo(models.Model):
         return f'{self.id}'
 
 
-class Shipment(models.Model):
+class OfflineShipment(models.Model):
     onec_ttn = models.ForeignKey(OfflineOneCTTN, on_delete=models.PROTECT)
-    warehouse = models.ForeignKey(Warehouse, on_delete=models.PROTECT)
-    warehouse_product = models.ForeignKey(WarehouseProduct, on_delete=models.PROTECT)
+    warehouse = models.ForeignKey(OfflineWarehouse, on_delete=models.PROTECT)
+    warehouse_product = models.ForeignKey(OfflineWarehouseProduct, on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField(default=1)
     is_offline = models.BooleanField(default=True)
     user = models.ForeignKey(OfflineUser, on_delete=models.PROTECT)
@@ -132,7 +132,7 @@ class Shipment(models.Model):
         return f'{self.id}'
 
 
-class OldProduct(models.Model):
+class OfflineOldProduct(models.Model):
     """
     Individual old_product items with barcodes, colors, and inventory information.
     """
