@@ -13,6 +13,7 @@ class ModelDatabaseRouter:
         "onec": 'bloom',
         "shtrih": 'bloom',
         "warehouse": 'bloom',
+        "woffline": 'default',
         "sync": 'default',
         'aoffline': 'default',
         'aonec': 'default',
