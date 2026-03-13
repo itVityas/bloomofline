@@ -82,10 +82,10 @@ class OfflineWarehouseTTN(models.Model):
     is_close = models.BooleanField(default=False)
     is_offline = models.BooleanField(default=True)
     date = models. DateField(null=True, blank=True)
-    warehouse = models.ForeignKey(OfflineWarehouse, on_delete=models.PROTECT)
-    warehouse_action = models.ForeignKey(OfflineWarehouseAction, on_delete=models.PROTECT)
+    warehouse = models.ForeignKey(OfflineWarehouse, on_delete=models.CASCADE)
+    warehouse_action = models.ForeignKey(OfflineWarehouseAction, on_delete=models.CASCADE)
     pallet = models.ForeignKey(OfflinePallet, on_delete=models.SET_NULL, null=True, blank=True)
-    user = models.ForeignKey(OfflineUser, on_delete=models.PROTECT)
+    user = models.ForeignKey(OfflineUser, on_delete=models.CASCADE)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 
@@ -98,10 +98,10 @@ class OfflineWarehouseTTN(models.Model):
 
 
 class OfflineWarehouseDo(models.Model):
-    warehouse_ttn = models.ForeignKey(OfflineWarehouseTTN, on_delete=models.PROTECT)
-    warehouse_product = models.ForeignKey(OfflineWarehouseProduct, on_delete=models.PROTECT)
+    warehouse_ttn = models.ForeignKey(OfflineWarehouseTTN, on_delete=models.CASCADE)
+    warehouse_product = models.ForeignKey(OfflineWarehouseProduct, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
-    user = models.ForeignKey(OfflineUser, on_delete=models.PROTECT)
+    user = models.ForeignKey(OfflineUser, on_delete=models.CASCADE)
     is_offline = models.BooleanField(default=True)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
@@ -115,12 +115,12 @@ class OfflineWarehouseDo(models.Model):
 
 
 class OfflineShipment(models.Model):
-    onec_ttn = models.ForeignKey(OfflineOneCTTN, on_delete=models.PROTECT)
-    warehouse = models.ForeignKey(OfflineWarehouse, on_delete=models.PROTECT)
-    warehouse_product = models.ForeignKey(OfflineWarehouseProduct, on_delete=models.PROTECT)
+    onec_ttn = models.ForeignKey(OfflineOneCTTN, on_delete=models.CASCADE)
+    warehouse = models.ForeignKey(OfflineWarehouse, on_delete=models.CASCADE)
+    warehouse_product = models.ForeignKey(OfflineWarehouseProduct, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
     is_offline = models.BooleanField(default=True)
-    user = models.ForeignKey(OfflineUser, on_delete=models.PROTECT)
+    user = models.ForeignKey(OfflineUser, on_delete=models.CASCADE)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 

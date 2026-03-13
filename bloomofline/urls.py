@@ -49,6 +49,7 @@ urlpatterns = [
     path('api/v1/aaccount/', include('apps.aoffline.urls')),
     path('api/v1/ashtrih/', include('apps.ashtrih.urls')),
     path('api/v1/aonec/', include('apps.aonec.urls')),
+    path('api/v1/woffline/', include('apps.woffline.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
