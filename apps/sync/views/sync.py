@@ -3,7 +3,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiResponse
 
-from apps.aoffline.utils.aoffline_sync import AccountFullSynchronization
+from apps.aoffline.utils.aoffline_sync import AccountFullSynchronization, AccountSync
 from apps.aonec.utils.aonec_sync import OneCFullSync, OneCSync
 from apps.ashtrih.utils.ashtrih_sync import ShtrihFullSync, ShtrihSync
 from apps.woffline.utils.woffline_sync import WarehouseFullSync, WarehouseSync
@@ -71,7 +71,7 @@ class SyncAllView(APIView):
             sync_date = SyncDate.objects.all().order_by('-last_sync').first()
             if not sync_date:
                 sync_date = SyncDate(last_sync='1970-01-01 00:00:00')
-            time_account = AccountFullSynchronization().full_sync()
+            time_account = AccountSync().sync()
             time_ttn = OneCSync(sync_date=sync_date).sync()
             time_shtrih = ShtrihSync(sync_date=sync_date).sync()
             time_warehouse = WarehouseSync(sync_date=sync_date).sync()
