@@ -68,7 +68,7 @@ class OfflineWarehouseProduct(models.Model):
         db_constraint=False)
     quantity = models.PositiveIntegerField(default=1)
     is_shipment = models.BooleanField(default=False)
-    is_offline = models.BooleanField(default=True)
+    is_offline = models.BooleanField(default=False)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 

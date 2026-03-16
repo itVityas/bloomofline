@@ -31,6 +31,109 @@ from apps.warehouse.models import (
 logger = logging.getLogger(__name__)
 
 
+def pallet_upload():
+    pallet = OfflinePallet.objects.filter(is_offline=True).values(
+        'barcode', 'create_at', 'update_at')
+    pallet_list = []
+    for i in pallet:
+        pallet_list.append(
+            Pallet(
+                barcode=i['barcode'],
+                create_at=i['create_at'],
+                update_at=i['update_at'],
+            )
+        )
+        i.delete()
+    Pallet.objects.bulk_create(pallet_list)
+
+
+def warehouse_ttn_upload():
+    warehouse_ttn = OfflineWarehouseTTN.objects.filter(is_offline=True).values(
+        'ttn_number', 'is_close', 'date', 'warehouse_id', 'warehouse_action_id',
+        'pallet_id', 'user_id', 'create_at', 'update_at'
+    )
+    warehouse_ttn_list = []
+    for i in warehouse_ttn:
+        warehouse_ttn_list.append(
+            WarehouseTTN(
+                ttn_number=i['ttn_number'],
+                is_close=i['is_close'],
+                date=i['date'],
+                warehouse_id=i['warehouse_id'],
+                warehouse_action_id=i['warehouse_action_id'],
+                pallet=i['pallet'],
+                user_id=i['user_id'],
+                create_at=i['create_at'],
+                update_at=i['update_at'],
+            )
+        )
+        i.delete()
+    WarehouseTTN.objects.bulk_create(warehouse_ttn_list)
+
+
+def warehouse_product_upload():
+    warehouse_product = OfflineWarehouseProduct.objects.filter(is_offline=True).values(
+        'product_id', 'quantity', 'is_shipment', 'create_at', 'update_at'
+    )
+    warehouse_product_list = []
+    for i in warehouse_product:
+        warehouse_product_list.append(
+            WarehouseProduct(
+                product_id=i['product_id'],
+                quantity=i['quantity'],
+                is_shipment=i['is_shipment'],
+                create_at=i['create_at'],
+                update_at=i['update_at'],
+            )
+        )
+        i.delete()
+    WarehouseProduct.objects.bulk_create(warehouse_product_list)
+
+
+def warehouse_do_upload():
+    warehouse_do = OfflineWarehouseDo.objects.filter(is_offline=True).values(
+        'warehouse_ttn_id', 'warehouse_product_id', 'quantity', 'user_id', 'create_at',
+        'update_at'
+    )
+    warehouse_do_list = []
+    for i in warehouse_do:
+        warehouse_do_list.append(
+            WarehouseDo(
+                warehouse_ttn_id=i['warehouse_ttn_id'],
+                warehouse_product_id=i['warehouse_product_id'],
+                quantity=i['quantity'],
+                user_id=i['user_id'],
+                create_at=i['create_at'],
+                update_at=i['update_at'],
+            )
+        )
+        i.delete()
+    WarehouseDo.objects.bulk_create(warehouse_do_list)
+
+
+def shipment_upload():
+    shipments = OfflineShipment.objects.filter(is_offline=True).values(
+        'onec_ttn_id', 'warehouse_id', 'warehouse_product_id', 'quantity', 'user_id',
+        'create_at', 'update_at'
+    )
+    shipment_list = []
+    for i in shipments:
+        shipment_list.append(
+            Shipment(
+                id=i['id'],
+                onec_ttn_id=i['onec_ttn_id'],
+                warehouse_id=i['warehouse_id'],
+                warehouse_product_id=i['warehouse_product_id'],
+                quantity=i['quantity'],
+                user_id=i['user_id'],
+                create_at=i['create_at'],
+                update_at=i['update_at'],
+            )
+        )
+        i.delete()
+    Shipment.objects.bulk_create(shipment_list)
+
+
 class WarehouseFullSync:
     def __init__(self, sync_date: SyncDate, batch_size: int = 1000):
         self.sync_date = sync_date
@@ -111,6 +214,7 @@ class WarehouseFullSync:
     def pallet_full_sync(self):
         try:
             start_time = time.time()
+            pallet_upload()
             pallet_list = Pallet.objects.all().values(
                 'id', 'barcode', 'create_at', 'update_at'
             )
@@ -155,6 +259,7 @@ class WarehouseFullSync:
     def warehouse_ttn_full_sync(self):
         try:
             start_time = time.time()
+            warehouse_ttn_upload()
             warehouse_ttn_list = WarehouseTTN.objects.all().values(
                 'ttn_number', 'is_close', 'date', 'warehouse_id', 'warehouse_action_id',
                 'pallet_id', 'user_id', 'create_at', 'update_at'
@@ -186,6 +291,7 @@ class WarehouseFullSync:
     def warehouse_product_full_sync(self):
         try:
             start_time = time.time()
+            warehouse_product_upload()
             warehouse_product_list = WarehouseProduct.objects.all().values(
                 'id', 'product_id', 'quantity', 'is_shipment', 'create_at', 'update_at'
             )
@@ -213,6 +319,7 @@ class WarehouseFullSync:
     def shipment_full_sync(self):
         try:
             start_time = time.time()
+            shipment_upload()
             shipment_list = Shipment.objects.all().values(
                 'id', 'onec_ttn_id', 'warehouse_id', 'warehouse_product_id', 'quantity',
                 'user_id', 'create_at', 'update_at'
@@ -270,6 +377,7 @@ class WarehouseFullSync:
     def warehouse_do_full_sync(self):
         try:
             start_time = time.time()
+            warehouse_do_upload()
             warehouse_do_list = WarehouseDo.objects.all().values(
                 'id', 'warehouse_ttn_id', 'warehouse_product_id', 'quantity', 'user_id',
                 'create_at', 'update_at'
@@ -430,6 +538,7 @@ class WarehouseSync:
     def pallet_sync(self):
         try:
             start_time = time.time()
+            pallet_upload()
             pallet_list = Pallet.objects.filter(
                 update_at__gt=self.sync_date.last_sync
             ).values(
@@ -457,6 +566,7 @@ class WarehouseSync:
     def warehouse_product_sync(self):
         try:
             start_time = time.time()
+            warehouse_product_upload()
             warehouse_product_list = WarehouseProduct.objects.filter(
                 update_at__gt=self.sync_date.last_sync
             ).values(
@@ -486,6 +596,7 @@ class WarehouseSync:
     def warehouse_ttn_sync(self):
         try:
             start_time = time.time()
+            warehouse_ttn_upload()
             warehouse_ttn_list = WarehouseTTN.objects.filter(
                 update_at__gt=self.sync_date.last_sync
             ).values(
@@ -519,6 +630,7 @@ class WarehouseSync:
     def shipment_sync(self):
         try:
             start_time = time.time()
+            shipment_upload()
             shipment_list = Shipment.objects.filter(
                 update_at__gt=self.sync_date.last_sync
             ).values(
@@ -551,6 +663,7 @@ class WarehouseSync:
     def warehouse_do_sync(self):
         try:
             start_time = time.time()
+            warehouse_do_upload()
             warehouse_do_list = WarehouseDo.objects.filter(
                 update_at__gt=self.sync_date.last_sync
             ).values(
