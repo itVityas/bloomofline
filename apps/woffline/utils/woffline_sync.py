@@ -160,7 +160,7 @@ class WarehouseFullSync:
                 time_full['ttn'] = self.warehouse_ttn_full_sync()
                 time_full['product'] = self.warehouse_product_full_sync()
                 time_full['shipment'] = self.shipment_full_sync()
-                time_full['old_product'] = self.old_product_sync()
+                time_full['old_product'] = self.old_product_full_sync()
                 time_full['do'] = self.warehouse_do_full_sync()
                 time_full['full'] = sum(time_full.values())
             return time_full
@@ -347,7 +347,7 @@ class WarehouseFullSync:
             logger.error('shipment_full_sync' + str(e))
             raise e
 
-    def old_product_sync(self):
+    def old_product_full_sync(self):
         try:
             start_time = time.time()
             old_product_list = OldProduct.objects.all().values(
@@ -437,13 +437,16 @@ class WarehouseSync:
                 'id', 'name', 'create_at', 'update_at'
             )
             bulk_list = []
+            ids = []
             for i in type_of_work_list:
+                ids.append(i['id'])
                 bulk_list.append(OfflineTypeOfWork(
                     id=i['id'],
                     name=i['name'],
                     create_at=i['create_at'],
                     update_at=i['update_at']
                 ))
+            OfflineTypeOfWork.objects.exclude(id__in=ids).delete()
             OfflineTypeOfWork.objects.filter(
                 id__in=[i.id for i in bulk_list]
             ).delete()
@@ -463,7 +466,9 @@ class WarehouseSync:
                 'id', 'name', 'type_of_work_id', 'create_at', 'update_at'
             )
             bulk_list = []
+            ids = []
             for i in action_list:
+                ids.append(i['id'])
                 bulk_list.append(OfflineWarehouseAction(
                     id=i['id'],
                     name=i['name'],
@@ -471,6 +476,7 @@ class WarehouseSync:
                     create_at=i['create_at'],
                     update_at=i['update_at']
                 ))
+            OfflineWarehouseAction.objects.exclude(id__in=ids).delete()
             OfflineWarehouseAction.objects.filter(
                 id__in=[i.id for i in bulk_list]
             ).delete()
@@ -490,7 +496,9 @@ class WarehouseSync:
                 'id', 'name', 'is_active', 'date', 'create_at', 'update_at'
             )
             bulk_list = []
+            ids = []
             for i in warehouse_list:
+                ids.append(i['id'])
                 bulk_list.append(OfflineWarehouse(
                     id=i['id'],
                     name=i['name'],
@@ -502,6 +510,7 @@ class WarehouseSync:
             OfflineWarehouse.objects.filter(
                 id__in=[i.id for i in bulk_list]
             ).delete()
+            OfflineWarehouse.objects.exclude(id__in=ids).delete()
             OfflineWarehouse.objects.bulk_create(bulk_list)
             end_time = time.time()
             return end_time - start_time
@@ -519,7 +528,9 @@ class WarehouseSync:
                 'id', 'barcode', 'color_id', 'model_id', 'state', 'quantity'
             )
             bulk_list = []
+            ids = []
             for i in old_product_list:
+                ids.append(i['id'])
                 bulk_list.append(OfflineOldProduct(
                     id=i['id'],
                     barcode=i['barcode'],
@@ -528,6 +539,7 @@ class WarehouseSync:
                     state=i['state'],
                     quantity=i['quantity']
                 ))
+            OfflineOldProduct.objects.exclude(id__in=ids).delete()
             OfflineOldProduct.objects.bulk_create(bulk_list)
             end_time = time.time()
             return end_time - start_time
@@ -545,7 +557,9 @@ class WarehouseSync:
                 'id', 'barcode', 'create_at', 'update_at'
             )
             bulk_list = []
+            ids = []
             for i in pallet_list:
+                ids.append(i['id'])
                 bulk_list.append(OfflinePallet(
                     id=i['id'],
                     barcode=i['barcode'],
@@ -553,6 +567,7 @@ class WarehouseSync:
                     update_at=i['update_at'],
                     is_offline=False,
                 ))
+            OfflinePallet.objects.exclude(id__in=ids).delete()
             OfflinePallet.objects.filter(
                 id__in=[i.id for i in bulk_list]
             ).delete()
@@ -573,7 +588,9 @@ class WarehouseSync:
                 'id', 'product_id', 'quantity', 'is_shipment', 'create_at', 'update_at'
             )
             bulk_list = []
+            ids = []
             for i in warehouse_product_list:
+                ids.append(i['id'])
                 bulk_list.append(OfflineWarehouseProduct(
                     id=i['id'],
                     product_id=i['product_id'],
@@ -583,6 +600,7 @@ class WarehouseSync:
                     update_at=i['update_at'],
                     is_offline=False,
                 ))
+            OfflineWarehouseProduct.objects.exclude(id__in=ids).delete()
             OfflineWarehouseProduct.objects.filter(
                 id__in=[i.id for i in bulk_list]
             ).delete()
@@ -604,7 +622,9 @@ class WarehouseSync:
                 'pallet_id', 'user_id', 'create_at', 'update_at'
             )
             bulk_list = []
+            ids = []
             for i in warehouse_ttn_list:
+                ids.append(i['ttn_number'])
                 bulk_list.append(OfflineWarehouseTTN(
                     ttn_number=i['ttn_number'],
                     is_close=i['is_close'],
@@ -617,6 +637,7 @@ class WarehouseSync:
                     update_at=i['update_at'],
                     is_offline=False,
                 ))
+            OfflineWarehouseTTN.objects.exclude(ttn_number__in=ids).delete()
             OfflineWarehouseTTN.objects.filter(
                 ttn_number__in=[i.ttn_number for i in bulk_list]
             ).delete()
@@ -638,7 +659,9 @@ class WarehouseSync:
                 'user_id', 'create_at', 'update_at'
             )
             bulk_list = []
+            ids = []
             for i in shipment_list:
+                ids.append(i['id'])
                 bulk_list.append(OfflineShipment(
                     id=i['id'],
                     onec_ttn_id=i['onec_ttn_id'],
@@ -650,6 +673,7 @@ class WarehouseSync:
                     update_at=i['update_at'],
                     is_offline=False,
                 ))
+            OfflineShipment.objects.exclude(id__in=ids).delete()
             OfflineShipment.objects.filter(
                 id__in=[i.id for i in bulk_list]
             ).delete()
@@ -671,7 +695,9 @@ class WarehouseSync:
                 'create_at', 'update_at'
             )
             bulk_list = []
+            ids = []
             for i in warehouse_do_list:
+                ids.append(i['id'])
                 bulk_list.append(OfflineWarehouseDo(
                     id=i['id'],
                     warehouse_ttn_id=i['warehouse_ttn_id'],
@@ -682,6 +708,7 @@ class WarehouseSync:
                     update_at=i['update_at'],
                     is_offline=False,
                 ))
+            OfflineWarehouseDo.objects.exclude(id__in=ids).delete()
             OfflineWarehouseDo.objects.filter(
                 id__in=[i.id for i in bulk_list]
             ).delete()
