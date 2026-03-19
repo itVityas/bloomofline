@@ -8,11 +8,15 @@ from apps.shtrih.models import (
     ModelNames,
     Models,
     Products,
+    Protocols,
+    Workplaces,
 )
 from apps.ashtrih.models import (
     OfflineModels as AshtrihModels,
     OfflineProducts as AshtrihProducts,
     OfflineModelNames as AshtrihModelNames,
+    OfflineProtocols,
+    OfflineWorkplaces,
 )
 from apps.sync.models import SyncDate
 
@@ -35,7 +39,10 @@ class ShtrihFullSync:
             time_full['names'] = time_names
             time_full['models'] = time_model
             time_full['products'] = time_products
-            time_full['full'] = time_names + time_model + time_products
+            time_full['workplaces'] = self.workplaces_full_sync()
+            time_full['protocols'] = self.protocols_full_sync()
+            time_full['full'] = time_names + time_model + time_products\
+                + time_full['protocols'] + time_full['workplaces']
             return time_full
         except Exception as e:
             raise e
@@ -117,6 +124,59 @@ class ShtrihFullSync:
             logger.error('products_full_sync' + str(e))
             raise e
 
+    def protocols_full_sync(self):
+        try:
+            time_start = time.time()
+            OfflineProtocols.objects.all().delete()
+            protocols = Protocols.objects.all().order_by('id').values(
+                'id', 'product_id', 'workplace_id', 'work_date')
+            list_protocols = []
+            for i in protocols.iterator(chunk_size=self.batch_size):
+                list_protocols.append(OfflineProtocols(
+                    id=i['id'],
+                    product_id=i['product_id'],
+                    workplace_id=i['workplace_id'],
+                    work_date=i['work_date'],
+                ))
+                if len(list_protocols) >= self.batch_size:
+                    OfflineProtocols.objects.bulk_create(list_protocols)
+                    list_protocols.clear()
+            if list_protocols:
+                OfflineProtocols.objects.bulk_create(list_protocols)
+            time_stop = time.time()
+            return time_stop - time_start
+        except Exception as e:
+            logger.error('protocols_full_sync ' + str(e))
+            raise e
+
+    def workplaces_full_sync(self):
+        try:
+            time_start = time.time()
+            OfflineWorkplaces.objects.all().delete()
+            workplaces = Workplaces.objects.all().order_by('id').values(
+                'id', 'housing', 'type_of_work', 'computer_number',
+                'create_at'
+            )
+            list_workplaces = []
+            for i in workplaces.iterator(chunk_size=self.batch_size):
+                list_workplaces.append(OfflineWorkplaces(
+                    id=i['id'],
+                    housing=i['housing'],
+                    type_of_work=i['type_of_work'],
+                    computer_number=i['computer_number'],
+                    create_at=i['create_at']
+                ))
+                if len(list_workplaces) >= self.batch_size:
+                    OfflineWorkplaces.objects.bulk_create(list_workplaces)
+                    list_workplaces.clear()
+            if list_workplaces:
+                OfflineWorkplaces.objects.bulk_create(list_workplaces)
+            time_stop = time.time()
+            return time_stop - time_start
+        except Exception as e:
+            logger.error('workplaces_full_sync' + str(e))
+            raise e
+
 
 class ShtrihSync:
     def __init__(self, sync_date: SyncDate, batch_size: int = 1000):
@@ -130,10 +190,13 @@ class ShtrihSync:
                 time_names = self.model_names_sync()
                 time_model = self.models_sync()
                 time_products = self.product_sync()
+                time_full['workplaces'] = self.workplace_sync()
+                time_full['protocols'] = self.protocol_sync()
                 time_full['names'] = time_names
                 time_full['models'] = time_model
                 time_full['products'] = time_products
-                time_full['full'] = time_names + time_model + time_products
+                time_full['full'] = time_names + time_model + time_products\
+                    + time_full['workplaces'] + time_full['protocols']
                 return time_full
         except Exception as e:
             raise e
@@ -268,4 +331,58 @@ class ShtrihSync:
             return time_stop - time_start
         except Exception as e:
             logger.error('product_sync' + str(e))
+            raise e
+
+    def workplace_sync(self):
+        try:
+            time_start = time.time()
+            last_workplace = OfflineWorkplaces.objects.order_by('-id').first()
+            workplaces = Workplaces.objects.filter(
+                id__gt=last_workplace.id if last_workplace else 0).order_by('id').values(
+                    'id', 'housing', 'type_of_work', 'computer_number',
+                    'create_at'
+            )
+            list_workplaces = []
+            for i in workplaces.iterator(chunk_size=self.batch_size):
+                list_workplaces.append(OfflineWorkplaces(
+                    id=i['id'],
+                    housing=i['housing'],
+                    type_of_work=i['type_of_work'],
+                    computer_number=i['computer_number'],
+                    create_at=i['create_at']
+                ))
+                if len(list_workplaces) >= self.batch_size:
+                    OfflineWorkplaces.objects.bulk_create(list_workplaces)
+                    list_workplaces.clear()
+            if list_workplaces:
+                OfflineWorkplaces.objects.bulk_create(list_workplaces)
+            time_stop = time.time()
+            return time_stop - time_start
+        except Exception as e:
+            logger.error('workplace_sync' + str(e))
+            raise e
+
+    def protocol_sync(self):
+        try:
+            time_start = time.time()
+            last_protocol = OfflineProtocols.objects.order_by('-id').first()
+            protocols = Protocols.objects.filter(id__gt=last_protocol.id if last_protocol else 0).order_by('id').values(
+                'id', 'product_id', 'workplace_id', 'work_date')
+            list_protocols = []
+            for i in protocols.iterator(chunk_size=self.batch_size):
+                list_protocols.append(OfflineProtocols(
+                    id=i['id'],
+                    product_id=i['product_id'],
+                    workplace_id=i['workplace_id'],
+                    work_date=i['work_date'],
+                ))
+                if len(list_protocols) >= self.batch_size:
+                    OfflineProtocols.objects.bulk_create(list_protocols)
+                    list_protocols.clear()
+            if list_protocols:
+                OfflineProtocols.objects.bulk_create(list_protocols)
+            time_stop = time.time()
+            return time_stop - time_start
+        except Exception as e:
+            logger.error('protocol_sync' + str(e))
             raise e
