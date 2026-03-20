@@ -42,7 +42,7 @@ class OfflineWarehouseActionListView(ListAPIView):
                 query = self.filter_queryset(self.queryset.all())
                 return Response(serializer(query, many=True).data)
         except Exception as e:
-            global_state.get()
+            global_state.set()
             return Response({'error ': str(e)}, status=400)
 
 
@@ -73,5 +73,5 @@ class OfflineWarehouseActionRetrieveView(RetrieveAPIView):
                     return Response({'error': 'not found'}, status=404)
                 return Response(serializer(query, many=False).data)
         except Exception as e:
-            global_state.get()
+            global_state.set()
             return Response({'error ': str(e)}, status=400)

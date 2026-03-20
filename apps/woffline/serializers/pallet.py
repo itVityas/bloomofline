@@ -8,7 +8,7 @@ from apps.woffline.models import OfflineWarehouseTTN
 class OfflinePalletSerializer(serializers.ModelSerializer):
     class Meta:
         model = OfflinePallet
-        fields = "__all__"
+        exclude = ['is_offline']
 
 
 class OfflinePalletGenerateSerializer(serializers.ModelSerializer):
@@ -19,7 +19,7 @@ class OfflinePalletGenerateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OfflinePallet
-        fields = "__all__"
+        exclude = ['is_offline']
 
     def create(self, validated_data):
         ttn_number = validated_data.pop('ttn_number', None)

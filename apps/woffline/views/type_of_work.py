@@ -35,5 +35,5 @@ class OfflineTypeOfWorkListView(ListAPIView):
                 page = self.paginate_queryset(query)
                 return self.get_paginated_response(serializer(page, many=True).data)
         except Exception as e:
-            global_state.get()
+            global_state.set()
             return Response({'error': str(e)}, status=400)
