@@ -1,7 +1,7 @@
-from apps.shtrih.models import Models
-from apps.warehouse.models import (
-    WarehouseTTN,
-    WarehouseDo
+from apps.ashtrih.models import OfflineModels
+from apps.woffline.models import (
+    OfflineWarehouseTTN,
+    OfflineWarehouseDo
 )
 
 
@@ -26,11 +26,11 @@ def len_word(str_in: str, col: int, replace='0') -> str:
 
 
 def generate_barcode(ttn_number: str) -> str:
-    warehouse_ttn = WarehouseTTN.objects.filter(ttn_number=ttn_number).first()
+    warehouse_ttn = OfflineWarehouseTTN.objects.filter(ttn_number=ttn_number).first()
     if not warehouse_ttn:
         return f"Error: ttn_number {ttn_number} not found"
 
-    warehouse_do = WarehouseDo.objects.filter(warehouse_ttn=warehouse_ttn)
+    warehouse_do = OfflineWarehouseDo.objects.filter(warehouse_ttn=warehouse_ttn)
     if not warehouse_do:
         return "Error: warehouse_do not found"
 
@@ -43,7 +43,7 @@ def generate_barcode(ttn_number: str) -> str:
     year = ttn_date.year
     year = len_word(str(year), 2)  # we need year with 2 character
 
-    model = Models.objects.filter(id=warehouse_do.first().warehouse_product.product.model.pk).first()
+    model = OfflineModels.objects.filter(id=warehouse_do.first().warehouse_product.product.model.pk).first()
     model = len_word(str(model.code), 5)  # we need model with 5 character
 
     ttn_number = len_word(str(ttn_number), 8)  # we need ttn_number with 8 character
