@@ -17,6 +17,7 @@ class WarehouseTTNPostSerializer(serializers.ModelSerializer):
             'warehouse',
             'warehouse_action',
             'pallet',
+            'user',
         ]
 
 

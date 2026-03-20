@@ -253,13 +253,13 @@ class OfflineWarehouseProductRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIV
                 query = WarehouseProduct.objects.filter(pk=pk).first()
                 if query:
                     query.delete()
-                    return Response({'message': 'deleted'}, status=200)
+                    return Response({'message': 'deleted'}, status=204)
                 return Response({'error': 'not found'}, status=404)
             else:
                 query = self.queryset.filter(pk=pk).first()
                 if query:
                     query.delete()
-                    return Response({'message': 'deleted'}, status=200)
+                    return Response({'message': 'deleted'}, status=204)
                 return Response({'error': 'not found'}, status=404)
         except Exception as e:
             global_state.set()

@@ -15,6 +15,15 @@ from apps.woffline.views.warehouse_products import (
     OfflineWarehouseProductListAPIView,
     OfflineWarehouseProductRetrieveUpdateDestroyView,
 )
+from apps.woffline.views.warehouse_ttn import (
+    OfflineWarehouseTTNByUserIdAPIView,
+    OfflineWarehouseTTNCreateAPIView,
+    OfflineWarehouseTTNListAPIView,
+    OfflineWarehouseTTNProductsAPIView,
+    OfflineWarehouseTTNRetrieveAPIView,
+    OfflineWarehouseTTNProductsByUserIdAPIView,
+    OfflineWarehouseTTNRetrieveUpdateDestroyAPIView,
+)
 
 urlpatterns = [
     path('full_sync/', FullWarehouseSyncView.as_view()),
@@ -31,4 +40,11 @@ urlpatterns = [
     path('warehouse/product/create/', OfflineWarehouseProductCreateAPIView.as_view()),
     path('warehouse/product/create/barcode/', OfflineWarehouseProductCreateByBarcodeAPIView.as_view()),
     path('warehouse/product/updaet/<int:pk>/', OfflineWarehouseProductRetrieveUpdateDestroyView.as_view()),
+    path('warehouse/ttn/', OfflineWarehouseTTNListAPIView.as_view()),
+    path('warehouse/ttn/create/', OfflineWarehouseTTNCreateAPIView.as_view()),
+    path('warehouse/ttns/<str:ttn_number>/', OfflineWarehouseTTNRetrieveAPIView.as_view()),
+    path('warehouse/ttn/update/<str:ttn_number>/', OfflineWarehouseTTNRetrieveUpdateDestroyAPIView.as_view()),
+    path('warehouse/ttn/user/', OfflineWarehouseTTNByUserIdAPIView.as_view()),
+    path('warehouse/ttn/products/<str:ttn_number>/', OfflineWarehouseTTNProductsAPIView.as_view()),
+    path('warehouse/ttn/product/user/', OfflineWarehouseTTNProductsByUserIdAPIView.as_view()),
 ]

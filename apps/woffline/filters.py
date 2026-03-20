@@ -36,22 +36,21 @@ class WarehouseProductFilter(filters.FilterSet):
 
 
 class WarehouseTTNFilter(filters.FilterSet):
-    number = filters.CharFilter(field_name='number', lookup_expr='iexact')
-    number_start = filters.CharFilter(field_name='number', lookup_expr='istartswith')
-    number_end = filters.CharFilter(field_name='number', lookup_expr='iendswith')
-    number_cont = filters.CharFilter(field_name='number', lookup_expr='icontains')
+    number = filters.CharFilter(field_name='ttn_number', lookup_expr='iexact')
+    number_start = filters.CharFilter(field_name='ttn_number', lookup_expr='istartswith')
+    number_end = filters.CharFilter(field_name='ttn_number', lookup_expr='iendswith')
+    number_cont = filters.CharFilter(field_name='ttn_number', lookup_expr='icontains')
     is_close = filters.BooleanFilter(field_name='is_close')
     date = filters.DateFilter(field_name='date', lookup_expr='exact')
 
     ordering = filters.OrderingFilter(
         fields=(
-            ('number', 'number'),
+            ('ttn_number', 'ttn_number'),
             ('is_close', 'is_close'),
             ('date', 'date'),
             ('warehouse', 'warehouse_id'),
             ('warehouse_action', 'warehouse_action_id'),
             ('user', 'user_id'),
-            ('id', 'id'),
             ('created_at', 'created_at'),
             ('updated_at', 'updated_at'),
         ),
