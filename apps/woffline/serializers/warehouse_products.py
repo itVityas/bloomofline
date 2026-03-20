@@ -25,7 +25,7 @@ class OfflineWarehouseProductGetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OfflineWarehouseProduct
-        fields = "__all__"
+        exclude = ['is_offline']
 
 
 class OfflineWarehouseProductBarcodeSerializer(serializers.ModelSerializer):
@@ -64,7 +64,9 @@ class OfflineWarehouseProductBarcodeSerializer(serializers.ModelSerializer):
         date = validated_data.pop('date', None)
         warehouse_id = validated_data.pop('warehouse_id', None)
         warehouse_action_id = validated_data.pop('warehouse_action_id', None)
-        user = self.context['request'].user
+        user = validated_data.pop('user', None)
+        if not user:
+            user = self.context['request'].user
 
         if not number or not date or not warehouse_id or not warehouse_action_id:
             raise serializers.ValidationError(

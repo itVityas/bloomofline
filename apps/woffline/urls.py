@@ -8,6 +8,13 @@ from apps.woffline.views.pallet import (
     OfflinePalletCreateByTTNAPIView,
     OfflinePalletListCreateAPIView,
     OfflinePalletRetrieveUpdateDestroyView)
+from apps.woffline.views.warehouse_products import (
+    OfflineWarehouseProductCreateAPIView,
+    OfflineWarehouseProductCreateByBarcodeAPIView,
+    OfflineWarehouseProductRetrieveAPIView,
+    OfflineWarehouseProductListAPIView,
+    OfflineWarehouseProductRetrieveUpdateDestroyView,
+)
 
 urlpatterns = [
     path('full_sync/', FullWarehouseSyncView.as_view()),
@@ -19,4 +26,9 @@ urlpatterns = [
     path('warehouse/pallet/', OfflinePalletListCreateAPIView.as_view()),
     path('warehouse/pallet/<int:pk>/', OfflinePalletRetrieveUpdateDestroyView.as_view()),
     path('warehouse/pallet/generate/', OfflinePalletCreateByTTNAPIView.as_view()),
+    path('warehouse/product/', OfflineWarehouseProductListAPIView.as_view()),
+    path('warehouse/product/<int:pk>/', OfflineWarehouseProductRetrieveAPIView.as_view()),
+    path('warehouse/product/create/', OfflineWarehouseProductCreateAPIView.as_view()),
+    path('warehouse/product/create/barcode/', OfflineWarehouseProductCreateByBarcodeAPIView.as_view()),
+    path('warehouse/product/updaet/<int:pk>/', OfflineWarehouseProductRetrieveUpdateDestroyView.as_view()),
 ]
