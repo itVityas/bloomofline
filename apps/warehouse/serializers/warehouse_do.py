@@ -29,6 +29,7 @@ class WarehouseDoPostSerializer(serializers.ModelSerializer):
             'warehouse_ttn',
             'warehouse_product',
             'quantity',
+            'user'
         ]
 
 
@@ -56,6 +57,7 @@ class WarehouseDoPalletSerializer(serializers.ModelSerializer):
             'warehouse_id',
             'warehouse_action_id',
             'model_id',
+            'user',
         ]
 
     def create(self, validated_data):
