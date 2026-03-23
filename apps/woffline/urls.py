@@ -31,6 +31,13 @@ from apps.woffline.views.warehouse_do import (
     OfflineWarehouseDoRetrieveAPIView,
     OfflineWarehouseDoRetrieveUpdateDestroyAPIView
 )
+from apps.woffline.views.shipment import (
+    OfflineShipmentBarcodeRetrieveAPIView,
+    OfflineShipmentCreateAPIView,
+    OfflineShipmentRetrieveAPIView,
+    OfflineShipmentRetrieveUpdateDestroyAPIView,
+    OfflineShipmentListAPIView
+)
 
 urlpatterns = [
     path('full_sync/', FullWarehouseSyncView.as_view()),
@@ -59,4 +66,9 @@ urlpatterns = [
     path('warehouse/do/retrieve/<int:pk>/', OfflineWarehouseDoRetrieveAPIView.as_view()),
     path('warehouse/do/update/<int:pk>/', OfflineWarehouseDoRetrieveUpdateDestroyAPIView.as_view()),
     path('warehouse/do/barcode/', OfflineWarehouseDoBarcodePalletAPIView.as_view()),
+    path('shipment/create/', OfflineShipmentCreateAPIView.as_view()),
+    path('shipment/', OfflineShipmentListAPIView.as_view()),
+    path('shipment/retrieve/<int:pk>/', OfflineShipmentRetrieveAPIView.as_view()),
+    path('shipment/update/<int:pk>/', OfflineShipmentRetrieveUpdateDestroyAPIView.as_view()),
+    path('shipment/barcode/', OfflineShipmentBarcodeRetrieveAPIView.as_view()),
 ]
