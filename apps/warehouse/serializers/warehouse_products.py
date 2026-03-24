@@ -76,7 +76,7 @@ class WarehouseProductBarcodeSerializer(serializers.ModelSerializer):
                 date=date,
                 warehouse_id=warehouse_id,
                 warehouse_action_id=warehouse_action_id,
-                user=user
+                user_id=user.id
             )
 
         if product:
@@ -101,7 +101,7 @@ class WarehouseProductBarcodeSerializer(serializers.ModelSerializer):
         WarehouseDo.objects.create(
             warehouse_product=warehouse_product,
             warehouse_ttn=warehouse_ttn,
-            user=user,
+            user_id=user.id,
             quantity=quantity
         )
         return warehouse_product
