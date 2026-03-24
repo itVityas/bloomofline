@@ -251,12 +251,12 @@ class OfflineWarehouseDoBarcodePalletAPIView(CreateAPIView):
         try:
             request.data['user'] = request.user.id
             if global_state.get():
-                serializer = WarehouseDoPalletSerializer(data=request.data)
+                serializer = WarehouseDoPalletSerializer(data=request.data, context={'request': request})
                 if serializer.is_valid():
                     return Response(serializer.data, status=201)
                 return Response(serializer.errors, status=400)
             else:
-                serializer = self.serializer_class(data=request.data)
+                serializer = self.serializer_class(data=request.data, context={'request': request})
                 if serializer.is_valid():
                     serializer.save()
                     return Response(serializer.data, status=201)

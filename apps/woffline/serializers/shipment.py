@@ -49,7 +49,6 @@ class OfflineShipmentBarcodeSerializer(serializers.ModelSerializer):
             'warehouse',
             'warehouse_product',
             'onec_ttn',
-            'user',
             'quantity',
         ]
 
@@ -67,7 +66,6 @@ class OfflineShipmentBarcodeSerializer(serializers.ModelSerializer):
         onec_ttn = OfflineOneCTTN.objects.filter(id=onec_ttn_id).first()
         if not warehouse or not onec_ttn:
             raise serializers.ValidationError('Склад или ТТН не найдены')
-
         if len(barcode) == 18:
             product = OfflineProducts.objects.filter(barcode=barcode).first()
             if not product:
