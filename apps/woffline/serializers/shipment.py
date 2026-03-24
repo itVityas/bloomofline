@@ -3,7 +3,7 @@ from rest_framework import serializers
 from apps.woffline.models import OfflineShipment, OfflineWarehouse, OfflineWarehouseProduct
 from apps.woffline.serializers.warehouse import OfflineWarehouseSerializer
 from apps.woffline.serializers.warehouse_products import OfflineWarehouseProductGetSerializer
-from apps.aonec.serializers.onec_ttn import OfflineOneCTTNFullSerializer
+from apps.aonec.serializers.onec_ttn import OfflineOneCTTNGetSerializer
 from apps.aoffline.serializers.user import OfflineUserSerializer
 from apps.ashtrih.models import OfflineProducts
 from apps.aonec.models import OfflineOneCTTN
@@ -24,7 +24,7 @@ class OfflineShipmentPostSerializer(serializers.ModelSerializer):
 class OfflineShipmentGetSerializer(serializers.ModelSerializer):
     warehouse = OfflineWarehouseSerializer(read_only=True)
     warehouse_product = OfflineWarehouseProductGetSerializer(read_only=True)
-    onec_ttn = OfflineOneCTTNFullSerializer(read_only=True)
+    onec_ttn = OfflineOneCTTNGetSerializer(read_only=True)
     user = OfflineUserSerializer(read_only=True)
 
     class Meta:
@@ -38,7 +38,7 @@ class OfflineShipmentBarcodeSerializer(serializers.ModelSerializer):
     once_ttn_id = serializers.IntegerField(write_only=True, required=True)
     warehouse = OfflineWarehouseSerializer(read_only=True)
     warehouse_product = OfflineWarehouseProductGetSerializer(read_only=True)
-    onec_ttn = OfflineOneCTTNFullSerializer(read_only=True)
+    onec_ttn = OfflineOneCTTNGetSerializer(read_only=True)
 
     class Meta:
         model = OfflineShipment

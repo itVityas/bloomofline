@@ -4,7 +4,7 @@ from apps.aonec.models import OfflineOneCTTN
 
 
 class OneCTTNFilter(filters.FilterSet):
-    id = filters.NumberFilter(field_name='id', lookup_expr='exact')
+    pk = filters.NumberFilter(field_name='id', lookup_expr='exact')
     number = filters.CharFilter(field_name='number', lookup_expr='iexact')
     start_number = filters.CharFilter(field_name='number', lookup_expr='istartswith')
     end_number = filters.CharFilter(field_name='number', lookup_expr='iendswith')
@@ -16,7 +16,7 @@ class OneCTTNFilter(filters.FilterSet):
 
     ordering = filters.OrderingFilter(
         fields=(
-            ('id', 'id'),
+            ('pk', 'pk'),
             ('number', 'number'),
             ('series', 'series')
         )
@@ -25,7 +25,7 @@ class OneCTTNFilter(filters.FilterSet):
     class Meta:
         model = OfflineOneCTTN
         fields = (
-            'id',
+            'pk',
             'number',
             'start_number',
             'end_number',

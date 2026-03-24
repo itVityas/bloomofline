@@ -1,5 +1,7 @@
 from django.db import models
 
+from apps.ashtrih.models import OfflineModels
+
 
 class OfflineOneCTTN(models.Model):
     number = models.CharField(max_length=50)
@@ -17,7 +19,7 @@ class OfflineOneCTTN(models.Model):
 
 class OfflineOneCTTNItem(models.Model):
     onec_ttn = models.ForeignKey(OfflineOneCTTN, on_delete=models.CASCADE)
-    name = models.CharField(max_length=255)
+    model = models.ForeignKey(OfflineModels, on_delete=models.CASCADE, db_constraint=False)
     count = models.PositiveIntegerField(default=1)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)

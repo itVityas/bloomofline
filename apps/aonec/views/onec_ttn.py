@@ -59,18 +59,20 @@ class OfflineOneCTTNRetrieveAPIView(RetrieveAPIView):
     serializer_class = OfflineOneCTTNGetSerializer
     permission_classes = [IsAuthenticated, Warehouse1CPermission]
 
-    def get(self, request):
+    def get(self, request, pk):
         try:
             if global_state.get():
-                query = OneCTTN.objects.all()
+                query = OneCTTN.objects.filter(pk=pk).first()
                 serializer = self.serializer_class
-                page = self.paginate_queryset(query)
-                return self.get_paginated_response(serializer(page, many=True).data)
+                if not query:
+                    return Response({'error': 'not found'}, status=404)
+                return Response(serializer(query, many=False).data)
             else:
                 serializer = self.serializer_class
-                query = self.queryset
-                page = self.paginate_queryset(query)
-                return self.get_paginated_response(serializer(page, many=True).data)
+                query = self.queryset.filter(pk=pk).first()
+                if not query:
+                    return Response({'error': 'not found'}, status=404)
+                return Response(serializer(query, many=False).data)
         except Exception as e:
-            global_state.get()
-            return Response({'error': str(e)})
+            global_state.set()
+            return Response({'error': str(e)}, status=400)
