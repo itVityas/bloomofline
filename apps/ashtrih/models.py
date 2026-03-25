@@ -52,6 +52,11 @@ class OfflineProducts(models.Model):
         db_constraint=False)
     state = models.IntegerField()
     quantity = models.IntegerField(null=True, blank=True)
+    type_of_work_id = models.IntegerField()
+    work_date = models.DateField()
+    module_id = models.IntegerField()
+    color_code = models.CharField(max_length=4)
+    russian_title = models.CharField(max_length=50)
 
     class Meta:
         ordering = ['-id']
@@ -59,36 +64,3 @@ class OfflineProducts(models.Model):
 
     def __str__(self):
         return f"Product {self.barcode}"
-
-
-class OfflineWorkplaces(models.Model):
-    """
-    Workplace reference table for product components.
-    """
-    housing = models.CharField(max_length=3, db_column='housing')
-    type_of_work = models.SmallIntegerField(db_column='type_of_work_id')
-    computer_number = models.CharField(max_length=2, db_column='computer_number')
-    create_at = models.DateTimeField(db_column='create_at')
-
-    class Meta:
-        app_label = "ashtrih"
-        ordering = ['-id']
-
-    def __str__(self):
-        return f"{self.id}"
-
-
-class OfflineProtocols(models.Model):
-    """
-    Protocol reference table for product components.
-    """
-    product = models.ForeignKey(OfflineProducts, on_delete=models.CASCADE, db_column='product_id')
-    workplace = models.ForeignKey(OfflineWorkplaces, on_delete=models.CASCADE, db_column='workplace_id')
-    work_date = models.DateField(db_column='work_date')
-
-    class Meta:
-        app_label = "ashtrih"
-        ordering = ['-id']
-
-    def __str__(self):
-        return f"Protocol {self.id}"
