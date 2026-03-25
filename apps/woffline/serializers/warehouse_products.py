@@ -81,16 +81,15 @@ class OfflineWarehouseProductBarcodeSerializer(serializers.ModelSerializer):
                 user=user
             )
 
-        # if product:
-        #     if check_packaging:
-        #         # is_packaging = OfflineProtocols.objects.\
-        #         #     filter(product=product).\
-        #         #     filter(workplace__type_of_work=3).\
-        #         #     exists()
-        #         # if not is_packaging:
-        #         #     raise PaсkagingNotFound()
-        # else:
-        #     ProductNotFound()
+        if product:
+            if check_packaging:
+                is_packaging = False
+                if product.type_of_work_id == 3:
+                    is_packaging = True
+                if not is_packaging:
+                    raise PaсkagingNotFound()
+        else:
+            ProductNotFound()
 
         if not validated_data.get('quantity', None):
             validated_data['quantity'] = product.quantity

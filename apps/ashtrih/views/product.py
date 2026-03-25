@@ -5,9 +5,10 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from apps.ashtrih.models import OfflineProducts
 from apps.shtrih.models import Products
-from apps.ashtrih.serializers.products import OfflineProductGetSerializer
+from apps.ashtrih.serializers.products import OfflineProductGetSerializer, OnlineProductGetSerializer
 from apps.ashtrih.permission import StrihPermission
 from apps.ashtrih.filterset import ProductFilter
+from apps.shtrih.filterset import ProductFilter as OnlineProductFilter
 from bloomofline.global_state import global_state
 from rest_framework.response import Response
 
@@ -40,20 +41,25 @@ class OfflineProductListView(ListAPIView):
     serializer_class = OfflineProductGetSerializer
     permission_classes = (IsAuthenticated, StrihPermission)
     filter_backends = [DjangoFilterBackend]
-    filterset_class = ProductFilter
+
+    def get_filterset_class(self):
+        if global_state.get():
+            return OnlineProductFilter
+        else:
+            return ProductFilter
 
     def get(self, request):
         try:
             if global_state.get():
-                query = Products.objects.all()
-                serializer = self.serializer_class
+                query = self.filter_queryset(Products.objects.select_related('model', 'color_id').all())
+                serializer = OnlineProductGetSerializer
                 page = self.paginate_queryset(query)
                 return self.get_paginated_response(serializer(page, many=True).data)
             else:
                 serializer = self.serializer_class
-                query = self.queryset
+                query = self.filter_queryset(self.queryset)
                 page = self.paginate_queryset(query)
                 return self.get_paginated_response(serializer(page, many=True).data)
         except Exception as e:
-            global_state.get()
+            global_state.set()
             return Response({'error': str(e)})
