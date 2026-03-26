@@ -365,7 +365,7 @@ class OfflineWarehouseTTNProductsByUserIdAPIView(APIView):
                     )
             if global_state.get():
                 query = WarehouseTTN.objects.filter(user_id=user_id).order_by('-create_at').first()
-                serializer = self.serializer_class
+                serializer = WarehouseTTNProductSerializer
                 return Response(serializer(query, many=False).data)
             else:
                 serializer = self.serializer_class
