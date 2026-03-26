@@ -38,6 +38,7 @@ class OfflineModelNameListView(ListAPIView):
     permission_classes = (IsAuthenticated, StrihPermission)
     pagination_class = StandartResultPaginator
     filter_backends = (DjangoFilterBackend,)
+    filterset_class = ModelNamesFilter
 
     def get_filterset_class(self):
         if global_state.get():

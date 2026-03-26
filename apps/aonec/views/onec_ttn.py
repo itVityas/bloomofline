@@ -30,6 +30,7 @@ class OfflineOneCTTNListAPIView(ListAPIView):
     serializer_class = OfflineOneCTTNGetSerializer
     permission_classes = [IsAuthenticated, Warehouse1CPermission]
     filter_backends = [DjangoFilterBackend]
+    filterset_class = OneCTTNFilter
 
     def get_filterset_class(self):
         if global_state.get():

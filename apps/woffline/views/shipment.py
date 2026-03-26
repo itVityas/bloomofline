@@ -75,6 +75,7 @@ class OfflineShipmentListAPIView(ListAPIView):
     serializer_class = OfflineShipmentGetSerializer
     permission_classes = [IsAuthenticated, WarehousePermission]
     filter_backends = [DjangoFilterBackend]
+    filterset_class = ShipmentFilter
     pagination_class = StandartResultPaginator
 
     def filter_queryset(self, queryset):

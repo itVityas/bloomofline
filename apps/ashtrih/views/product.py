@@ -41,6 +41,7 @@ class OfflineProductListView(ListAPIView):
     serializer_class = OfflineProductGetSerializer
     permission_classes = (IsAuthenticated, StrihPermission)
     filter_backends = [DjangoFilterBackend]
+    filterset_class = ProductFilter
 
     def get_filterset_class(self):
         if global_state.get():

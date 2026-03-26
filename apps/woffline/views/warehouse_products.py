@@ -42,6 +42,7 @@ class OfflineWarehouseProductListAPIView(ListAPIView):
     permission_classes = [IsAuthenticated, WarehousePermission]
     pagination_class = StandartResultPaginator
     filter_backends = [DjangoFilterBackend]
+    filterset_class = WarehouseProductFilter
 
     def filter_queryset(self, queryset):
         filterset_class = self.get_filterset_class()
