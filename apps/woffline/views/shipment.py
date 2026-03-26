@@ -49,6 +49,7 @@ class OfflineShipmentCreateAPIView(CreateAPIView):
             if global_state.get():
                 serializer = ShipmentPostSerializer(data=request.data)
                 if serializer.is_valid():
+                    serializer.save()
                     return Response(serializer.data, status=201)
                 return Response(serializer.errors, status=400)
             else:
@@ -74,8 +75,23 @@ class OfflineShipmentListAPIView(ListAPIView):
     serializer_class = OfflineShipmentGetSerializer
     permission_classes = [IsAuthenticated, WarehousePermission]
     filter_backends = [DjangoFilterBackend]
-    filterset_class = ShipmentFilter
     pagination_class = StandartResultPaginator
+
+    def filter_queryset(self, queryset):
+        filterset_class = self.get_filterset_class()
+
+        if filterset_class:
+            filterset = filterset_class(
+                self.request.GET,
+                queryset=queryset,
+                request=self.request
+            )
+            if filterset.is_valid():
+                return filterset.qs
+            else:
+                return queryset.none()
+
+        return queryset
 
     def get_filterset_class(self):
         if global_state.get():
@@ -128,7 +144,7 @@ class OfflineShipmentRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
         try:
             if global_state.get():
                 query = Shipment.objects.filter(pk=pk).first()
-                serializer = self.serializer_class
+                serializer = ShipmentPostSerializer
                 if not query:
                     return Response({'error': 'not found'}, status=404)
                 return Response(serializer(query, many=False).data)
@@ -147,7 +163,7 @@ class OfflineShipmentRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
             request.data['user'] = request.user.id
             if global_state.get():
                 query = Shipment.objects.filter(pk=pk).first()
-                serializer = self.serializer_class(query, data=request.data)
+                serializer = ShipmentPostSerializer(query, data=request.data)
                 if serializer.is_valid():
                     serializer.save()
                     return Response(serializer.data)
@@ -170,7 +186,7 @@ class OfflineShipmentRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
             request.data['user'] = request.user.id
             if global_state.get():
                 query = Shipment.objects.filter(pk=pk).first()
-                serializer = self.serializer_class(query, data=request.data, partial=True)
+                serializer = ShipmentPostSerializer(query, data=request.data, partial=True)
                 if serializer.is_valid():
                     serializer.save()
                     return Response(serializer.data)
@@ -185,7 +201,7 @@ class OfflineShipmentRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
                     return Response(serializer.data)
                 return Response(serializer.errors, status=400)
         except Exception as e:
-            global_state.get()
+            global_state.set()
             return Response({'error': str(e)}, status=400)
 
     def delete(self, request, pk):
@@ -223,7 +239,7 @@ class OfflineShipmentRetrieveAPIView(RetrieveAPIView):
         try:
             if global_state.get():
                 query = Shipment.objects.filter(pk=pk).first()
-                serializer = self.serializer_class
+                serializer = ShipmentGetSerializer
                 if not query:
                     return Response({'error': 'not found'}, status=404)
                 return Response(serializer(query, many=False).data)

@@ -46,7 +46,7 @@ class OfflinePalletListCreateAPIView(ListCreateAPIView):
         try:
             if global_state.get():
                 query = self.filter_queryset(Pallet.objects.all())
-                serializer = self.serializer_class
+                serializer = PalletSerializer
                 page = self.paginate_queryset(query)
                 return self.get_paginated_response(serializer(page, many=True).data)
             else:
@@ -105,7 +105,7 @@ class OfflinePalletRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
         try:
             if global_state.get():
                 query = Pallet.objects.filter(pk=pk).first()
-                serializer = self.serializer_class
+                serializer = PalletSerializer
                 if not query:
                     return Response({'error': 'not found'}, status=404)
                 return Response(serializer(query, many=False).data)
@@ -123,7 +123,7 @@ class OfflinePalletRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
         try:
             if global_state.get():
                 query = Pallet.objects.filter(pk=pk).first()
-                serializer = self.serializer_class(query, data=request.data)
+                serializer = PalletSerializer(query, data=request.data)
                 if serializer.is_valid():
                     serializer.save()
                     return Response(serializer.data)
@@ -145,7 +145,7 @@ class OfflinePalletRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
         try:
             if global_state.get():
                 query = Pallet.objects.filter(pk=pk).first()
-                serializer = self.serializer_class(query, data=request.data, partial=True)
+                serializer = PalletSerializer(query, data=request.data, partial=True)
                 if serializer.is_valid():
                     serializer.save()
                     return Response(serializer.data)
@@ -160,7 +160,7 @@ class OfflinePalletRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
                     return Response(serializer.data)
                 return Response(serializer.errors, status=400)
         except Exception as e:
-            global_state.get()
+            global_state.set()
             return Response({'error': str(e)}, status=400)
 
     def delete(self, request, pk):

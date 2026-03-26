@@ -49,6 +49,22 @@ class OfflineWarehouseTTNListAPIView(ListAPIView):
     pagination_class = StandartResultPaginator
     filter_backends = [DjangoFilterBackend]
 
+    def filter_queryset(self, queryset):
+        filterset_class = self.get_filterset_class()
+
+        if filterset_class:
+            filterset = filterset_class(
+                self.request.GET,
+                queryset=queryset,
+                request=self.request
+            )
+            if filterset.is_valid():
+                return filterset.qs
+            else:
+                return queryset.none()
+
+        return queryset
+
     def get_filterset_class(self):
         if global_state.get():
             return OnlineWarehouseTTNFilter
@@ -131,7 +147,7 @@ class OfflineWarehouseTTNRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIVi
         try:
             if global_state.get():
                 query = WarehouseTTN.objects.filter(ttn_number=ttn_number).first()
-                serializer = self.serializer_class
+                serializer = WarehouseTTNPostSerializer
                 if not query:
                     return Response({'error': 'not found'}, status=404)
                 return Response(serializer(query, many=False).data)
@@ -150,7 +166,7 @@ class OfflineWarehouseTTNRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIVi
             request.data['user'] = request.user.id
             if global_state.get():
                 query = WarehouseTTN.objects.filter(ttn_number=ttn_number).first()
-                serializer = self.serializer_class(query, data=request.data)
+                serializer = WarehouseTTNPostSerializer(query, data=request.data)
                 if serializer.is_valid():
                     serializer.save()
                     return Response(serializer.data)
@@ -173,7 +189,7 @@ class OfflineWarehouseTTNRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIVi
             request.data['user'] = request.user.id
             if global_state.get():
                 query = WarehouseTTN.objects.filter(ttn_number=ttn_number).first()
-                serializer = self.serializer_class(query, data=request.data, partial=True)
+                serializer = WarehouseTTNPostSerializer(query, data=request.data, partial=True)
                 if serializer.is_valid():
                     serializer.save()
                     return Response(serializer.data)
@@ -188,7 +204,7 @@ class OfflineWarehouseTTNRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIVi
                     return Response(serializer.data)
                 return Response(serializer.errors, status=400)
         except Exception as e:
-            global_state.get()
+            global_state.set()
             return Response({'error': str(e)}, status=400)
 
     def delete(self, request, ttn_number):
@@ -242,7 +258,7 @@ class OfflineWarehouseTTNRetrieveAPIView(RetrieveAPIView):
         try:
             if global_state.get():
                 query = WarehouseTTN.objects.filter(ttn_number=ttn_number).first()
-                serializer = self.serializer_class
+                serializer = WarehouseTTNGetSerializer
                 if not query:
                     return Response({'error': 'not found'}, status=404)
                 return Response(serializer(query, many=False).data)
@@ -290,7 +306,7 @@ class OfflineWarehouseTTNByUserIdAPIView(APIView):
                     )
             if global_state.get():
                 query = WarehouseTTN.objects.filter(user_id=user_id).order_by('-create_at').first()
-                serializer = self.serializer_class
+                serializer = WarehouseTTNGetSerializer
                 return Response(serializer(query, many=False).data)
             else:
                 serializer = self.serializer_class

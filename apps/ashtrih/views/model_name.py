@@ -11,6 +11,7 @@ from apps.ashtrih.serializers.model_name import OfflineModelNamesSerializer, Off
 from apps.ashtrih.permission import StrihPermission
 from bloomofline.paginator import StandartResultPaginator
 from apps.ashtrih.filterset import ModelNamesFilter
+from apps.shtrih.filterset import ModelNamesFilter as OnlineModelNamesFilter
 from bloomofline.global_state import global_state
 
 
@@ -37,21 +38,43 @@ class OfflineModelNameListView(ListAPIView):
     permission_classes = (IsAuthenticated, StrihPermission)
     pagination_class = StandartResultPaginator
     filter_backends = (DjangoFilterBackend,)
-    filterset_class = ModelNamesFilter
+
+    def get_filterset_class(self):
+        if global_state.get():
+            return OnlineModelNamesFilter
+        else:
+            return ModelNamesFilter
+
+    def filter_queryset(self, queryset):
+        filterset_class = self.get_filterset_class()
+
+        if filterset_class:
+            filterset = filterset_class(
+                self.request.GET,
+                queryset=queryset,
+                request=self.request
+            )
+            if filterset.is_valid():
+                return filterset.qs
+            else:
+                return queryset.none()
+
+        return queryset
 
     def get(self, request):
         try:
             if global_state.get():
-                query = ModelNames.objects.all()
+                query = self.filter_queryset(ModelNames.objects.all())
                 serializer = self.serializer_class
                 page = self.paginate_queryset(query)
                 return self.get_paginated_response(serializer(page, many=True).data)
             else:
                 serializer = self.serializer_class
-                query = self.queryset
+                query = self.filter_queryset(self.queryset)
                 page = self.paginate_queryset(query)
                 return self.get_paginated_response(serializer(page, many=True).data)
         except Exception as e:
+            global_state.set()
             return Response({'error': str(e)})
 
 
@@ -86,5 +109,5 @@ class OfflineProductCountByModelNameView(APIView):
                 model_code = model.code
             return Response({'count': count, 'code': model_code})
         except Exception as e:
-            global_state.get()
+            global_state.set()
             return Response({'error': str(e)})

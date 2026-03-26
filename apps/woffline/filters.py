@@ -9,7 +9,7 @@ from apps.woffline.models import (
 
 
 class WarehouseProductFilter(filters.FilterSet):
-    is_shipment = filters.BooleanFilter(field_name='is_shipment')
+    is_shipment = filters.BooleanFilter(field_name='is_shipment', lookup_expr='iexact')
     quantity = filters.NumberFilter(field_name='quantity', lookup_expr='exact')
     create_at = filters.DateFilter(field_name='create_at', lookup_expr='exact')
     update_at = filters.DateFilter(field_name='update_at', lookup_expr='icontains')

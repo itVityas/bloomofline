@@ -48,6 +48,22 @@ class OfflineProductListView(ListAPIView):
         else:
             return ProductFilter
 
+    def filter_queryset(self, queryset):
+        filterset_class = self.get_filterset_class()
+
+        if filterset_class:
+            filterset = filterset_class(
+                self.request.GET,
+                queryset=queryset,
+                request=self.request
+            )
+            if filterset.is_valid():
+                return filterset.qs
+            else:
+                return queryset.none()
+
+        return queryset
+
     def get(self, request):
         try:
             if global_state.get():

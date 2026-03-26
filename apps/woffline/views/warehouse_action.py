@@ -12,6 +12,7 @@ from apps.woffline.models import OfflineWarehouseAction
 from apps.woffline.serializers.warehouse_action import (
     OfflineWarehouseActionGetSerializer
 )
+from apps.warehouse.serializers.warehouse_action import WarehouseActionGetSerializer
 from apps.warehouse.permissions import WarehousePermission
 from bloomofline.global_state import global_state
 
@@ -35,7 +36,7 @@ class OfflineWarehouseActionListView(ListAPIView):
         try:
             if global_state.get():
                 query = self.filter_queryset(WarehouseAction.objects.all())
-                serializer = self.serializer_class
+                serializer = WarehouseActionGetSerializer
                 return Response(serializer(query, many=True).data)
             else:
                 serializer = self.serializer_class

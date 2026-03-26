@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from apps.warehouse.models import Warehouse
 from apps.woffline.models import OfflineWarehouse
 from apps.woffline.serializers.warehouse import OfflineWarehouseSerializer
+from apps.warehouse.serializers.warehouse import WarehouseSerializer
 from apps.woffline.permissions import WarehousePermission
 from bloomofline.global_state import global_state
 
@@ -30,7 +31,7 @@ class OfflineWarehouseListView(ListAPIView):
         try:
             if global_state.get():
                 query = self.filter_queryset(Warehouse.objects.all())
-                serializer = self.serializer_class
+                serializer = WarehouseSerializer
                 return Response(serializer(query, many=True).data)
             else:
                 serializer = self.serializer_class

@@ -13,6 +13,7 @@ from rest_framework import status
 from apps.warehouse.models import WarehouseProduct
 from apps.woffline.models import OfflineWarehouseProduct
 from apps.warehouse.serializers.warehouse_products import (
+    WarehouseProductGetSerializer,
     WarehouseProductPostSerializer,
     WarehouseProductBarcodeSerializer
 )
@@ -42,6 +43,22 @@ class OfflineWarehouseProductListAPIView(ListAPIView):
     pagination_class = StandartResultPaginator
     filter_backends = [DjangoFilterBackend]
 
+    def filter_queryset(self, queryset):
+        filterset_class = self.get_filterset_class()
+
+        if filterset_class:
+            filterset = filterset_class(
+                self.request.GET,
+                queryset=queryset,
+                request=self.request
+            )
+            if filterset.is_valid():
+                return filterset.qs
+            else:
+                return queryset.none()
+
+        return queryset
+
     def get_filterset_class(self):
         if global_state.get():
             return OnlineWarehouseProductFilter
@@ -52,7 +69,7 @@ class OfflineWarehouseProductListAPIView(ListAPIView):
         try:
             if global_state.get():
                 query = self.filter_queryset(WarehouseProduct.objects.all())
-                serializer = self.serializer_class
+                serializer = WarehouseProductGetSerializer
                 page = self.paginate_queryset(query)
                 return self.get_paginated_response(serializer(page, many=True).data)
             else:
@@ -81,7 +98,7 @@ class OfflineWarehouseProductRetrieveAPIView(RetrieveAPIView):
         try:
             if global_state.get():
                 query = WarehouseProduct.objects.filter(pk=pk).first()
-                serializer = self.serializer_class
+                serializer = WarehouseProductGetSerializer
                 if not query:
                     return Response({'error': 'not found'}, status=404)
                 return Response(serializer(query, many=False).data)
@@ -180,14 +197,14 @@ class OfflineWarehouseProductCreateByBarcodeAPIView(CreateAPIView):
 )
 class OfflineWarehouseProductRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     queryset = OfflineWarehouseProduct.objects.all()
-    serializer_class = OfflineWarehouseProductGetSerializer
+    serializer_class = OfflineWarehouseProductPostSerializer
     permission_classes = [IsAuthenticated, WarehousePermission]
 
     def get(self, request, pk):
         try:
             if global_state.get():
                 query = WarehouseProduct.objects.filter(pk=pk).first()
-                serializer = self.serializer_class
+                serializer = WarehouseProductPostSerializer
                 if not query:
                     return Response({'error': 'not found'}, status=404)
                 return Response(serializer(query, many=False).data)
@@ -206,7 +223,7 @@ class OfflineWarehouseProductRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIV
             request.data['user'] = request.user
             if global_state.get():
                 query = WarehouseProduct.objects.filter(pk=pk).first()
-                serializer = self.serializer_class(query, data=request.data)
+                serializer = WarehouseProductPostSerializer(query, data=request.data)
                 if serializer.is_valid():
                     serializer.save()
                     return Response(serializer.data)
@@ -229,7 +246,7 @@ class OfflineWarehouseProductRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIV
             request.data['user'] = request.user
             if global_state.get():
                 query = WarehouseProduct.objects.filter(pk=pk).first()
-                serializer = self.serializer_class(query, data=request.data, partial=True)
+                serializer = WarehouseProductPostSerializer(query, data=request.data, partial=True)
                 if serializer.is_valid():
                     serializer.save()
                     return Response(serializer.data)
@@ -244,7 +261,7 @@ class OfflineWarehouseProductRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIV
                     return Response(serializer.data)
                 return Response(serializer.errors, status=400)
         except Exception as e:
-            global_state.get()
+            global_state.set()
             return Response({'error': str(e)}, status=400)
 
     def delete(self, request, pk):

@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from apps.woffline.models import OfflineTypeOfWork
 from apps.warehouse.models import TypeOfWork
 from apps.woffline.serializers.type_of_work import OfflineTypeOfWorkSerializer
+from apps.warehouse.serializers.type_of_work import TypeOfWorkSerializer
 from apps.woffline.permissions import WarehousePermission
 from bloomofline.global_state import global_state
 
@@ -26,7 +27,7 @@ class OfflineTypeOfWorkListView(ListAPIView):
         try:
             if global_state.get():
                 query = TypeOfWork.objects.all()
-                serializer = self.serializer_class
+                serializer = TypeOfWorkSerializer
                 page = self.paginate_queryset(query)
                 return self.get_paginated_response(serializer(page, many=True).data)
             else:

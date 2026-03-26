@@ -10,6 +10,7 @@ from apps.ashtrih.serializers.model import OfflineModelsSerializer
 from apps.ashtrih.permission import StrihPermission
 from bloomofline.paginator import StandartResultPaginator
 from apps.ashtrih.filterset import ModelFilter
+from apps.shtrih.filterset import ModelFilter as OnlineModelFilter
 from bloomofline.global_state import global_state
 
 
@@ -40,20 +41,41 @@ class OfflineModelListView(ListAPIView):
     permission_classes = (IsAuthenticated, StrihPermission)
     pagination_class = StandartResultPaginator
     filter_backends = (DjangoFilterBackend,)
-    filterset_class = ModelFilter
+
+    def get_filterset_class(self):
+        if global_state.get():
+            return OnlineModelFilter
+        else:
+            return ModelFilter
+
+    def filter_queryset(self, queryset):
+        filterset_class = self.get_filterset_class()
+
+        if filterset_class:
+            filterset = filterset_class(
+                self.request.GET,
+                queryset=queryset,
+                request=self.request
+            )
+            if filterset.is_valid():
+                return filterset.qs
+            else:
+                return queryset.none()
+
+        return queryset
 
     def get(self, request):
         try:
             if global_state.get():
-                query = Models.objects.all()
+                query = self.filter_queryset(Models.objects.all())
                 serializer = self.serializer_class
                 page = self.paginate_queryset(query)
                 return self.get_paginated_response(serializer(page, many=True).data)
             else:
                 serializer = self.serializer_class
-                query = self.queryset
+                query = self.filter_queryset(self.queryset)
                 page = self.paginate_queryset(query)
                 return self.get_paginated_response(serializer(page, many=True).data)
         except Exception as e:
-            global_state.get()
+            global_state.set()
             return Response({'error': str(e)})
