@@ -270,13 +270,14 @@ class OfflineWarehouseDoBarcodePalletAPIView(CreateAPIView):
             if global_state.get():
                 serializer = WarehouseDoPalletSerializer(data=request.data, context={'request': request})
                 if serializer.is_valid():
-                    return Response(serializer.data, status=201)
+                    do = serializer.save()
+                    return Response(WarehouseDoGetSerializer(do).data, status=201)
                 return Response(serializer.errors, status=400)
             else:
                 serializer = self.serializer_class(data=request.data, context={'request': request})
                 if serializer.is_valid():
-                    serializer.save()
-                    return Response(serializer.data, status=201)
+                    do = serializer.save()
+                    return Response(OfflineWarehouseDoGetSerializer(do).data, status=201)
                 return Response(serializer.errors, status=400)
         except Exception as e:
             global_state.set()

@@ -77,7 +77,7 @@ class WarehouseDoPalletSerializer(serializers.ModelSerializer):
                 date=date,
                 warehouse_id=warehouse_id,
                 warehouse_action_id=warehouse_action_id,
-                user=user
+                user_id=user.id
             )
 
         # получаем или создаем warehouse product
@@ -101,7 +101,7 @@ class WarehouseDoPalletSerializer(serializers.ModelSerializer):
         warehouse_do = WarehouseDo.objects.create(
             warehouse_product=warehouse_product,
             warehouse_ttn=warehouse_ttn,
-            user=user,
+            user_id=user.id,
             quantity=quantity
         )
 
