@@ -31,4 +31,4 @@ class GlobalStateView(APIView):
 class GlobalStateSetFalseView(APIView):
     def get(self, request):
         global_state.set_false()
-        return Response({'global_state': global_state.set()})
+        return Response({'global_state': global_state.get()})
