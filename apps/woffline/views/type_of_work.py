@@ -11,7 +11,7 @@ from apps.woffline.permissions import WarehousePermission
 from bloomofline.global_state import global_state
 
 
-@extend_schema(tags=["Offline Warehouse"])
+@extend_schema(tags=["Offline TypeOfWork"])
 @extend_schema_view(
     get=extend_schema(
         summary='get list type_of_work warehouse',

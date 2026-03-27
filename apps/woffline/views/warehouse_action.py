@@ -17,7 +17,7 @@ from apps.warehouse.permissions import WarehousePermission
 from bloomofline.global_state import global_state
 
 
-@extend_schema(tags=["Offline Warehouse"])
+@extend_schema(tags=["Offline WarehouseAction"])
 @extend_schema_view(
     get=extend_schema(
         summary='get list warehouse_action',
@@ -47,7 +47,7 @@ class OfflineWarehouseActionListView(ListAPIView):
             return Response({'error ': str(e)}, status=400)
 
 
-@extend_schema(tags=["Offline Warehouse"])
+@extend_schema(tags=["Offline WarehouseAction"])
 @extend_schema_view(
     get=extend_schema(
         summary='get warehouse_action',
