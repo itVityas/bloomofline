@@ -164,7 +164,7 @@ class OfflineWarehouseProductCreateByBarcodeAPIView(CreateAPIView):
                 serializer = WarehouseProductBarcodeSerializer(data=request.data, context={'request': request})
                 if serializer.is_valid():
                     instance = serializer.save()
-                    return Response(OfflineWarehouseProductGetSerializer(instance).data, status=status.HTTP_201_CREATED)
+                    return Response(WarehouseProductGetSerializer(instance).data, status=status.HTTP_201_CREATED)
                 return Response(serializer.errors, status=400)
             else:
                 serializer = self.serializer_class(data=request.data, context={'request': request})
