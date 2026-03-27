@@ -56,7 +56,7 @@ urlpatterns = [
     path('warehouse/product/updaet/<int:pk>/', OfflineWarehouseProductRetrieveUpdateDestroyView.as_view()),
     path('warehouse/ttn/', OfflineWarehouseTTNListAPIView.as_view()),
     path('warehouse/ttn/create/', OfflineWarehouseTTNCreateAPIView.as_view()),
-    path('warehouse/ttns/<str:ttn_number>/', OfflineWarehouseTTNRetrieveAPIView.as_view()),
+    path('warehouse/ttn/retrieve/<str:ttn_number>/', OfflineWarehouseTTNRetrieveAPIView.as_view()),
     path('warehouse/ttn/update/<str:ttn_number>/', OfflineWarehouseTTNRetrieveUpdateDestroyAPIView.as_view()),
     path('warehouse/ttn/user/', OfflineWarehouseTTNByUserIdAPIView.as_view()),
     path('warehouse/ttn/products/<str:ttn_number>/', OfflineWarehouseTTNProductsAPIView.as_view()),
