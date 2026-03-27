@@ -57,7 +57,6 @@ class OfflineWarehouseDoPalletSerializer(serializers.ModelSerializer):
             'warehouse_id',
             'warehouse_action_id',
             'model_id',
-            'user',
         ]
 
     def create(self, validated_data):
