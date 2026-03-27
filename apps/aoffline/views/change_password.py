@@ -8,7 +8,7 @@ from apps.aoffline.serializers.change_password import (
 from apps.aoffline.models import OfflineUser
 
 
-@extend_schema(tags=['user offline'])
+@extend_schema(tags=['Offline user'])
 @extend_schema_view(
     patch=extend_schema(
         summary='Изменение пароля',
@@ -24,7 +24,7 @@ class ChangePasswordView(UpdateAPIView):
         return self.request.user
 
 
-@extend_schema(tags=['user offline'])
+@extend_schema(tags=['Offline user'])
 @extend_schema_view(
     patch=extend_schema(
         summary='Изменение пароля у пользователя',

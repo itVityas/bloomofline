@@ -15,7 +15,7 @@ from bloomofline.paginator import StandartResultPaginator
 from apps.aoffline.filterset import UserFilter
 
 
-@extend_schema(tags=['user offline'])
+@extend_schema(tags=['Offline user'])
 @extend_schema_view(
     get=extend_schema(
         summary='Получение списка всех пользователй',
@@ -31,7 +31,7 @@ class UserListView(ListAPIView):
     filterset_class = UserFilter
 
 
-@extend_schema(tags=['user offline'])
+@extend_schema(tags=['Offline user'])
 @extend_schema_view(
     put=extend_schema(
         summary='Обновление пользователя',
@@ -52,7 +52,7 @@ class UserDetailedView(DestroyAPIView, UpdateAPIView):
     queryset = OfflineUser.objects.all()
 
 
-@extend_schema(tags=['user offline'])
+@extend_schema(tags=['Offline user'])
 @extend_schema_view(
     get=extend_schema(
         summary='Получение пользователя по id',
@@ -65,7 +65,7 @@ class UserRetrieveView(RetrieveAPIView):
     queryset = OfflineUser.objects.all()
 
 
-@extend_schema(tags=['user offline'])
+@extend_schema(tags=['Offline user'])
 @extend_schema_view(
     delete=extend_schema(
         summary='Удаление роли у пользователя',

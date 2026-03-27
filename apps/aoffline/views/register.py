@@ -7,7 +7,7 @@ from apps.aoffline.serializers.register import OfflineUserRegisterSerializer
 from apps.aoffline.permissions import AccountPermissions
 
 
-@extend_schema(tags=['user offline'])
+@extend_schema(tags=['Offline user'])
 @extend_schema_view(
     post=extend_schema(
         summary='Регистрация пользователя',

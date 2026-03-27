@@ -256,7 +256,8 @@ class OfflineWarehouseDoRetrieveAPIView(RetrieveAPIView):
 @extend_schema_view(
     post=extend_schema(
         summary='Create a WarehouseDo by barcode in pallet',
-        description='Permission: admin, warehouse, warehouse_writer',
+        description='''Permission: admin, warehouse, warehouse_writer
+        Generate pallet barcode and add it to warhouse_ttn''',
     ),
 )
 class OfflineWarehouseDoBarcodePalletAPIView(CreateAPIView):

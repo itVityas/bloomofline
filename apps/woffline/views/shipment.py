@@ -258,7 +258,7 @@ class OfflineShipmentRetrieveAPIView(RetrieveAPIView):
 @extend_schema(tags=["Offline Shipments"])
 @extend_schema_view(
     post=extend_schema(
-        summary='Get shipment by barcode',
+        summary='Create shipment by barcode',
         description='Permission: admin, warehouse, warehouse_writer',
     ),
 )

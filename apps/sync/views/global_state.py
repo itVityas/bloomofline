@@ -39,6 +39,7 @@ class CheckGlobalStateView(APIView):
 @extend_schema_view(
     get=extend_schema(
         summary='Set global state False',
+        description='Set global state to False, work offline',
         responses={
             200: OpenApiResponse(description='Return global state'),
         },

@@ -65,10 +65,10 @@ urlpatterns = [
     path('warehouse/do/create/', OfflineWarehouseDoCreateAPIView.as_view()),
     path('warehouse/do/retrieve/<int:pk>/', OfflineWarehouseDoRetrieveAPIView.as_view()),
     path('warehouse/do/update/<int:pk>/', OfflineWarehouseDoRetrieveUpdateDestroyAPIView.as_view()),
-    path('warehouse/do/barcode/', OfflineWarehouseDoBarcodePalletAPIView.as_view()),
+    path('warehouse/do/pallet_barcode/', OfflineWarehouseDoBarcodePalletAPIView.as_view()),
     path('shipment/create/', OfflineShipmentCreateAPIView.as_view()),
     path('shipment/', OfflineShipmentListAPIView.as_view()),
     path('shipment/retrieve/<int:pk>/', OfflineShipmentRetrieveAPIView.as_view()),
     path('shipment/update/<int:pk>/', OfflineShipmentRetrieveUpdateDestroyAPIView.as_view()),
-    path('shipment/barcode/', OfflineShipmentBarcodeRetrieveAPIView.as_view()),
+    path('shipment/by_barcode/', OfflineShipmentBarcodeRetrieveAPIView.as_view()),
 ]

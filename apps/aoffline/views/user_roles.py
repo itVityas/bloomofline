@@ -9,7 +9,7 @@ from apps.aoffline.serializers.user_roles import OfflineUserRolesSerializer
 from apps.aoffline.permissions import AccountPermissions
 
 
-@extend_schema(tags=['UserRoles offline'])
+@extend_schema(tags=['Offline UserRoles'])
 @extend_schema_view(
     get=extend_schema(
         summary='Получение списка ролей и пользователя',
@@ -28,7 +28,7 @@ class UserRolesListView(ListCreateAPIView):
     filterset_fields = ('user', 'role')
 
 
-@extend_schema(tags=['UserRoles offline'])
+@extend_schema(tags=['Offline UserRoles'])
 @extend_schema_view(
     get=extend_schema(
         summary='Получение роли и пользователя по id',
