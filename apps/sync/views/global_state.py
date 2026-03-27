@@ -9,12 +9,28 @@ from bloomofline.global_state import global_state
 @extend_schema_view(
     get=extend_schema(
         summary='Get global state',
+        description='Get global state, true=can connect to mysql, false=only offline sqlite',
         responses={
             200: OpenApiResponse(description='Return global state'),
         },
     ),
 )
 class GlobalStateView(APIView):
+    def get(self, request):
+        return Response({'global_state': global_state.get()})
+
+
+@extend_schema(tags=['GlobalState'])
+@extend_schema_view(
+    get=extend_schema(
+        summary='Check global state',
+        description='Check global state, true=can connect to mysql, false=only offline sqlite',
+        responses={
+            200: OpenApiResponse(description='Return global state'),
+        },
+    ),
+)
+class CheckGlobalStateView(APIView):
     def get(self, request):
         return Response({'global_state': global_state.set()})
 
