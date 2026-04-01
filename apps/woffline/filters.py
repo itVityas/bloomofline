@@ -1,38 +1,9 @@
 import django_filters as filters
 
 from apps.woffline.models import (
-    OfflineWarehouseProduct,
     OfflineWarehouseTTN,
     OfflineWarehouseDo,
-    OfflineShipment
 )
-
-
-class WarehouseProductFilter(filters.FilterSet):
-    is_shipment = filters.BooleanFilter(field_name='is_shipment', lookup_expr='iexact')
-    quantity = filters.NumberFilter(field_name='quantity', lookup_expr='exact')
-    create_at = filters.DateFilter(field_name='create_at', lookup_expr='exact')
-    update_at = filters.DateFilter(field_name='update_at', lookup_expr='icontains')
-
-    ordering = filters.OrderingFilter(
-        fields=(
-            ('id', 'id'),
-            ('product', 'product_id'),
-            ('update_at', 'update_at'),
-            ('create_at', 'create_at'),
-            ('quantity', 'quantity'),
-            ('user', 'user_id'),
-        ),
-    )
-
-    class Meta:
-        model = OfflineWarehouseProduct
-        fields = (
-            'is_shipment',
-            'quantity',
-            'create_at',
-            'update_at',
-        )
 
 
 class WarehouseTTNFilter(filters.FilterSet):
@@ -93,42 +64,6 @@ class WarehouseDoFilter(filters.FilterSet):
 
     class Meta:
         model = OfflineWarehouseDo
-        fields = (
-            'id',
-            'quantity',
-            'create_at',
-            'update_at',
-            'user',
-            'warehouse_product',
-            'warehouse_ttn',
-        )
-
-
-class ShipmentFilter(filters.FilterSet):
-    id = filters.NumberFilter(field_name='id', lookup_expr='exact')
-    quantity = filters.NumberFilter(field_name='quantity', lookup_expr='exact')
-    create_at = filters.DateFilter(field_name='create_at', lookup_expr='exact')
-    update_at = filters.DateFilter(field_name='update_at', lookup_expr='icontains')
-    warehouse_product = filters.NumberFilter(
-        field_name='warehouse_product', lookup_expr='exact')
-    warehouse_ttn = filters.NumberFilter(
-        field_name='warehouse_ttn', lookup_expr='exact')
-    user = filters.NumberFilter(field_name='user', lookup_expr='exact')
-
-    ordering = filters.OrderingFilter(
-        fields=(
-            ('id', 'id'),
-            ('update_at', 'update_at'),
-            ('create_at', 'create_at'),
-            ('quantity', 'quantity'),
-            ('user', 'user_id'),
-            ('warehouse_product', 'warehouse_product_id'),
-            ('warehouse_ttn', 'warehouse_ttn_id')
-        ),
-    )
-
-    class Meta:
-        model = OfflineShipment
         fields = (
             'id',
             'quantity',

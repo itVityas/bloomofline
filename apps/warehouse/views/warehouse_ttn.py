@@ -16,12 +16,13 @@ from drf_spectacular.utils import (
 from rest_framework.response import Response
 from rest_framework import status
 
-from apps.warehouse.models import WarehouseTTN, WarehouseDo, WarehouseProduct
+from apps.warehouse.models import WarehouseTTN, WarehouseDo
 from apps.warehouse.serializers.warehouse_ttn import (
     WarehouseTTNGetSerializer,
     WarehouseTTNPostSerializer,
     WarehouseTTNProductSerializer
 )
+from apps.shtrih.models import Products
 from apps.warehouse.permissions import WarehousePermission
 from bloomofline.paginator import StandartResultPaginator
 from apps.warehouse.filters import WarehouseTTNFilter
@@ -95,7 +96,7 @@ class WarehouseTTNRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
         if not ttn:
             raise TTNNotFound()
         warehouse_do = WarehouseDo.objects.filter(warehouse_ttn=ttn)
-        warehouse_products = WarehouseProduct.objects.filter(warehousedo__warehouse_ttn__ttn_number=ttn_number)
+        warehouse_products = Products.objects.filter(warehousedo__warehouse_ttn__ttn_number=ttn_number)
         warehouse_do.delete()
         for items in warehouse_products:
             if not WarehouseDo.objects.filter(warehouse_product=items).exclude(warehouse_ttn__ttn_number=ttn_number):

@@ -1,10 +1,11 @@
 from rest_framework import serializers
 
-from apps.woffline.models import OfflineWarehouseTTN, OfflineWarehouseProduct
+from apps.woffline.models import OfflineWarehouseTTN
+from apps.ashtrih.models import OfflineProducts
 from apps.woffline.serializers.warehouse import OfflineWarehouseSerializer
 from apps.woffline.serializers.warehouse_action import OfflineWarehouseActionGetSerializer
 from apps.aoffline.serializers.user import OfflineUserSerializer
-from apps.woffline.serializers.warehouse_products import OfflineWarehouseProductGetSerializer
+from apps.ashtrih.serializers.products import OfflineProductGetSerializer
 
 
 class OfflineWarehouseTTNPostSerializer(serializers.ModelSerializer):
@@ -16,7 +17,6 @@ class OfflineWarehouseTTNPostSerializer(serializers.ModelSerializer):
             'date',
             'warehouse',
             'warehouse_action',
-            'pallet',
             'user',
         ]
 
@@ -42,5 +42,5 @@ class OfflineWarehouseTTNProductSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_products(self, obj) -> list:
-        warehouse_products = OfflineWarehouseProduct.objects.filter(offlinewarehousedo__warehouse_ttn=obj)
-        return OfflineWarehouseProductGetSerializer(warehouse_products, many=True).data
+        products = OfflineProducts.objects.filter(offlinewarehousedo__warehouse_ttn=obj)
+        return OfflineProductGetSerializer(products, many=True).data

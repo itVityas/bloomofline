@@ -1,10 +1,11 @@
 from rest_framework import serializers
 
-from apps.warehouse.models import WarehouseTTN, WarehouseProduct
+from apps.warehouse.models import WarehouseTTN
+from apps.shtrih.models import Products
 from apps.warehouse.serializers.warehouse import WarehouseSerializer
 from apps.warehouse.serializers.warehouse_action import WarehouseActionGetSerializer
 from apps.account.serializers.user import UserSerializer
-from apps.warehouse.serializers.warehouse_products import WarehouseProductGetSerializer
+from apps.shtrih.serializers.products import ProductGetSerializer
 
 
 class WarehouseTTNPostSerializer(serializers.ModelSerializer):
@@ -16,8 +17,8 @@ class WarehouseTTNPostSerializer(serializers.ModelSerializer):
             'date',
             'warehouse',
             'warehouse_action',
-            'pallet',
             'user',
+            'onec_ttn'
         ]
 
 
@@ -42,5 +43,5 @@ class WarehouseTTNProductSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_products(self, obj) -> list:
-        warehouse_products = WarehouseProduct.objects.filter(warehousedo__warehouse_ttn=obj)
-        return WarehouseProductGetSerializer(warehouse_products, many=True).data
+        products = Products.objects.filter(warehousedo__warehouse_ttn=obj)
+        return ProductGetSerializer(products, many=True).data

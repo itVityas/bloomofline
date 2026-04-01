@@ -16,8 +16,8 @@ from drf_spectacular.utils import (
 from rest_framework.response import Response
 from rest_framework import status
 
-from apps.warehouse.models import WarehouseTTN, WarehouseDo, WarehouseProduct
-from apps.woffline.models import OfflineWarehouseTTN, OfflineWarehouseDo, OfflineWarehouseProduct
+from apps.warehouse.models import WarehouseTTN, WarehouseDo
+from apps.woffline.models import OfflineWarehouseTTN, OfflineWarehouseDo
 from apps.warehouse.serializers.warehouse_ttn import (
     WarehouseTTNPostSerializer,
     WarehouseTTNGetSerializer,
@@ -214,13 +214,7 @@ class OfflineWarehouseTTNRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIVi
                 query = WarehouseTTN.objects.filter(ttn_number=ttn_number).first()
                 if query:
                     warehouse_do = WarehouseDo.objects.filter(warehouse_ttn=query)
-                    warehouse_products = WarehouseProduct.objects.filter(
-                        warehousedo__warehouse_ttn__ttn_number=ttn_number)
                     warehouse_do.delete()
-                    for items in warehouse_products:
-                        if not WarehouseDo.objects.filter(warehouse_product=items).exclude(
-                                warehouse_ttn__ttn_number=ttn_number):
-                            items.delete()
                     query.delete()
                     return Response({'message': 'deleted'}, status=204)
                 return Response({'error': 'not found'}, status=404)
@@ -228,13 +222,7 @@ class OfflineWarehouseTTNRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIVi
                 query = self.queryset.filter(ttn_number=ttn_number).first()
                 if query:
                     warehouse_do = OfflineWarehouseDo.objects.filter(warehouse_ttn=query)
-                    warehouse_products = OfflineWarehouseProduct.objects.filter(
-                        warehousedo__warehouse_ttn__ttn_number=ttn_number)
                     warehouse_do.delete()
-                    for items in warehouse_products:
-                        if not OfflineWarehouseDo.objects.filter(warehouse_product=items).exclude(
-                                warehouse_ttn__ttn_number=ttn_number):
-                            items.delete()
                     query.delete()
                     return Response({'message': 'deleted'}, status=204)
                 return Response({'error': 'not found'}, status=404)

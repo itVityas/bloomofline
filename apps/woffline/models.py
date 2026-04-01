@@ -47,36 +47,6 @@ class OfflineWarehouseAction(models.Model):
         return f'{self.id}:{self.name}'
 
 
-class OfflinePallet(models.Model):
-    barcode = models.CharField(max_length=50)
-    create_at = models.DateTimeField(auto_now_add=True)
-    update_at = models.DateTimeField(auto_now=True)
-    is_offline = models.BooleanField(default=True)
-
-    class Meta:
-        app_label = "woffline"
-        ordering = ['-id']
-
-    def __str__(self):
-        return f'{self.id}:{self.barcode}'
-
-
-class OfflineWarehouseProduct(models.Model):
-    product = models.ForeignKey(
-        OfflineProducts,
-        on_delete=models.CASCADE,
-        db_constraint=False)
-    quantity = models.PositiveIntegerField(default=1)
-    is_shipment = models.BooleanField(default=False)
-    is_offline = models.BooleanField(default=False)
-    create_at = models.DateTimeField(auto_now_add=True)
-    update_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        app_label = "woffline"
-        ordering = ['-id']
-
-
 class OfflineWarehouseTTN(models.Model):
     ttn_number = models.CharField(max_length=50, primary_key=True)
     is_close = models.BooleanField(default=False)
@@ -84,7 +54,7 @@ class OfflineWarehouseTTN(models.Model):
     date = models. DateField(null=True, blank=True)
     warehouse = models.ForeignKey(OfflineWarehouse, on_delete=models.CASCADE)
     warehouse_action = models.ForeignKey(OfflineWarehouseAction, on_delete=models.CASCADE)
-    pallet = models.ForeignKey(OfflinePallet, on_delete=models.SET_NULL, null=True, blank=True)
+    onec_ttn = models.ForeignKey(OfflineOneCTTN, on_delete=models.PROTECT, null=True, blank=True)
     user = models.ForeignKey(OfflineUser, on_delete=models.CASCADE)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
@@ -97,39 +67,19 @@ class OfflineWarehouseTTN(models.Model):
         return f'{self.ttn_number}'
 
 
-class OfflineWarehouseDo(models.Model):
-    warehouse_ttn = models.ForeignKey(OfflineWarehouseTTN, on_delete=models.CASCADE)
-    warehouse_product = models.ForeignKey(OfflineWarehouseProduct, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
-    user = models.ForeignKey(OfflineUser, on_delete=models.CASCADE)
-    is_offline = models.BooleanField(default=True)
+class OfflinePallet(models.Model):
+    ttn_number = models.ForeignKey(OfflineWarehouseTTN, on_delete=models.PROTECT)
+    barcode = models.CharField(max_length=50)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
+    is_offline = models.BooleanField(default=True)
 
     class Meta:
         app_label = "woffline"
         ordering = ['-id']
 
     def __str__(self):
-        return f'{self.id}'
-
-
-class OfflineShipment(models.Model):
-    onec_ttn = models.ForeignKey(OfflineOneCTTN, on_delete=models.CASCADE)
-    warehouse = models.ForeignKey(OfflineWarehouse, on_delete=models.CASCADE)
-    warehouse_product = models.ForeignKey(OfflineWarehouseProduct, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
-    is_offline = models.BooleanField(default=True)
-    user = models.ForeignKey(OfflineUser, on_delete=models.CASCADE)
-    create_at = models.DateTimeField(auto_now_add=True)
-    update_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        app_label = "woffline"
-        ordering = ['-id']
-
-    def __str__(self):
-        return f'{self.id}'
+        return f'{self.id}:{self.barcode}'
 
 
 class OfflineOldProduct(models.Model):
@@ -158,3 +108,20 @@ class OfflineOldProduct(models.Model):
 
     def __str__(self):
         return f"old_product {self.id} {self.barcode}"
+
+
+class OfflineWarehouseDo(models.Model):
+    warehouse_ttn = models.ForeignKey(OfflineWarehouseTTN, on_delete=models.CASCADE)
+    product = models.ForeignKey(OfflineProducts, on_delete=models.CASCADE, db_constraint=False, null=True, blank=True)
+    old_product = models.ForeignKey(OfflineOldProduct, on_delete=models.PROTECT, null=True, blank=True)
+    quantity = models.PositiveIntegerField(default=1)
+    is_offline = models.BooleanField(default=True)
+    create_at = models.DateTimeField(auto_now_add=True)
+    update_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = "woffline"
+        ordering = ['-id']
+
+    def __str__(self):
+        return f'{self.id}'

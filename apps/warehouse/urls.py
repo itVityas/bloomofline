@@ -19,13 +19,6 @@ from apps.warehouse.views.pallet import (
     PalletRetrieveUpdateDestroyView,
     PalletCreateByTTNAPIView
 )
-from apps.warehouse.views.warehouse_products import (
-    WarehouseProductCreateAPIView,
-    WarehouseProductListAPIView,
-    WarehouseProductRetrieveAPIView,
-    WarehouseProductRetrieveUpdateDestroyView,
-    WarehouseProductCreateByBarcodeAPIView,
-)
 from apps.warehouse.views.warehouse_ttn import (
     WarehouseTTNCreateAPIView,
     WarehouseTTNListAPIView,
@@ -42,13 +35,6 @@ from apps.warehouse.views.warehouse_do import (
     WarehouseDoRetrieveAPIView,
     WarehouseDoBarcodePalletAPIView
 )
-from apps.warehouse.views.shipment import (
-    ShipmentCreateAPIView,
-    ShipmentListAPIView,
-    ShipmentRetrieveUpdateDestroyAPIView,
-    ShipmentRetrieveAPIView,
-    ShipmentBarcodeRetrieveAPIView
-)
 
 urlpatterns = [
     path('typeofwork/', TypeOfWorkListCreateView.as_view()),
@@ -62,11 +48,6 @@ urlpatterns = [
     path('pallet/', PalletListCreateAPIView.as_view()),
     path('pallet/<int:pk>/', PalletRetrieveUpdateDestroyView.as_view()),
     path('pallet/create_by_ttn/', PalletCreateByTTNAPIView.as_view()),
-    path('warehouseproduct/create/', WarehouseProductCreateAPIView.as_view()),
-    path('warehouseproduct/list/', WarehouseProductListAPIView.as_view()),
-    path('warehouseproduct/detailed/<int:pk>/', WarehouseProductRetrieveAPIView.as_view()),
-    path('warehouseproduct/update/<int:pk>/', WarehouseProductRetrieveUpdateDestroyView.as_view()),
-    path('warehouseproduct/create_by_barcode/', WarehouseProductCreateByBarcodeAPIView.as_view()),
     path('warehousettn/create/', WarehouseTTNCreateAPIView.as_view()),
     path('warehousettn/list/', WarehouseTTNListAPIView.as_view()),
     path('warehousettn/detailed/<str:ttn_number>/', WarehouseTTNRetrieveAPIView.as_view()),
@@ -79,9 +60,4 @@ urlpatterns = [
     path('warehouse_do/detailed/<int:pk>/', WarehouseDoRetrieveAPIView.as_view()),
     path('warehouse_do/update/<int:pk>/', WarehouseDoRetrieveUpdateDestroyAPIView.as_view()),
     path('warehouse_do/barcode_pallet/', WarehouseDoBarcodePalletAPIView.as_view()),
-    path('shipment/create/', ShipmentCreateAPIView.as_view()),
-    path('shipment/list/', ShipmentListAPIView.as_view()),
-    path('shipment/detailed/<int:pk>/', ShipmentRetrieveAPIView.as_view()),
-    path('shipment/update/<int:pk>/', ShipmentRetrieveUpdateDestroyAPIView.as_view()),
-    path('shipment/barcode/', ShipmentBarcodeRetrieveAPIView.as_view()),
 ]
