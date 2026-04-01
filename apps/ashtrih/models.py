@@ -52,6 +52,8 @@ class OfflineProducts(models.Model):
         db_constraint=False)
     state = models.IntegerField()
     quantity = models.IntegerField(null=True, blank=True)
+    available_quantity = models.IntegerField()
+    is_shipment = models.BooleanField(default=False)
     type_of_work_id = models.IntegerField()
     work_date = models.DateField()
     module_id = models.IntegerField()

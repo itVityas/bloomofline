@@ -112,8 +112,8 @@ class ShtrihFullSync:
                 type_of_work_id=latest_type_of_work_id,
                 module_id=latest_module_id
             ).order_by('id').values(
-                'id', 'model_id', 'barcode', 'state', 'quantity', 'work_date', 'type_of_work_id',
-                'module_id', 'color_id__color_code', 'color_id__russian_title')
+                'id', 'model_id', 'barcode', 'state', 'quantity', 'available_quantity', 'is_shipment',
+                'work_date', 'type_of_work_id', 'module_id', 'color_id__color_code', 'color_id__russian_title')
             list_products = []
             for i in products.iterator(chunk_size=self.batch_size):
                 list_products.append(AshtrihProducts(
@@ -122,6 +122,8 @@ class ShtrihFullSync:
                     barcode=i['barcode'],
                     state=i['state'],
                     quantity=i['quantity'],
+                    available_quantity=i['available_quantity'],
+                    is_shipment=i['is_shipment'],
                     work_date=i['work_date'],
                     type_of_work_id=i['type_of_work_id'],
                     module_id=i['module_id'],
@@ -272,8 +274,8 @@ class ShtrihSync:
                 type_of_work_id=latest_type_of_work_id,
                 module_id=latest_module_id
             ).order_by('id').values(
-                'id', 'model_id', 'barcode', 'state', 'quantity', 'work_date', 'type_of_work_id',
-                'module_id', 'color_id__color_code', 'color_id__russian_title')
+                'id', 'model_id', 'barcode', 'state', 'quantity', 'available_quantity', 'is_shipment',
+                'work_date', 'type_of_work_id', 'module_id', 'color_id__color_code', 'color_id__russian_title')
             list_products = []
             existing_ids = set(AshtrihProducts.objects.values_list('id', flat=True))
             list_products = []
@@ -288,6 +290,8 @@ class ShtrihSync:
                         barcode=i['barcode'],
                         state=i['state'],
                         quantity=i['quantity'],
+                        available_quantity=i['available_quantity'],
+                        is_shipment=i['is_shipment'],
                         work_date=i['work_date'],
                         type_of_work_id=i['type_of_work_id'],
                         module_id=i['module_id'],
@@ -306,6 +310,8 @@ class ShtrihSync:
                         barcode=i[0]['barcode'],
                         state=i[0]['state'],
                         quantity=i[0]['quantity'],
+                        available_quantity=i[0]['available_quantity'],
+                        is_shipment=i[0]['is_shipment'],
                         work_date=i['work_date'],
                         type_of_work_id=i['type_of_work_id'],
                         module_id=i['module_id'],
