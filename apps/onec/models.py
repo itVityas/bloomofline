@@ -1,6 +1,6 @@
 from django.db import models
 
-from apps.shtrih.models import Models
+from apps.shtrih.models import ModelNames
 
 
 class OneCTTN(models.Model):
@@ -20,7 +20,7 @@ class OneCTTN(models.Model):
 
 class OneCTTNItem(models.Model):
     onec_ttn = models.ForeignKey(OneCTTN, on_delete=models.CASCADE)
-    model = models.ForeignKey(Models, on_delete=models.CASCADE, null=True, blank=True, db_constraint=False)
+    model_name = models.ForeignKey(ModelNames, on_delete=models.CASCADE, null=True, blank=True, db_constraint=False)
     count = models.PositiveIntegerField(default=1)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)

@@ -62,13 +62,13 @@ class OneCFullSync:
             start_time = time.time()
             offline_OneCTTItem.objects.all().delete()
             onec_ttn_items = OneCTTNItem.objects.select_related('onec_ttn').all().order_by('id').values(
-                'id', 'onec_ttn_id', 'model_id', 'count', 'create_at', 'update_at')
+                'id', 'onec_ttn_id', 'model_name_id', 'count', 'create_at', 'update_at')
             list_ttn_item = []
             for i in onec_ttn_items.iterator(chunk_size=self.batch_size):
                 list_ttn_item.append(offline_OneCTTItem(
                     id=i['id'],
                     onec_ttn_id=i['onec_ttn_id'],
-                    model_id=i['model_id'],
+                    model_name_id=i['model_name_id'],
                     count=i['count'],
                     create_at=i['create_at'],
                     update_at=i['update_at'],
@@ -151,7 +151,7 @@ class OneCSync:
             last_onec_ttn_item = offline_OneCTTItem.objects.order_by('-id').first()
             onec_ttn_item = OneCTTNItem.objects.filter(
                 id__gt=last_onec_ttn_item.id if last_onec_ttn_item else 0).values(
-                'id', 'onec_ttn_id', 'model_id', 'count', 'create_at', 'update_at')
+                'id', 'onec_ttn_id', 'model_name_id', 'count', 'create_at', 'update_at')
             existing_ids = set(offline_OneCTTItem.objects.values_list('id', flat=True))
             list_items = []
             list_update = []
@@ -164,7 +164,7 @@ class OneCSync:
                     list_items.append(offline_OneCTTItem(
                         id=i['id'],
                         onec_ttn_id=i['onec_ttn_id'],
-                        model_id=i['model_id'],
+                        model_name_id=i['model_name_id'],
                         count=i['count'],
                         create_at=i['create_at'],
                         update_at=i['update_at'],
@@ -179,7 +179,7 @@ class OneCSync:
                 for i in list_update:
                     offline_OneCTTItem.objects.filter(id=i['id']).update(
                         onec_ttn_id=i['onec_ttn_id'],
-                        model_id=i['model_id'],
+                        model_name_id=i['model_name_id'],
                         count=i['count'],
                         create_at=i['create_at'],
                         update_at=i['update_at'],
