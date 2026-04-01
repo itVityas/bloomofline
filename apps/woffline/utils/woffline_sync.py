@@ -508,7 +508,6 @@ class WarehouseSync:
                 'id', 'warehouse_ttn_id', 'product_id', 'quantity', 'old_product_id',
                 'create_at', 'update_at'
             )
-            print(len(warehouse_do_list))
             bulk_list = []
             for i in warehouse_do_list:
                 bulk_list.append(OfflineWarehouseDo(
