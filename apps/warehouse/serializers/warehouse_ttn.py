@@ -9,6 +9,8 @@ from apps.shtrih.serializers.products import ProductGetSerializer
 
 
 class WarehouseTTNPostSerializer(serializers.ModelSerializer):
+    user = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = WarehouseTTN
         fields = [

@@ -8,6 +8,19 @@ from apps.aoffline.serializers.user import OfflineUserSerializer
 from apps.ashtrih.serializers.products import OfflineProductGetSerializer
 
 
+class OfflineWarehouseTTNVisibleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OfflineWarehouseTTN
+        fields = [
+            'ttn_number',
+            'is_close',
+            'date',
+            'warehouse',
+            'warehouse_action',
+            'onec_ttn',
+        ]
+
+
 class OfflineWarehouseTTNPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = OfflineWarehouseTTN
@@ -18,6 +31,7 @@ class OfflineWarehouseTTNPostSerializer(serializers.ModelSerializer):
             'warehouse',
             'warehouse_action',
             'user',
+            'onec_ttn',
         ]
 
 

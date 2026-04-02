@@ -21,12 +21,13 @@ from apps.woffline.models import OfflineWarehouseTTN, OfflineWarehouseDo
 from apps.warehouse.serializers.warehouse_ttn import (
     WarehouseTTNPostSerializer,
     WarehouseTTNGetSerializer,
-    WarehouseTTNProductSerializer
+    WarehouseTTNProductSerializer,
 )
 from apps.woffline.serializers.warehouse_ttn import (
     OfflineWarehouseTTNGetSerializer,
     OfflineWarehouseTTNPostSerializer,
     OfflineWarehouseTTNProductSerializer,
+    OfflineWarehouseTTNVisibleSerializer
 )
 from apps.woffline.permissions import WarehousePermission
 from bloomofline.paginator import StandartResultPaginator
@@ -38,7 +39,7 @@ from bloomofline.global_state import global_state
 @extend_schema(tags=['Offline WarehouseTTN'])
 @extend_schema_view(
     get=extend_schema(
-        summary='Get all WarehouseTTN',
+        summary='Get list all WarehouseTTN with filters',
         description='Permission: admin, warehouse, warehouse_writer',
     ),
 )
@@ -98,7 +99,7 @@ class OfflineWarehouseTTNListAPIView(ListAPIView):
 )
 class OfflineWarehouseTTNCreateAPIView(CreateAPIView):
     queryset = OfflineWarehouseTTN.objects.all()
-    serializer_class = OfflineWarehouseTTNPostSerializer
+    serializer_class = OfflineWarehouseTTNVisibleSerializer
     permission_classes = [IsAuthenticated, WarehousePermission]
 
     def post(self, request):
@@ -110,7 +111,7 @@ class OfflineWarehouseTTNCreateAPIView(CreateAPIView):
                     return Response(serializer.data, status=201)
                 return Response(serializer.errors, status=400)
             else:
-                serializer = self.serializer_class(data=request.data)
+                serializer = OfflineWarehouseTTNPostSerializer(data=request.data)
                 if serializer.is_valid():
                     serializer.save()
                     return Response(serializer.data, status=201)
@@ -131,7 +132,7 @@ class OfflineWarehouseTTNCreateAPIView(CreateAPIView):
         description='Permission: admin warehouse_writer',
     ),
     patch=extend_schema(
-        summary='partial update a WarehouseTTN',
+        summary='Partial update a WarehouseTTN',
         description='Permission: admin warehouse_writer',
     ),
     delete=extend_schema(
