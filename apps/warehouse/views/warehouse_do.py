@@ -12,7 +12,7 @@ from apps.warehouse.models import WarehouseDo
 from apps.warehouse.serializers.warehouse_do import (
     WarehouseDoGetSerializer,
     WarehouseDoPostSerializer,
-    WarehouseDoPalletSerializer
+    WarehouseDoBarcodeSerializer
 )
 from apps.warehouse.permissions import WarehousePermission
 from bloomofline.paginator import StandartResultPaginator
@@ -73,17 +73,4 @@ class WarehouseDoRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
 class WarehouseDoRetrieveAPIView(RetrieveAPIView):
     queryset = WarehouseDo.objects.all()
     serializer_class = WarehouseDoGetSerializer
-    permission_classes = [IsAuthenticated, WarehousePermission]
-
-
-@extend_schema(tags=["WarehouseDo"])
-@extend_schema_view(
-    post=extend_schema(
-        summary='Create a WarehouseDo by barcode in pallet',
-        description='Permission: admin, warehouse, warehouse_writer',
-    ),
-)
-class WarehouseDoBarcodePalletAPIView(CreateAPIView):
-    queryset = WarehouseDo.objects.all()
-    serializer_class = WarehouseDoPalletSerializer
     permission_classes = [IsAuthenticated, WarehousePermission]

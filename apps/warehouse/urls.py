@@ -32,7 +32,6 @@ from apps.warehouse.views.warehouse_do import (
     WarehouseDoListAPIView,
     WarehouseDoRetrieveUpdateDestroyAPIView,
     WarehouseDoRetrieveAPIView,
-    WarehouseDoBarcodePalletAPIView
 )
 
 urlpatterns = [
@@ -57,5 +56,4 @@ urlpatterns = [
     path('warehouse_do/list/', WarehouseDoListAPIView.as_view()),
     path('warehouse_do/detailed/<int:pk>/', WarehouseDoRetrieveAPIView.as_view()),
     path('warehouse_do/update/<int:pk>/', WarehouseDoRetrieveUpdateDestroyAPIView.as_view()),
-    path('warehouse_do/barcode_pallet/', WarehouseDoBarcodePalletAPIView.as_view()),
 ]

@@ -14,12 +14,12 @@ from apps.woffline.models import OfflineWarehouseDo
 from apps.warehouse.serializers.warehouse_do import (
     WarehouseDoGetSerializer,
     WarehouseDoPostSerializer,
-    WarehouseDoPalletSerializer
+    WarehouseDoBarcodeSerializer
 )
 from apps.woffline.serializers.warehouse_do import (
     OfflineWarehouseDoGetSerializer,
     OfflineWarehouseDoPostSerializer,
-    OfflineWarehouseDoPalletSerializer
+    OfflineWarehouseDoBarcodeSerializer
 )
 from apps.woffline.permissions import WarehousePermission
 from bloomofline.paginator import StandartResultPaginator
@@ -229,16 +229,16 @@ class OfflineWarehouseDoRetrieveAPIView(RetrieveAPIView):
         not for shipment and palleting operations ''',
     ),
 )
-class OfflineWarehouseDoBarcodePalletAPIView(CreateAPIView):
+class OfflineWarehouseDoBarcodeAPIView(CreateAPIView):
     queryset = OfflineWarehouseDo.objects.all()
-    serializer_class = OfflineWarehouseDoPalletSerializer
+    serializer_class = OfflineWarehouseDoBarcodeSerializer
     permission_classes = [IsAuthenticated, WarehousePermission]
 
     def post(self, request):
         try:
             request.data['user'] = request.user.id
             if global_state.get():
-                serializer = WarehouseDoPalletSerializer(data=request.data, context={'request': request})
+                serializer = WarehouseDoBarcodeSerializer(data=request.data, context={'request': request})
                 if serializer.is_valid():
                     do = serializer.save()
                     return Response(WarehouseDoGetSerializer(do).data, status=201)

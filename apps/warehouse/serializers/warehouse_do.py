@@ -33,7 +33,7 @@ class WarehouseDoPostSerializer(serializers.ModelSerializer):
         ]
 
 
-class WarehouseDoPalletSerializer(serializers.ModelSerializer):
+class WarehouseDoBarcodeSerializer(serializers.ModelSerializer):
     warehouse_ttn_number = serializers.CharField(write_only=True, required=True)
     barcode = serializers.CharField(write_only=True, required=True)
     warehouse_id = serializers.IntegerField(write_only=True, required=True)
