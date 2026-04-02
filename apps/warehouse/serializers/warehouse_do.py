@@ -3,7 +3,8 @@ from rest_framework import serializers
 from apps.warehouse.models import (
     WarehouseDo,
     WarehouseTTN,
-    Pallet
+    Pallet,
+    WarehouseAction
 )
 from apps.shtrih.models import Products
 from apps.shtrih.serializers.products import ProductGetSerializer
@@ -27,6 +28,7 @@ class WarehouseDoPostSerializer(serializers.ModelSerializer):
         fields = [
             'warehouse_ttn',
             'product',
+            'old_product',
             'quantity',
         ]
 
@@ -37,7 +39,7 @@ class WarehouseDoPalletSerializer(serializers.ModelSerializer):
     warehouse_id = serializers.IntegerField(write_only=True, required=True)
     warehouse_action_id = serializers.IntegerField(write_only=True, required=True)
     date = serializers.DateField(write_only=True, required=True)
-    model_id = serializers.IntegerField(write_only=True, required=True)
+    model_name_id = serializers.IntegerField(write_only=True, required=True)
 
     warehouse_ttn = WarehouseTTNGetSerializer(read_only=True)
     product = ProductGetSerializer(many=False, read_only=True)
@@ -54,7 +56,7 @@ class WarehouseDoPalletSerializer(serializers.ModelSerializer):
             'date',
             'warehouse_id',
             'warehouse_action_id',
-            'model_id',
+            'model_name_id',
         ]
 
     def create(self, validated_data):
@@ -62,10 +64,14 @@ class WarehouseDoPalletSerializer(serializers.ModelSerializer):
         date = validated_data.pop('date')
         warehouse_id = validated_data.pop('warehouse_id')
         warehouse_action_id = validated_data.pop('warehouse_action_id')
-        model_id = validated_data.pop('model_id')
+        model_name_id = validated_data.pop('model_name_id')
         quantity = validated_data.pop('quantity')
         barcode = validated_data.pop('barcode')
         user = self.context['request'].user
+
+        warehouse_action = WarehouseAction.objects.get(id=warehouse_action_id)
+        if not warehouse_action or warehouse_action.type_of_work.id == 2 or warehouse_action.type_of_work.id == 3:
+            raise serializers.ValidationError('Эта операция ну доступна для операций типа Отгрузка и Палетирование')
 
         # получает ttn
         warehouse_ttn = WarehouseTTN.objects.filter(ttn_number=number).first()
@@ -75,30 +81,27 @@ class WarehouseDoPalletSerializer(serializers.ModelSerializer):
                 date=date,
                 warehouse_id=warehouse_id,
                 warehouse_action_id=warehouse_action_id,
-                user_id=user.id
+                user=user
             )
 
         # получаем или создаем warehouse product
         product = Products.objects.filter(
-            product__barcode=barcode
+            barcode=barcode
         ).first()
         if product:
-            if model_id != product.model.id:
+            if model_name_id != product.model.name.id:
                 raise WrongModel()
         else:
             raise serializers.ValidationError('Продукт не найден')
+
+        # проверка на дублирование в ttn
+        if WarehouseDo.objects.filter(warehouse_ttn=warehouse_ttn, product=product).exists():
+            raise serializers.ValidationError('Продукт уже добавлен в эту ТТН')
 
         warehouse_do = WarehouseDo.objects.create(
             product=product,
             warehouse_ttn=warehouse_ttn,
             quantity=quantity
         )
-
-        # проверяем палет в ттн
-        # if not warehouse_ttn.pallet:
-        #     pallet_barcode = generate_barcode(number)
-        #     if pallet_barcode.find('Error') != -1 or not isinstance(pallet_barcode, str):
-        #         raise serializers.ValidationError('Не удалось сгенерировать штрих-код' + pallet_barcode)
-        #     Pallet.objects.create(barcode=pallet_barcode, ttn_number=warehouse_ttn)
 
         return warehouse_do

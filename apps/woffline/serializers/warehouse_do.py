@@ -3,7 +3,8 @@ from rest_framework import serializers
 from apps.woffline.models import (
     OfflineWarehouseDo,
     OfflineWarehouseTTN,
-    OfflinePallet
+    OfflinePallet,
+    OfflineWarehouseAction
 )
 from apps.ashtrih.models import OfflineProducts
 from apps.ashtrih.serializers.products import OfflineProductGetSerializer
@@ -27,6 +28,7 @@ class OfflineWarehouseDoPostSerializer(serializers.ModelSerializer):
         fields = [
             'warehouse_ttn',
             'product',
+            'old_product',
             'quantity',
         ]
 
@@ -37,7 +39,7 @@ class OfflineWarehouseDoPalletSerializer(serializers.ModelSerializer):
     warehouse_id = serializers.IntegerField(write_only=True, required=True)
     warehouse_action_id = serializers.IntegerField(write_only=True, required=True)
     date = serializers.DateField(write_only=True, required=True)
-    model_id = serializers.IntegerField(write_only=True, required=True)
+    model_name_id = serializers.IntegerField(write_only=True, required=True)
 
     warehouse_ttn = OfflineWarehouseTTNGetSerializer(read_only=True)
     product = OfflineProductGetSerializer(many=False, read_only=True)
@@ -54,7 +56,7 @@ class OfflineWarehouseDoPalletSerializer(serializers.ModelSerializer):
             'date',
             'warehouse_id',
             'warehouse_action_id',
-            'model_id',
+            'model_name_id',
         ]
 
     def create(self, validated_data):
@@ -62,10 +64,14 @@ class OfflineWarehouseDoPalletSerializer(serializers.ModelSerializer):
         date = validated_data.pop('date')
         warehouse_id = validated_data.pop('warehouse_id')
         warehouse_action_id = validated_data.pop('warehouse_action_id')
-        model_id = validated_data.pop('model_id')
+        model_name_id = validated_data.pop('model_name_id')
         quantity = validated_data.pop('quantity')
         barcode = validated_data.pop('barcode')
         user = self.context['request'].user
+
+        warehouse_action = OfflineWarehouseAction.objects.get(id=warehouse_action_id)
+        if not warehouse_action or warehouse_action.type_of_work.id == 2 or warehouse_action.type_of_work.id == 3:
+            raise serializers.ValidationError('Эта операция ну доступна для операций типа Отгрузка и Палетирование')
 
         # получает ttn
         warehouse_ttn = OfflineWarehouseTTN.objects.filter(ttn_number=number).first()
@@ -80,25 +86,22 @@ class OfflineWarehouseDoPalletSerializer(serializers.ModelSerializer):
 
         # получаем или создаем warehouse product
         product = OfflineProducts.objects.filter(
-            product__barcode=barcode
+            barcode=barcode
         ).first()
         if product:
-            if model_id != product.product.model.id:
+            if model_name_id != product.model.name.id:
                 raise WrongModel()
         else:
             raise serializers.ValidationError('Продукт не найден')
+
+        # проверка на дублирование в ttn
+        if OfflineWarehouseDo.objects.filter(warehouse_ttn=warehouse_ttn, product=product).exists():
+            raise serializers.ValidationError('Продукт уже добавлен в эту ТТН')
 
         warehouse_do = OfflineWarehouseDo.objects.create(
             product=product,
             warehouse_ttn=warehouse_ttn,
             quantity=quantity
         )
-
-        # проверяем палет в ттн
-        # if not warehouse_ttn.pallet:
-        #     pallet_barcode = generate_barcode(number)
-        #     if pallet_barcode.find('Error') != -1 or not isinstance(pallet_barcode, str):
-        #         raise serializers.ValidationError('Не удалось сгенерировать штрих-код' + pallet_barcode)
-        #     OfflinePallet.objects.create(barcode=pallet_barcode, ttn_number=warehouse_ttn)
 
         return warehouse_do

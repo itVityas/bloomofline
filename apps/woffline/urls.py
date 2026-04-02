@@ -19,7 +19,6 @@ from apps.woffline.views.warehouse_ttn import (
 )
 from apps.woffline.views.warehouse_do import (
     OfflineWarehouseDoBarcodePalletAPIView,
-    OfflineWarehouseDoCreateAPIView,
     OfflineWarehouseDoListAPIView,
     OfflineWarehouseDoRetrieveAPIView,
     OfflineWarehouseDoRetrieveUpdateDestroyAPIView
@@ -43,7 +42,6 @@ urlpatterns = [
     path('warehouse/ttn/products/<str:ttn_number>/', OfflineWarehouseTTNProductsAPIView.as_view()),
     path('warehouse/ttn/product/user/', OfflineWarehouseTTNProductsByUserIdAPIView.as_view()),
     path('warehouse/do/', OfflineWarehouseDoListAPIView.as_view()),
-    path('warehouse/do/create/', OfflineWarehouseDoCreateAPIView.as_view()),
     path('warehouse/do/retrieve/<int:pk>/', OfflineWarehouseDoRetrieveAPIView.as_view()),
     path('warehouse/do/update/<int:pk>/', OfflineWarehouseDoRetrieveUpdateDestroyAPIView.as_view()),
     path('warehouse/do/pallet_barcode/', OfflineWarehouseDoBarcodePalletAPIView.as_view()),

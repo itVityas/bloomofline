@@ -37,22 +37,6 @@ class WarehouseDoListAPIView(ListAPIView):
 
 @extend_schema(tags=["WarehouseDo"])
 @extend_schema_view(
-    post=extend_schema(
-        summary='Create a new WarehouseDo',
-        description='Permission: admin, warehouse_writer',
-    )
-)
-class WarehouseDoCreateAPIView(CreateAPIView):
-    queryset = WarehouseDo.objects.all()
-    serializer_class = WarehouseDoPostSerializer
-    permission_classes = [IsAuthenticated, WarehousePermission]
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-
-@extend_schema(tags=["WarehouseDo"])
-@extend_schema_view(
     get=extend_schema(
         summary='Get a WarehouseDo',
         description='Permission: admin, warehouse, warehouse_writer',

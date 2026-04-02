@@ -40,36 +40,39 @@ class WarehouseTTNFilter(filters.FilterSet):
 
 
 class WarehouseDoFilter(filters.FilterSet):
-    id = filters.NumberFilter(field_name='id', lookup_expr='exact')
+    pk = filters.NumberFilter(field_name='id', lookup_expr='exact')
     quantity = filters.NumberFilter(field_name='quantity', lookup_expr='exact')
     create_at = filters.DateFilter(field_name='create_at', lookup_expr='exact')
-    update_at = filters.DateFilter(field_name='update_at', lookup_expr='icontains')
-    warehouse_product = filters.NumberFilter(
-        field_name='warehouse_product', lookup_expr='exact')
-    warehouse_ttn = filters.NumberFilter(
-        field_name='warehouse_ttn', lookup_expr='exact')
-    user = filters.NumberFilter(field_name='user', lookup_expr='exact')
+    update_at = filters.DateFilter(field_name='update_at', lookup_expr='exact')
+    product = filters.NumberFilter(
+        field_name='product', lookup_expr='exact')
+    warehouse_ttn = filters.CharFilter(
+        field_name='warehouse_ttn__ttn_number', lookup_expr='iexact')
+    start_warehouse_ttn = filters.CharFilter(
+        field_name='warehouse_ttn__ttn_number', lookup_expr='istartswith')
+    cont_warehouse_ttn = filters.CharFilter(
+        field_name='warehouse_ttn__ttn_number', lookup_expr='icontains')
 
     ordering = filters.OrderingFilter(
         fields=(
-            ('id', 'id'),
+            ('pk', 'pk'),
             ('update_at', 'update_at'),
             ('create_at', 'create_at'),
             ('quantity', 'quantity'),
-            ('user', 'user_id'),
-            ('warehouse_product', 'warehouse_product_id'),
-            ('warehouse_ttn', 'warehouse_ttn_id')
+            ('product', 'product_id'),
+            ('warehouse_ttn', 'warehouse_ttn__ttn_number')
         ),
     )
 
     class Meta:
         model = OfflineWarehouseDo
         fields = (
-            'id',
+            'pk',
             'quantity',
             'create_at',
             'update_at',
-            'user',
-            'warehouse_product',
+            'product',
             'warehouse_ttn',
+            'start_warehouse_ttn',
+            'cont_warehouse_ttn',
         )

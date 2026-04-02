@@ -31,7 +31,7 @@ from bloomofline.global_state import global_state
 @extend_schema(tags=["Offline WarehouseDo"])
 @extend_schema_view(
     get=extend_schema(
-        summary='get list warehouse do',
+        summary='Get list warehouse do with filters',
         description='Permission: admin, warehouse, warehouse_writer',
     ),
 )
@@ -77,38 +77,6 @@ class OfflineWarehouseDoListAPIView(ListAPIView):
                 query = self.filter_queryset(self.queryset)
                 page = self.paginate_queryset(query)
                 return self.get_paginated_response(serializer(page, many=True).data)
-        except Exception as e:
-            global_state.set()
-            return Response({'error': str(e)}, status=400)
-
-
-@extend_schema(tags=["Offline WarehouseDo"])
-@extend_schema_view(
-    post=extend_schema(
-        summary='Create a new WarehouseDo',
-        description='Permission: admin, warehouse_writer',
-    )
-)
-class OfflineWarehouseDoCreateAPIView(CreateAPIView):
-    queryset = OfflineWarehouseDo.objects.all()
-    serializer_class = OfflineWarehouseDoPostSerializer
-    permission_classes = [IsAuthenticated, WarehousePermission]
-
-    def post(self, request):
-        try:
-            request.data['user'] = request.user.id
-            if global_state.get():
-                serializer = WarehouseDoPostSerializer(data=request.data)
-                if serializer.is_valid():
-                    serializer.save()
-                    return Response(serializer.data, status=201)
-                return Response(serializer.errors, status=400)
-            else:
-                serializer = self.serializer_class(data=request.data)
-                if serializer.is_valid():
-                    serializer.save()
-                    return Response(serializer.data, status=201)
-                return Response(serializer.errors, status=400)
         except Exception as e:
             global_state.set()
             return Response({'error': str(e)}, status=400)
@@ -255,9 +223,10 @@ class OfflineWarehouseDoRetrieveAPIView(RetrieveAPIView):
 @extend_schema(tags=["Offline WarehouseDo"])
 @extend_schema_view(
     post=extend_schema(
-        summary='Create a WarehouseDo by barcode in pallet',
+        summary='Create a WarehouseDo by product barcode',
         description='''Permission: admin, warehouse, warehouse_writer
-        Generate pallet barcode and add it to warhouse_ttn''',
+        product barcode and add it to warhouse_ttn, if not warehouse_ttn create it
+        not for shipment and palleting operations ''',
     ),
 )
 class OfflineWarehouseDoBarcodePalletAPIView(CreateAPIView):
