@@ -44,5 +44,5 @@ class PalletGenerateSerializer(serializers.ModelSerializer):
 
         return Pallet.objects.create(
             barcode=barcode,
-            warehouse_ttn=warehouse_ttn,
+            ttn_number=warehouse_ttn,
         )

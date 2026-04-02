@@ -43,7 +43,7 @@ def generate_barcode(ttn_number: str) -> str:
     year = ttn_date.year
     year = len_word(str(year), 2)  # we need year with 2 character
 
-    model = OfflineModels.objects.filter(id=warehouse_do.first().warehouse_product.product.model.pk).first()
+    model = OfflineModels.objects.filter(id=warehouse_do.first().product.model.pk).first()
     model = len_word(str(model.code), 5)  # we need model with 5 character
 
     ttn_number = len_word(str(ttn_number), 8)  # we need ttn_number with 8 character

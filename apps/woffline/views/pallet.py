@@ -163,7 +163,7 @@ class OfflinePalletRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
 @extend_schema(tags=["Offline Pallet"])
 @extend_schema_view(
     post=extend_schema(
-        summary='create pallet by ttn_number',
+        summary='create pallet by ttn_number or return existing',
         description='Permission: admin, warehouse_writer'
     )
 )
@@ -177,13 +177,14 @@ class OfflinePalletCreateByTTNAPIView(CreateAPIView):
             if global_state.get():
                 serializer = PalletGenerateSerializer(data=request.data)
                 if serializer.is_valid():
-                    return Response(serializer.data, status=201)
+                    warehouse_ttn = serializer.save()
+                    return Response(PalletSerializer(warehouse_ttn).data, status=201)
                 return Response(serializer.errors, status=400)
             else:
                 serializer = self.serializer_class(data=request.data)
                 if serializer.is_valid():
-                    serializer.save()
-                    return Response(serializer.data, status=201)
+                    warehouse_ttn = serializer.save()
+                    return Response(OfflinePalletSerializer(warehouse_ttn).data, status=201)
                 return Response(serializer.errors, status=400)
         except Exception as e:
             global_state.set()

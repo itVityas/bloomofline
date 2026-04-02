@@ -42,5 +42,5 @@ class OfflinePalletGenerateSerializer(serializers.ModelSerializer):
 
         return OfflinePallet.objects.create(
             barcode=barcode,
-            warehouse_ttn=warehouse_ttn,
+            ttn_number=warehouse_ttn,
         )
