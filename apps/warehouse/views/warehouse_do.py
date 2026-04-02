@@ -1,6 +1,5 @@
 from rest_framework.generics import (
     ListAPIView,
-    CreateAPIView,
     RetrieveAPIView,
     RetrieveUpdateDestroyAPIView
 )
@@ -12,7 +11,6 @@ from apps.warehouse.models import WarehouseDo
 from apps.warehouse.serializers.warehouse_do import (
     WarehouseDoGetSerializer,
     WarehouseDoPostSerializer,
-    WarehouseDoBarcodeSerializer
 )
 from apps.warehouse.permissions import WarehousePermission
 from bloomofline.paginator import StandartResultPaginator
