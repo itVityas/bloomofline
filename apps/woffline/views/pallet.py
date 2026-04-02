@@ -1,5 +1,5 @@
 from rest_framework.generics import (
-    ListCreateAPIView,
+    ListAPIView,
     RetrieveUpdateDestroyAPIView,
     CreateAPIView
 )
@@ -29,12 +29,8 @@ from bloomofline.global_state import global_state
         summary='get list pallet',
         description='Permission: admin, warehouse, warehouse_writer'
     ),
-    post=extend_schema(
-        summary='get list pallet',
-        description='Permission: admin, warehouse_writer'
-    ),
 )
-class OfflinePalletListCreateAPIView(ListCreateAPIView):
+class OfflinePalletListCreateAPIView(ListAPIView):
     queryset = OfflinePallet.objects.all()
     serializer_class = OfflinePalletSerializer
     permission_classes = [IsAuthenticated, WarehousePermission]
@@ -54,24 +50,6 @@ class OfflinePalletListCreateAPIView(ListCreateAPIView):
                 query = self.filter_queryset(self.queryset)
                 page = self.paginate_queryset(query)
                 return self.get_paginated_response(serializer(page, many=True).data)
-        except Exception as e:
-            global_state.set()
-            return Response({'error': str(e)}, status=400)
-
-    def post(self, request):
-        try:
-            if global_state.get():
-                serializer = PalletSerializer(data=request.data)
-                if serializer.is_valid():
-                    serializer.save()
-                    return Response(serializer.data, status=201)
-                return Response(serializer.errors, status=400)
-            else:
-                serializer = self.serializer_class(data=request.data)
-                if serializer.is_valid():
-                    serializer.save()
-                    return Response(serializer.data, status=201)
-                return Response(serializer.errors, status=400)
         except Exception as e:
             global_state.set()
             return Response({'error': str(e)}, status=400)
