@@ -23,6 +23,7 @@ from apps.woffline.views.warehouse_do import (
     OfflineWarehouseDoRetrieveAPIView,
     OfflineWarehouseDoRetrieveUpdateDestroyAPIView,
     OfflineWarehouseDoPalletAPIView,
+    OfflineWarehouseDoShipmentAPIView,
 )
 
 urlpatterns = [
@@ -47,4 +48,5 @@ urlpatterns = [
     path('warehouse/do/update/<int:pk>/', OfflineWarehouseDoRetrieveUpdateDestroyAPIView.as_view()),
     path('warehouse/do/barcode/', OfflineWarehouseDoBarcodeAPIView.as_view()),
     path('warehouse/do/pallet/', OfflineWarehouseDoPalletAPIView.as_view()),
+    path('warehouse/do/shipment/', OfflineWarehouseDoShipmentAPIView.as_view()),
 ]

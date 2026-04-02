@@ -16,12 +16,14 @@ from apps.warehouse.serializers.warehouse_do import (
     WarehouseDoPostSerializer,
     WarehouseDoBarcodeSerializer,
     WarehouseDoPalletSerializer,
+    WarehouseDoShipmentSerializer
 )
 from apps.woffline.serializers.warehouse_do import (
     OfflineWarehouseDoGetSerializer,
     OfflineWarehouseDoPostSerializer,
     OfflineWarehouseDoBarcodeSerializer,
     OfflineWarehouseDoPalletSerializer,
+    OfflineWarehouseDoShipmentSerializer
 )
 from apps.woffline.permissions import WarehousePermission
 from bloomofline.paginator import StandartResultPaginator
@@ -275,6 +277,40 @@ class OfflineWarehouseDoPalletAPIView(CreateAPIView):
             request.data['user'] = request.user.id
             if global_state.get():
                 serializer = WarehouseDoPalletSerializer(data=request.data, context={'request': request})
+                if serializer.is_valid():
+                    do = serializer.save()
+                    return Response(WarehouseDoGetSerializer(do).data, status=201)
+                return Response(serializer.errors, status=400)
+            else:
+                serializer = self.serializer_class(data=request.data, context={'request': request})
+                if serializer.is_valid():
+                    do = serializer.save()
+                    return Response(OfflineWarehouseDoGetSerializer(do).data, status=201)
+                return Response(serializer.errors, status=400)
+        except Exception as e:
+            global_state.set()
+            return Response({'error': str(e)}, status=400)
+
+
+@extend_schema(tags=["Offline WarehouseDo"])
+@extend_schema_view(
+    post=extend_schema(
+        summary='Create a WarehouseDo by product barcode for shipment',
+        description='''Permission: admin, warehouse, warehouse_writer
+        product barcode and add it to warhouse_ttn, if not warehouse_ttn create it
+        only for shipment operations ''',
+    ),
+)
+class OfflineWarehouseDoShipmentAPIView(CreateAPIView):
+    queryset = OfflineWarehouseDo.objects.all()
+    serializer_class = OfflineWarehouseDoShipmentSerializer
+    permission_classes = [IsAuthenticated, WarehousePermission]
+
+    def post(self, request):
+        try:
+            request.data['user'] = request.user.id
+            if global_state.get():
+                serializer = WarehouseDoShipmentSerializer(data=request.data, context={'request': request})
                 if serializer.is_valid():
                     do = serializer.save()
                     return Response(WarehouseDoGetSerializer(do).data, status=201)
