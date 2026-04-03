@@ -5,6 +5,7 @@ from apps.warehouse.models import (
 )
 from apps.warehouse.utils.generate_barcode import generate_barcode
 from apps.warehouse.models import WarehouseTTN
+from apps.shtrih.serializers.products import ProductGetSerializer
 
 
 class PalletSerializer(serializers.ModelSerializer):
@@ -46,3 +47,16 @@ class PalletGenerateSerializer(serializers.ModelSerializer):
             barcode=barcode,
             ttn_number=warehouse_ttn,
         )
+
+
+class PalletProductsSerializer(serializers.ModelSerializer):
+    products = serializers.SerializerMethodField('get_products')
+
+    class Meta:
+        model = Pallet
+        fields = ['id', 'barcode', 'ttn_number', 'products', 'create_at', 'update_at']
+
+    def get_products(self, obj) -> dict:
+        products = obj.ttn_number.warehousedo_set.all()
+        print(products)
+        return ProductGetSerializer(products, many=True).data

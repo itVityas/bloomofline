@@ -29,4 +29,4 @@ class OfflineOneCTTNItem(models.Model):
         ordering = ['-id']
 
     def __str__(self):
-        return f"{self.name} ({self.count})"
+        return f"{self.id} ({self.count})"

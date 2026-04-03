@@ -4,7 +4,7 @@ from rest_framework.generics import (
     CreateAPIView
 )
 from rest_framework.permissions import IsAuthenticated
-from drf_spectacular.utils import extend_schema, extend_schema_view
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 
@@ -12,11 +12,13 @@ from apps.warehouse.models import Pallet
 from apps.woffline.models import OfflinePallet
 from apps.woffline.serializers.pallet import (
     OfflinePalletSerializer,
-    OfflinePalletGenerateSerializer
+    OfflinePalletGenerateSerializer,
+    OfflinePalletProductsSerializer,
 )
 from apps.warehouse.serializers.pallet import (
     PalletSerializer,
-    PalletGenerateSerializer
+    PalletGenerateSerializer,
+    PalletProductsSerializer,
 )
 from apps.woffline.permissions import WarehousePermission
 from bloomofline.paginator import StandartResultPaginator
@@ -186,6 +188,38 @@ class OfflinePalletCreateByTTNAPIView(CreateAPIView):
                     warehouse_ttn = serializer.save()
                     return Response(OfflinePalletSerializer(warehouse_ttn).data, status=201)
                 return Response(serializer.errors, status=400)
+        except Exception as e:
+            global_state.set()
+            return Response({'error': str(e)}, status=400)
+
+
+@extend_schema(tags=["Offline Pallet"])
+@extend_schema_view(
+    get=extend_schema(
+        summary='get pallet with products',
+        description='Permission: admin, warehouse, warehouse_writer',
+        parameters=[
+            OpenApiParameter(name='ttn_number', description='ttn_number', required=True, type=str),
+        ]
+    ),
+)
+class OfflinePalletWithProductsListAPIView(ListAPIView):
+    queryset = OfflinePallet.objects.all()
+    serializer_class = OfflinePalletProductsSerializer
+    permission_classes = [IsAuthenticated, WarehousePermission]
+    pagination_class = None
+
+    def get(self, request):
+        try:
+            ttn_number = request.GET.get('ttn_number', None)
+            if global_state.get():
+                query = Pallet.objects.get(ttn_number=ttn_number)
+                serializer = PalletProductsSerializer
+                return Response(serializer(query, many=False).data)
+            else:
+                query = OfflinePallet.objects.get(ttn_number=ttn_number)
+                serializer = self.serializer_class
+                return Response(serializer(query, many=False).data)
         except Exception as e:
             global_state.set()
             return Response({'error': str(e)}, status=400)
