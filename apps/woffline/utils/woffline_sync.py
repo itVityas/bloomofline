@@ -164,9 +164,10 @@ class WarehouseFullSync:
             )
             bulk_list = []
             for i in pallet_list:
+                ttn = OfflineWarehouseTTN.objects.get(ttn_number=i['ttn_number'])
                 bulk_list.append(OfflinePallet(
                     id=i['id'],
-                    ttn_number=i['ttn_number'],
+                    ttn_number=ttn,
                     barcode=i['barcode'],
                     create_at=i['create_at'],
                     update_at=i['update_at'],
@@ -433,9 +434,10 @@ class WarehouseSync:
             )
             bulk_list = []
             for i in pallet_list:
+                ttn = OfflineWarehouseTTN.objects.get(ttn_number=i['ttn_number'])
                 bulk_list.append(OfflinePallet(
                     id=i['id'],
-                    ttn_number=i['ttn_number'],
+                    ttn_number=ttn,
                     barcode=i['barcode'],
                     create_at=i['create_at'],
                     update_at=i['update_at'],
