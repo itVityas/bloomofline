@@ -15,7 +15,7 @@ from apps.warehouse.exceptions.barcode import WrongModel
 
 class WarehouseDoGetSerializer(serializers.ModelSerializer):
     warehouse_ttn = WarehouseTTNGetSerializer(read_only=True)
-    warehouse_product = ProductGetSerializer(many=False, read_only=True)
+    product = ProductGetSerializer(many=False, read_only=True)
 
     class Meta:
         model = WarehouseDo
