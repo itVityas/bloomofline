@@ -69,6 +69,10 @@ class ModelNamesFilter(filter.FilterSet):
         field_name='short_name',
         lookup_expr='icontains',
         help_text="Filter model names by short name containing (case insensitive)",)
+    model_id = filter.NumberFilter(
+        field_name='models__id',
+        lookup_expr='exact',
+        help_text="Filter model names by model ID",)
 
     class Meta:
         model = ModelNames
@@ -81,7 +85,8 @@ class ModelNamesFilter(filter.FilterSet):
             'short_name',
             'start_short_name',
             'end_short_name',
-            'cont_short_name'
+            'cont_short_name',
+            'model_id',
         ]
 
 
