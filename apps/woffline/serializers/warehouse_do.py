@@ -224,7 +224,6 @@ class OfflineWarehouseDoShipmentSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('1C TTN не найден')
 
         model_name_ids = OfflineOneCTTNItem.objects.filter(onec_ttn=onec_ttn).values_list('model_name_id', flat=True)
-        print(model_name_ids)
 
         with transaction.atomic():
             # получает ttn
@@ -243,12 +242,9 @@ class OfflineWarehouseDoShipmentSerializer(serializers.ModelSerializer):
             product = OfflineProducts.objects.filter(
                 barcode=barcode
             ).first()
-            print(product)
             if not product:
                 raise serializers.ValidationError('Продукт не найден')
             else:
-                print(product.model)
-                print(product.model.name.id)
                 if product.model.name.id not in model_name_ids:
                     raise serializers.ValidationError('Модель не найдена в выбранной 1C накладной')
             product.is_shipment = True

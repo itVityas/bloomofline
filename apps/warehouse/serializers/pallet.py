@@ -3,6 +3,7 @@ from rest_framework import serializers
 from apps.warehouse.models import (
     Pallet,
 )
+from apps.shtrih.models import Products
 from apps.warehouse.utils.generate_barcode import generate_barcode
 from apps.warehouse.models import WarehouseTTN
 from apps.shtrih.serializers.products import ProductGetSerializer
@@ -57,6 +58,5 @@ class PalletProductsSerializer(serializers.ModelSerializer):
         fields = ['id', 'barcode', 'ttn_number', 'products', 'create_at', 'update_at']
 
     def get_products(self, obj) -> dict:
-        products = obj.ttn_number.warehousedo_set.all()
-        print(products)
+        products = Products.objects.filter(warehousedo__warehouse_ttn__ttn_number=obj.ttn_number)
         return ProductGetSerializer(products, many=True).data

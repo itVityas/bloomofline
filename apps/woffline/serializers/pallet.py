@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from apps.woffline.models import OfflinePallet
+from apps.ashtrih.models import OfflineProducts
 from apps.woffline.utils.generate_barcode import generate_barcode
 from apps.woffline.models import OfflineWarehouseTTN
 from apps.ashtrih.serializers.products import OfflineProductGetSerializer
@@ -55,6 +56,5 @@ class OfflinePalletProductsSerializer(serializers.ModelSerializer):
         fields = ['id', 'barcode', 'ttn_number', 'products', 'create_at', 'update_at']
 
     def get_products(self, obj) -> dict:
-        products = obj.ttn_number.warehousedo_set.all()
-        print(products)
+        products = OfflineProducts.objects.filter(offlinewarehousedo__warehouse_ttn__ttn_number=obj.ttn_number)
         return OfflineProductGetSerializer(products, many=True).data

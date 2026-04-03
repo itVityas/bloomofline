@@ -211,13 +211,17 @@ class OfflinePalletWithProductsListAPIView(ListAPIView):
 
     def get(self, request):
         try:
-            ttn_number = request.GET.get('ttn_number', None)
+            ttn_number = request.query_params.get('ttn_number', None)
             if global_state.get():
-                query = Pallet.objects.get(ttn_number=ttn_number)
+                query = Pallet.objects.filter(ttn_number__ttn_number=ttn_number).first()
+                if not query:
+                    return Response({'error': 'Палет не найден'}, status=404)
                 serializer = PalletProductsSerializer
                 return Response(serializer(query, many=False).data)
             else:
-                query = OfflinePallet.objects.get(ttn_number=ttn_number)
+                query = OfflinePallet.objects.filter(ttn_number__ttn_number=ttn_number).first()
+                if not query:
+                    return Response({'error': 'Палет не найден'}, status=404)
                 serializer = self.serializer_class
                 return Response(serializer(query, many=False).data)
         except Exception as e:
