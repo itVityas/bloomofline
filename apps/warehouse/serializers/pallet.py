@@ -60,3 +60,15 @@ class PalletProductsSerializer(serializers.ModelSerializer):
     def get_products(self, obj) -> dict:
         products = Products.objects.filter(warehousedo__warehouse_ttn__ttn_number=obj.ttn_number)
         return ProductGetSerializer(products, many=True).data
+
+
+class PalletDecomposeSerializer(serializers.Serializer):
+    model_name = serializers.CharField()
+    month = serializers.IntegerField()
+    year = serializers.IntegerField()
+    quantity = serializers.IntegerField()
+    ttn_number = serializers.CharField()
+    pallet = serializers.DictField()
+
+    class Meta:
+        fields = ['model_name', 'month', 'year', 'quantity', 'ttn_number', 'pallet']

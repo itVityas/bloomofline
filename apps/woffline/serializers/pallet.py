@@ -66,3 +66,7 @@ class OfflinePalletDecomposeSerializer(serializers.Serializer):
     year = serializers.IntegerField()
     quantity = serializers.IntegerField()
     ttn_number = serializers.CharField()
+    pallet = serializers.DictField()
+
+    class Meta:
+        fields = ['model_name', 'month', 'year', 'quantity', 'ttn_number', 'pallet']

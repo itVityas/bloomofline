@@ -21,6 +21,7 @@ from apps.warehouse.serializers.pallet import (
     PalletSerializer,
     PalletGenerateSerializer,
     PalletProductsSerializer,
+    PalletDecomposeSerializer,
 )
 from apps.shtrih.models import Models
 from apps.ashtrih.models import OfflineModels
@@ -269,24 +270,36 @@ class OfflinePalletDecomposeAPIView(APIView):
                 model = Models.objects.filter(code=model_code).first()
                 if not model:
                     return Response({'error': 'model not found'}, status=404)
-                return Response({
+                pallet = Pallet.objects.filter(barcode=barcode).first()
+                if not pallet:
+                    return Response({'error': 'pallet not found'}, status=404)
+                pallet_serializer = PalletSerializer(pallet).data
+                serializer = PalletDecomposeSerializer({
                     'model_name': model.name.name,
-                    'month': month,
-                    'year': year,
-                    'quantity': quantity,
-                    'ttn_number': ttn_number,
-                }, status=200)
+                    'month': int(month),
+                    'year': int(year),
+                    'quantity': int(quantity),
+                    'ttn_number': str(int(ttn_number)),
+                    'pallet': dict(pallet_serializer)
+                })
+                return Response(serializer.data, status=200)
             else:
                 model = OfflineModels.objects.filter(code=model_code).first()
                 if not model:
                     return Response({'error': 'model not found'}, status=404)
-                return Response({
+                pallet = OfflinePallet.objects.filter(barcode=barcode).first()
+                if not pallet:
+                    return Response({'error': 'pallet not found'}, status=404)
+                pallet_serializer = OfflinePalletSerializer(pallet).data
+                serializer = OfflinePalletDecomposeSerializer({
                     'model_name': model.name.name,
-                    'month': month,
-                    'year': year,
-                    'quantity': quantity,
-                    'ttn_number': ttn_number,
-                }, status=200)
+                    'month': int(month),
+                    'year': int(year),
+                    'quantity': int(quantity),
+                    'ttn_number': str(int(ttn_number)),
+                    'pallet': dict(pallet_serializer)
+                })
+                return Response(serializer.data, status=200)
         except Exception as e:
             global_state.set()
             return Response({'error ': str(e)}, status=400)
