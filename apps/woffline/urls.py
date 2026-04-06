@@ -8,7 +8,8 @@ from apps.woffline.views.pallet import (
     OfflinePalletCreateByTTNAPIView,
     OfflinePalletListCreateAPIView,
     OfflinePalletRetrieveUpdateDestroyView,
-    OfflinePalletWithProductsListAPIView,)
+    OfflinePalletWithProductsListAPIView,
+    OfflinePalletDecomposeAPIView,)
 from apps.woffline.views.warehouse_ttn import (
     OfflineWarehouseTTNByUserIdAPIView,
     OfflineWarehouseTTNCreateAPIView,
@@ -38,6 +39,7 @@ urlpatterns = [
     path('warehouse/pallet/<int:pk>/', OfflinePalletRetrieveUpdateDestroyView.as_view()),
     path('warehouse/pallet/generate/', OfflinePalletCreateByTTNAPIView.as_view()),
     path('warehouse/pallet/pallet_with_products/', OfflinePalletWithProductsListAPIView.as_view()),
+    path('warehouse/pallet/decompose/', OfflinePalletDecomposeAPIView.as_view()),
     path('warehouse/ttn/', OfflineWarehouseTTNListAPIView.as_view()),
     path('warehouse/ttn/create/', OfflineWarehouseTTNCreateAPIView.as_view()),
     path('warehouse/ttn/retrieve/<str:ttn_number>/', OfflineWarehouseTTNRetrieveAPIView.as_view()),

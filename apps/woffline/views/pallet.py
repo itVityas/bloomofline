@@ -3,6 +3,7 @@ from rest_framework.generics import (
     RetrieveUpdateDestroyAPIView,
     CreateAPIView
 )
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
 from django_filters.rest_framework import DjangoFilterBackend
@@ -14,12 +15,15 @@ from apps.woffline.serializers.pallet import (
     OfflinePalletSerializer,
     OfflinePalletGenerateSerializer,
     OfflinePalletProductsSerializer,
+    OfflinePalletDecomposeSerializer,
 )
 from apps.warehouse.serializers.pallet import (
     PalletSerializer,
     PalletGenerateSerializer,
     PalletProductsSerializer,
 )
+from apps.shtrih.models import Models
+from apps.ashtrih.models import OfflineModels
 from apps.woffline.permissions import WarehousePermission
 from bloomofline.paginator import StandartResultPaginator
 from bloomofline.global_state import global_state
@@ -227,3 +231,62 @@ class OfflinePalletWithProductsListAPIView(ListAPIView):
         except Exception as e:
             global_state.set()
             return Response({'error': str(e)}, status=400)
+
+
+@extend_schema(tags=["Offline Pallet"])
+@extend_schema_view(
+    get=extend_schema(
+        summary='decompose pallet barcode',
+        description='''Permission: admin, warehouse_writer
+        barcode 20 symbols:
+        model: 5 (model.code),
+        month: 2,
+        year: 2,
+        quantity: 3,
+        ttn_number: 8''',
+        parameters=[
+            OpenApiParameter(name='barcode', description='pallet barcode', required=True, type=str),
+        ]
+    )
+)
+class OfflinePalletDecomposeAPIView(APIView):
+    query = Pallet.objects.all()
+    serializer_class = OfflinePalletDecomposeSerializer
+    permission_classes = (IsAuthenticated, WarehousePermission)
+
+    def get(self, request):
+        barcode = request.query_params.get('barcode', None)
+        if not barcode or len(barcode) != 20:
+            return Response({'error': 'invalid barcode'}, status=400)
+        model_code = barcode[0:5]
+        month = barcode[5:7]
+        year = barcode[7:9]
+        quantity = barcode[9:12]
+        ttn_number = barcode[12:20]
+
+        try:
+            if global_state.get():
+                model = Models.objects.filter(code=model_code).first()
+                if not model:
+                    return Response({'error': 'model not found'}, status=404)
+                return Response({
+                    'model_name': model.name.name,
+                    'month': month,
+                    'year': year,
+                    'quantity': quantity,
+                    'ttn_number': ttn_number,
+                }, status=200)
+            else:
+                model = OfflineModels.objects.filter(code=model_code).first()
+                if not model:
+                    return Response({'error': 'model not found'}, status=404)
+                return Response({
+                    'model_name': model.name.name,
+                    'month': month,
+                    'year': year,
+                    'quantity': quantity,
+                    'ttn_number': ttn_number,
+                }, status=200)
+        except Exception as e:
+            global_state.set()
+            return Response({'error ': str(e)}, status=400)

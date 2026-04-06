@@ -58,3 +58,11 @@ class OfflinePalletProductsSerializer(serializers.ModelSerializer):
     def get_products(self, obj) -> dict:
         products = OfflineProducts.objects.filter(offlinewarehousedo__warehouse_ttn__ttn_number=obj.ttn_number)
         return OfflineProductGetSerializer(products, many=True).data
+
+
+class OfflinePalletDecomposeSerializer(serializers.Serializer):
+    model_name = serializers.CharField()
+    month = serializers.IntegerField()
+    year = serializers.IntegerField()
+    quantity = serializers.IntegerField()
+    ttn_number = serializers.CharField()
