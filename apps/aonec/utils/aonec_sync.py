@@ -92,22 +92,20 @@ class OneCSync:
 
     def sync(self) -> dict:
         try:
-            with transaction.atomic():
-                time_full = dict()
-                time_ttn = self.onec_ttn_sync()
-                time_item = self.onec_ttn_item_sync()
-                time_full['ttn'] = time_ttn
-                time_full['ttn_item'] = time_item
-                time_full['full'] = time_ttn + time_item
-                return time_full
+            time_full = dict()
+            time_ttn = self.onec_ttn_sync()
+            time_item = self.onec_ttn_item_sync()
+            time_full['ttn'] = time_ttn
+            time_full['ttn_item'] = time_item
+            time_full['full'] = time_ttn + time_item
+            return time_full
         except Exception as e:
             raise e
 
     def onec_ttn_sync(self) -> float:
         try:
             start_time = time.time()
-            last_onec_ttn = offline_OneCTTN.objects.order_by('-id').first()
-            onec_tnn = OneCTTN.objects.filter(id__gt=last_onec_ttn.id if last_onec_ttn else 0).values(
+            onec_tnn = OneCTTN.objects.filter(update_at__gt=self.sync_date.last_sync).values(
                 'id', 'number', 'series', 'create_at', 'update_at')
             existing_ids = set(offline_OneCTTN.objects.values_list('id', flat=True))
             list_ttn = []
@@ -136,8 +134,8 @@ class OneCSync:
                     offline_OneCTTN.objects.filter(id=i['id']).update(
                         number=i['number'],
                         series=i['series'],
-                        create_at=i['created_at'],
-                        update_at=i['updated_at'],
+                        create_at=i['create_at'],
+                        update_at=i['update_at'],
                     )
             stop_time = time.time()
             return stop_time - start_time
@@ -148,9 +146,8 @@ class OneCSync:
     def onec_ttn_item_sync(self) -> float:
         try:
             start_time = time.time()
-            last_onec_ttn_item = offline_OneCTTItem.objects.order_by('-id').first()
             onec_ttn_item = OneCTTNItem.objects.filter(
-                id__gt=last_onec_ttn_item.id if last_onec_ttn_item else 0).values(
+                update_at__gt=self.sync_date.last_sync).values(
                 'id', 'onec_ttn_id', 'model_name_id', 'count', 'create_at', 'update_at')
             existing_ids = set(offline_OneCTTItem.objects.values_list('id', flat=True))
             list_items = []
