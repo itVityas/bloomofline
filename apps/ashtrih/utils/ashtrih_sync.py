@@ -40,6 +40,7 @@ class ShtrihFullSync:
             time_full['full'] = time_names + time_model + time_products
             return time_full
         except Exception as e:
+            logger.error('shtrih full sync: ' + str(e))
             raise e
 
     def model_names_full_sync(self) -> float:
@@ -58,7 +59,7 @@ class ShtrihFullSync:
             time_stop = time.time()
             return time_stop - time_start
         except Exception as e:
-            logger.error('model_names_full_sync' + str(e))
+            logger.error('model_names_full_sync: ' + str(e))
             raise e
 
     def models_full_sync(self) -> float:
@@ -90,7 +91,7 @@ class ShtrihFullSync:
             time_stop = time.time()
             return time_stop - time_start
         except Exception as e:
-            logger.error('models_full_sync' + str(e))
+            logger.error('models_full_sync: ' + str(e))
             raise e
 
     def products_full_sync(self) -> float:
@@ -138,7 +139,7 @@ class ShtrihFullSync:
             time_stop = time.time()
             return time_stop - time_start
         except Exception as e:
-            logger.error('products_full_sync' + str(e))
+            logger.error('products_full_sync: ' + str(e))
             raise e
 
 
@@ -160,6 +161,7 @@ class ShtrihSync:
                 time_full['full'] = time_names + time_model + time_products
                 return time_full
         except Exception as e:
+            logger.error('shtrih sync: ' + str(e))
             raise e
 
     def model_names_sync(self) -> float:
@@ -197,7 +199,7 @@ class ShtrihSync:
             time_stop = time.time()
             return time_stop - time_start
         except Exception as e:
-            logger.error('model_names_sync' + str(e))
+            logger.error('model_names_sync: ' + str(e))
             raise e
 
     def models_sync(self) -> float:
@@ -251,7 +253,7 @@ class ShtrihSync:
             time_stop = time.time()
             return time_stop - time_start
         except Exception as e:
-            logger.error('models_sync' + str(e))
+            logger.error('models_sync: ' + str(e))
             raise e
 
     def product_sync(self) -> float:
@@ -321,5 +323,5 @@ class ShtrihSync:
             time_stop = time.time()
             return time_stop - time_start
         except Exception as e:
-            logger.error('product_sync' + str(e))
+            logger.error('product_sync: ' + str(e))
             raise e

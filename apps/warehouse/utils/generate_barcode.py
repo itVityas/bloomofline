@@ -28,7 +28,7 @@ def len_word(str_in: str, col: int, replace='0') -> str:
 def generate_barcode(ttn_number: str) -> str:
     warehouse_ttn = WarehouseTTN.objects.filter(ttn_number=ttn_number).first()
     if not warehouse_ttn:
-        return f"Error: ttn_number {ttn_number} not found"
+        return "Error: ttn_number not found"
 
     warehouse_do = WarehouseDo.objects.filter(warehouse_ttn=warehouse_ttn)
     if not warehouse_do:
