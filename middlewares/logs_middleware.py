@@ -17,12 +17,13 @@ class LogsMiddleware:
         current_time = time.strftime('%H:%M:%S', t)
         time_start = time.time()
         try:
-            request_body = request.body.decode('utf-8').replace('\n', ' ')
+            body = request.body
+            request._body = body
+            request_body = body.decode('utf-8').replace('\n', ' ')
             log_request = f"{request.path} {request.method} {request.user}" +\
                 f"{request_body}"
             response = self.get_response(request)
         except Exception as ex:
-            response = self.get_response(request)
             log_request = str(ex)
 
         time_stop = time.time()
