@@ -149,7 +149,7 @@ class WarehouseDoPalletSerializer(serializers.ModelSerializer):
 
         with transaction.atomic():
             # получает ttn
-            warehouse_ttn = WarehouseTTN.objects.filter(ttn_number=number, is_close=False).first()
+            warehouse_ttn = WarehouseTTN.objects.filter(ttn_number=number).first()
             if not warehouse_ttn:
                 warehouse_ttn = WarehouseTTN.objects.create(
                     ttn_number=number,
