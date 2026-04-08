@@ -201,7 +201,7 @@ class OfflinePalletCreateByTTNAPIView(CreateAPIView):
 @extend_schema(tags=["Offline Pallet"])
 @extend_schema_view(
     get=extend_schema(
-        summary='get pallet with products',
+        summary='get pallet with products by warehouse ttn',
         description='Permission: admin, warehouse, warehouse_writer',
         parameters=[
             OpenApiParameter(name='ttn_number', description='ttn_number', required=True, type=str),
@@ -225,6 +225,42 @@ class OfflinePalletWithProductsListAPIView(ListAPIView):
                 return Response(serializer(query, many=False).data)
             else:
                 query = OfflinePallet.objects.filter(ttn_number__ttn_number=ttn_number).first()
+                if not query:
+                    return Response({'error': 'Палет не найден'}, status=404)
+                serializer = self.serializer_class
+                return Response(serializer(query, many=False).data)
+        except Exception as e:
+            global_state.set()
+            return Response({'error': str(e)}, status=400)
+
+
+@extend_schema(tags=["Offline Pallet"])
+@extend_schema_view(
+    get=extend_schema(
+        summary='get pallet with products by barcode',
+        description='Permission: admin, warehouse, warehouse_writer',
+        parameters=[
+            OpenApiParameter(name='barcode', description='barcode', required=True, type=str),
+        ]
+    ),
+)
+class OfflinePalletByBarcodeWithProductsListAPIView(ListAPIView):
+    queryset = OfflinePallet.objects.all()
+    serializer_class = OfflinePalletProductsSerializer
+    permission_classes = [IsAuthenticated, WarehousePermission]
+    pagination_class = None
+
+    def get(self, request):
+        try:
+            barcode = request.query_params.get('barcode', None)
+            if global_state.get():
+                query = Pallet.objects.filter(barcode=barcode).first()
+                if not query:
+                    return Response({'error': 'Палет не найден'}, status=404)
+                serializer = PalletProductsSerializer
+                return Response(serializer(query, many=False).data)
+            else:
+                query = OfflinePallet.objects.filter(barcode=barcode).first()
                 if not query:
                     return Response({'error': 'Палет не найден'}, status=404)
                 serializer = self.serializer_class
