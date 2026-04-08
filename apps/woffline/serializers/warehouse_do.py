@@ -89,6 +89,9 @@ class OfflineWarehouseDoBarcodeSerializer(serializers.ModelSerializer):
             if not product:
                 raise serializers.ValidationError('Продукт не найден')
 
+            if warehouse_ttn.is_close:
+                raise serializers.ValidationError('ТТН уже закрыто')
+
             # проверка на дублирование в ttn
             if OfflineWarehouseDo.objects.filter(warehouse_ttn=warehouse_ttn, product=product).exists():
                 raise serializers.ValidationError('Продукт уже добавлен в эту ТТН')
@@ -170,6 +173,9 @@ class OfflineWarehouseDoPalletSerializer(serializers.ModelSerializer):
             if OfflineWarehouseDo.objects.filter(warehouse_ttn=warehouse_ttn, product=product).exists():
                 raise serializers.ValidationError('Продукт уже добавлен в эту ТТН')
 
+            if warehouse_ttn.is_close:
+                raise serializers.ValidationError('ТТН уже закрыто')
+
             warehouse_do = OfflineWarehouseDo.objects.create(
                 product=product,
                 warehouse_ttn=warehouse_ttn,
@@ -237,6 +243,9 @@ class OfflineWarehouseDoShipmentSerializer(serializers.ModelSerializer):
                     user_id=user.id,
                     onec_ttn=onec_ttn,
                 )
+
+            if warehouse_ttn.is_close:
+                raise serializers.ValidationError('ТТН уже закрыто')
 
             # получаем или создаем warehouse product
             product = OfflineProducts.objects.filter(

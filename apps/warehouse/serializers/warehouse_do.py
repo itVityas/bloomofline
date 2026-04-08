@@ -93,6 +93,9 @@ class WarehouseDoBarcodeSerializer(serializers.ModelSerializer):
             if WarehouseDo.objects.filter(warehouse_ttn=warehouse_ttn, product=product).exists():
                 raise serializers.ValidationError('Продукт уже добавлен в эту ТТН')
 
+            if warehouse_ttn.is_close:
+                raise serializers.ValidationError('ТТН уже закрыто')
+
             warehouse_do = WarehouseDo.objects.create(
                 product=product,
                 warehouse_ttn=warehouse_ttn,
@@ -170,6 +173,9 @@ class WarehouseDoPalletSerializer(serializers.ModelSerializer):
             if WarehouseDo.objects.filter(warehouse_ttn=warehouse_ttn, product=product).exists():
                 raise serializers.ValidationError('Продукт уже добавлен в эту ТТН')
 
+            if warehouse_ttn.is_close:
+                raise serializers.ValidationError('ТТН уже закрыто')
+
             warehouse_do = WarehouseDo.objects.create(
                 product=product,
                 warehouse_ttn=warehouse_ttn,
@@ -237,6 +243,9 @@ class WarehouseDoShipmentSerializer(serializers.ModelSerializer):
                     user_id=user.id,
                     onec_ttn=onec_ttn,
                 )
+
+            if warehouse_ttn.is_close:
+                raise serializers.ValidationError('ТТН уже закрыто')
 
             # получаем или создаем warehouse product
             product = Products.objects.filter(
