@@ -30,6 +30,7 @@ class AccountFullSynchronization:
                 time_dict['full'] = time_roles + time_users + time_m2m
                 return time_dict
         except Exception as e:
+            logger.error('full_sync onec: ' + str('e'))
             raise e
 
     def full_role_sync(self) -> float:
@@ -49,7 +50,7 @@ class AccountFullSynchronization:
             stop_time = time.time()
             return stop_time - start_time
         except Exception as e:
-            logger.error('full_role_sync' + str(e))
+            logger.error('full_role_sync: ' + str(e))
             raise e
 
     def full_user_sync(self) -> float:
@@ -74,7 +75,7 @@ class AccountFullSynchronization:
             stop_time = time.time()
             return stop_time - start_time
         except Exception as e:
-            logger.error('full_user_sync' + str(e))
+            logger.error('full_user_sync: ' + str(e))
             raise e
 
     def full_user_roles_sync(self) -> float:
@@ -94,7 +95,7 @@ class AccountFullSynchronization:
             stop_time = time.time()
             return stop_time - start_time
         except Exception as e:
-            logger.error('full_user_roles_sync' + str(e))
+            logger.error('full_user_roles_sync: ' + str(e))
             raise e
 
 
@@ -118,6 +119,7 @@ class AccountSync:
                 time_dict['full'] = time_roles + time_users + time_m2m
                 return time_dict
         except Exception as e:
+            logger.error('sync' + str('e'))
             raise e
 
     def full_role_sync(self) -> float:
