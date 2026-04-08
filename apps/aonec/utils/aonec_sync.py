@@ -29,6 +29,7 @@ class OneCFullSync:
                 time_full['full'] = time_ttn + time_item
                 return time_full
         except Exception as e:
+            logger.error('onec full sync: ' + str(e))
             raise e
 
     def onec_ttn_full_sync(self) -> float:
@@ -54,7 +55,7 @@ class OneCFullSync:
             stop_time = time.time()
             return stop_time - start_time
         except Exception as e:
-            logger.error('onec_ttn_full_sync' + str(e))
+            logger.error('onec_ttn_full_sync:' + str(e))
             raise e
 
     def onec_ttn_item_full_sync(self) -> float:
@@ -81,7 +82,7 @@ class OneCFullSync:
             stop_time = time.time()
             return stop_time - start_time
         except Exception as e:
-            logger.error('onec_ttn_item_full_sync' + str(e))
+            logger.error('onec_ttn_item_full_sync:' + str(e))
             raise e
 
 
@@ -100,6 +101,7 @@ class OneCSync:
             time_full['full'] = time_ttn + time_item
             return time_full
         except Exception as e:
+            logger.error('onec sync: ' + str(e))
             raise e
 
     def onec_ttn_sync(self) -> float:
@@ -140,7 +142,7 @@ class OneCSync:
             stop_time = time.time()
             return stop_time - start_time
         except Exception as e:
-            logger.error('onec_ttn_sync' + str(e))
+            logger.error('onec_ttn_sync: ' + str(e))
             raise e
 
     def onec_ttn_item_sync(self) -> float:
@@ -184,5 +186,5 @@ class OneCSync:
             stop_time = time.time()
             return stop_time - start_time
         except Exception as e:
-            logger.error('onec_ttn_item_sync' + str(e))
+            logger.error('onec_ttn_item_sync: ' + str(e))
             raise e
