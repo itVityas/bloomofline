@@ -173,9 +173,6 @@ class OfflineWarehouseDoPalletSerializer(serializers.ModelSerializer):
             if OfflineWarehouseDo.objects.filter(warehouse_ttn=warehouse_ttn, product=product).exists():
                 raise serializers.ValidationError('Продукт уже добавлен в эту ТТН')
 
-            if warehouse_ttn.is_close:
-                raise serializers.ValidationError('ТТН уже закрыто')
-
             warehouse_do = OfflineWarehouseDo.objects.create(
                 product=product,
                 warehouse_ttn=warehouse_ttn,
