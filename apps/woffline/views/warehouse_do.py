@@ -16,14 +16,16 @@ from apps.warehouse.serializers.warehouse_do import (
     WarehouseDoPostSerializer,
     WarehouseDoBarcodeSerializer,
     WarehouseDoPalletSerializer,
-    WarehouseDoShipmentSerializer
+    WarehouseDoShipmentSerializer,
+    WarehouseDoShipmentDeleteSerializer,
 )
 from apps.woffline.serializers.warehouse_do import (
     OfflineWarehouseDoGetSerializer,
     OfflineWarehouseDoPostSerializer,
     OfflineWarehouseDoBarcodeSerializer,
     OfflineWarehouseDoPalletSerializer,
-    OfflineWarehouseDoShipmentSerializer
+    OfflineWarehouseDoShipmentSerializer,
+    OfflineWarehouseDoShipmentDeleteSerializer,
 )
 from apps.woffline.permissions import WarehousePermission
 from bloomofline.paginator import StandartResultPaginator
@@ -320,6 +322,39 @@ class OfflineWarehouseDoShipmentAPIView(CreateAPIView):
                 if serializer.is_valid():
                     do = serializer.save()
                     return Response(OfflineWarehouseDoGetSerializer(do).data, status=201)
+                return Response(serializer.errors, status=400)
+        except Exception as e:
+            global_state.set()
+            return Response({'error': str(e)}, status=400)
+
+
+@extend_schema(tags=["Offline WarehouseDo"])
+@extend_schema_view(
+    post=extend_schema(
+        summary='Delete product from shipment ttn',
+        description='''Permission: admin, warehouse, warehouse_writer
+        check barcode in warehouse ttn filtered by onec number and series,
+        if warehouse ttn exist, set it to is_deleted and add this barcode to new ttn''',
+    ),
+)
+class OfflineWarehouseDoShipmentDeleteAPIView(CreateAPIView):
+    queryset = OfflineWarehouseDo.objects.all()
+    serializer_class = OfflineWarehouseDoShipmentDeleteSerializer
+    permission_classes = [IsAuthenticated, WarehousePermission]
+
+    def post(self, request):
+        try:
+            if global_state.get():
+                serializer = WarehouseDoShipmentDeleteSerializer(data=request.data, context={'request': request})
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response(serializer.data, status=201)
+                return Response(serializer.errors, status=400)
+            else:
+                serializer = self.serializer_class(data=request.data, context={'request': request})
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response(serializer.data, status=201)
                 return Response(serializer.errors, status=400)
         except Exception as e:
             global_state.set()

@@ -273,3 +273,73 @@ class WarehouseDoShipmentSerializer(serializers.ModelSerializer):
             )
 
         return warehouse_do
+
+
+class WarehouseDoShipmentDeleteSerializer(serializers.ModelSerializer):
+    barcode = serializers.CharField(write_only=True)
+    new_ttn = serializers.CharField(write_only=True)
+    onec_number = serializers.CharField(write_only=True)
+    onec_series = serializers.CharField(write_only=True)
+    warehouse_id = serializers.IntegerField(write_only=True, required=True)
+    warehouse_action_id = serializers.IntegerField(write_only=True, required=True)
+    date = serializers.DateField(write_only=True, required=True)
+
+    class Meta:
+        model = WarehouseDo
+        fields = [
+            'barcode',
+            'new_ttn',
+            'onec_number',
+            'onec_series',
+            'warehouse_id',
+            'warehouse_action_id',
+            'date',
+        ]
+
+    def create(self, validated_data):
+        barcode = validated_data.pop('barcode')
+        new_ttn = validated_data.pop('new_ttn')
+        onec_number = validated_data.pop('onec_number')
+        onec_series = validated_data.pop('onec_series')
+        user = self.context['request'].user
+        date = validated_data.pop('date')
+        warehouse_id = validated_data.pop('warehouse_id')
+        warehouse_action_id = validated_data.pop('warehouse_action_id')
+
+        if not barcode or not new_ttn or not onec_number or not onec_series:
+            raise serializers.ValidationError('Предоставлены не все данные')
+        if not user:
+            raise serializers.ValidationError('Нету пользователя')
+
+        warehouse_ttn = WarehouseTTN(onec_ttn__number=onec_number, onec_ttn__series=onec_series).first()
+        if not warehouse_ttn:
+            raise serializers.ValidationError('ТТН не найдена')
+
+        warehouse_do = WarehouseDo.objects.filter(
+            warehouse_ttn=warehouse_ttn,
+            product__barcode=barcode
+        ).first()
+        if not warehouse_do:
+            raise serializers.ValidationError('Данные не найдены')
+
+        with transaction.atomic():
+            warehouse_do.is_deleted = True
+            warehouse_do.save()
+
+            warehouse_ttn = WarehouseTTN.objects.filter(ttn_number=new_ttn).first()
+            if not warehouse_ttn:
+                warehouse_ttn = WarehouseTTN.objects.create(
+                    ttn_number=new_ttn,
+                    date=date,
+                    warehouse_id=warehouse_id,
+                    warehouse_action_id=warehouse_action_id,
+                    user_id=user.id,
+                    onec_ttn=None,
+                )
+
+            warehouse_do_new = WarehouseDo.objects.create(
+                product=warehouse_do.product,
+                warehouse_ttn=warehouse_ttn,
+                quantity=warehouse_do.quantity
+            )
+            return warehouse_do_new
