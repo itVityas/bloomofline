@@ -76,6 +76,7 @@ def warehouse_do_upload():
                 quantity=i.quantity,
                 create_at=i.create_at,
                 update_at=i.update_at,
+                is_deleted=i.is_deleted,
             )
         )
         i.delete()
@@ -240,7 +241,7 @@ class WarehouseFullSync:
         try:
             start_time = time.time()
             old_product_list = OldProduct.objects.all().values(
-                'id', 'barcode', 'color_id', 'model_id', 'state', 'quantity'
+                'id', 'barcode', 'color_id', 'model_id', 'state', 'quantity', 'is_shipment',
             )
             bulk_list = []
             for i in old_product_list.iterator(chunk_size=self.batch_size):
@@ -250,7 +251,8 @@ class WarehouseFullSync:
                     color_id=i['color_id'],
                     model_id=i['model_id'],
                     state=i['state'],
-                    quantity=i['quantity']
+                    quantity=i['quantity'],
+                    is_shipment=i['is_shipment'],
                 ))
                 if len(bulk_list) >= self.batch_size:
                     OfflineOldProduct.objects.bulk_create(bulk_list)
@@ -269,7 +271,7 @@ class WarehouseFullSync:
             warehouse_do_upload()
             warehouse_do_list = WarehouseDo.objects.all().values(
                 'id', 'warehouse_ttn_id', 'product_id', 'quantity', 'old_product_id',
-                'create_at', 'update_at'
+                'create_at', 'update_at', 'is_deleted',
             )
             bulk_list = []
             for i in warehouse_do_list.iterator(chunk_size=self.batch_size):
@@ -281,7 +283,8 @@ class WarehouseFullSync:
                     old_product_id=i['old_product_id'],
                     create_at=i['create_at'],
                     update_at=i['update_at'],
-                    is_offline=False
+                    is_deleted=i['is_deleted'],
+                    is_offline=False,
                 ))
                 if len(bulk_list) >= self.batch_size:
                     OfflineWarehouseDo.objects.bulk_create(bulk_list)
@@ -404,7 +407,7 @@ class WarehouseSync:
             old_product_list = OldProduct.objects.filter(
                 id__gt=last_old_product.id if last_old_product else 0
             ).values(
-                'id', 'barcode', 'color_id', 'model_id', 'state', 'quantity'
+                'id', 'barcode', 'color_id', 'model_id', 'state', 'quantity', 'is_shipment',
             )
             bulk_list = []
             for i in old_product_list:
@@ -414,7 +417,8 @@ class WarehouseSync:
                     color_id=i['color_id'],
                     model_id=i['model_id'],
                     state=i['state'],
-                    quantity=i['quantity']
+                    quantity=i['quantity'],
+                    is_shipment=i['is_shipment'],
                 ))
             OfflineOldProduct.objects.bulk_create(bulk_list)
             end_time = time.time()
@@ -508,7 +512,7 @@ class WarehouseSync:
                 update_at__gt=self.sync_date.last_sync
             ).values(
                 'id', 'warehouse_ttn_id', 'product_id', 'quantity', 'old_product_id',
-                'create_at', 'update_at'
+                'create_at', 'update_at', 'is_deleted',
             )
             bulk_list = []
             for i in warehouse_do_list:
@@ -520,6 +524,7 @@ class WarehouseSync:
                     old_product_id=i['old_product_id'],
                     create_at=i['create_at'],
                     update_at=i['update_at'],
+                    is_deleted=i['is_deleted'],
                     is_offline=False,
                 ))
             # вначале все удаляем, потом создаем заново, первый вариант, дольше по времени
@@ -532,7 +537,7 @@ class WarehouseSync:
                 update_conflicts=True,
                 unique_fields=['id'],
                 update_fields=['warehouse_ttn_id', 'product_id', 'quantity', 'old_product_id',
-                               'create_at', 'update_at', 'is_offline']
+                               'create_at', 'update_at', 'is_offline', 'is_deleted']
             )
             end_time = time.time()
             return end_time - start_time
