@@ -100,6 +100,7 @@ class OldProduct(models.Model):
     model = models.ForeignKey('shtrih.Models', on_delete=models.CASCADE, db_column='model_id', db_constraint=False)
     state = models.IntegerField()
     quantity = models.IntegerField()
+    is_shipment = models.BooleanField(default=False)
 
     class Meta:
         ordering = ['-id']
@@ -115,6 +116,7 @@ class WarehouseDo(models.Model):
     product = models.ForeignKey(Products, on_delete=models.PROTECT, db_constraint=False, null=True, blank=True)
     old_product = models.ForeignKey(OldProduct, on_delete=models.PROTECT, null=True, blank=True)
     quantity = models.PositiveIntegerField(default=1)
+    is_deleted = models.BooleanField(default=False)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 
