@@ -341,6 +341,55 @@ class OfflineWarehouseTTNProductsAPIView(RetrieveAPIView):
 @extend_schema(tags=['Offline WarehouseTTN'])
 @extend_schema_view(
     get=extend_schema(
+        summary='Get WarehouseTTN products by onecttn number and series',
+        description='Permission: admin, warehouse, warehouse_writer',
+        parameters=[
+            OpenApiParameter(
+                name='number',
+                description='onec ttn number',
+                required=True,
+                type=str
+            ),
+            OpenApiParameter(
+                name='series',
+                description='onec ttn series',
+                required=True,
+                type=str
+            )
+        ]
+    ),
+)
+class OfflineWarehouseTTNByOneCProductsAPIView(APIView):
+    permission_classes = [IsAuthenticated, WarehousePermission]
+    serializer_class = OfflineWarehouseTTNProductSerializer
+    queryset = OfflineWarehouseTTN.objects.all()
+
+    def get(self, request):
+        try:
+            number = request.query_params.get('number')
+            series = request.query_params.get('series')
+            if not number or not series:
+                return Response({'error': 'Не все параметры даны'}, status=400)
+            if global_state.get():
+                query = WarehouseTTN.objects.filter(onec_ttn__number=number, onec_ttn__series=series).first()
+                serializer = WarehouseTTNProductSerializer
+                if not query:
+                    return Response({'error': 'not found'}, status=404)
+                return Response(serializer(query, many=False).data)
+            else:
+                serializer = self.serializer_class
+                query = self.queryset.filter(onec_ttn__number=number, onec_ttn__series=series).first()
+                if not query:
+                    return Response({'error': 'not found'}, status=404)
+                return Response(serializer(query, many=False).data)
+        except Exception as e:
+            global_state.set()
+            return Response({'error': str(e)}, status=400)
+
+
+@extend_schema(tags=['Offline WarehouseTTN'])
+@extend_schema_view(
+    get=extend_schema(
         summary='Get latest WarehouseTTN with products by user_id',
         description='Permission: admin, warehouse, warehouse_writer',
         parameters=[

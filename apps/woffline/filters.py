@@ -13,6 +13,8 @@ class WarehouseTTNFilter(filters.FilterSet):
     number_cont = filters.CharFilter(field_name='ttn_number', lookup_expr='icontains')
     is_close = filters.BooleanFilter(field_name='is_close')
     date = filters.DateFilter(field_name='date', lookup_expr='exact')
+    onec_number = filters.CharFilter(field_name='onec_ttn__number', lookup_expr='iexact')
+    onec_series = filters.CharFilter(field_name='onec_ttn__series', lookup_expr='iexact')
 
     ordering = filters.OrderingFilter(
         fields=(
@@ -36,6 +38,8 @@ class WarehouseTTNFilter(filters.FilterSet):
             'number_cont',
             'is_close',
             'date',
+            'onec_number',
+            'onec_series',
         )
 
 
