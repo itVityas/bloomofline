@@ -11,6 +11,7 @@ from apps.ashtrih.filterset import ProductFilter
 from apps.shtrih.filterset import ProductFilter as OnlineProductFilter
 from bloomofline.global_state import global_state
 from rest_framework.response import Response
+from bloomofline.paginator import StandartResultPaginator
 
 
 @extend_schema(tags=['Offline Shtrih'])
@@ -42,6 +43,7 @@ class OfflineProductListView(ListAPIView):
     permission_classes = (IsAuthenticated, StrihPermission)
     filter_backends = [DjangoFilterBackend]
     filterset_class = ProductFilter
+    pagination_class = StandartResultPaginator
 
     def get_filterset_class(self):
         if global_state.get():
@@ -68,7 +70,7 @@ class OfflineProductListView(ListAPIView):
     def get(self, request):
         try:
             if global_state.get():
-                query = self.filter_queryset(Products.objects.select_related('model', 'color_id').all())
+                query = self.filter_queryset(Products.objects.all())
                 serializer = OnlineProductGetSerializer
                 page = self.paginate_queryset(query)
                 return self.get_paginated_response(serializer(page, many=True).data)
@@ -79,4 +81,4 @@ class OfflineProductListView(ListAPIView):
                 return self.get_paginated_response(serializer(page, many=True).data)
         except Exception as e:
             global_state.set()
-            return Response({'error': str(e)})
+            return Response({'error': str(e)}, status=400)

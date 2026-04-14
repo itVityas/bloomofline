@@ -11,10 +11,23 @@ class ProductFilter(filter.FilterSet):
     Attributes:
         start_barcode: Filter products by barcode prefix (case-insensitive)
     """
+    pk = filter.NumberFilter(field_name='pk', lookup_expr='exact')
     start_barcode = filter.CharFilter(
         field_name='barcode',
         lookup_expr='istartswith',
         help_text="Filter products by barcode prefix (case insensitive)",)
+    barcode = filter.CharFilter(
+        field_name='barcode',
+        lookup_expr='iexact',
+        help_text="Filter products by barcode (case insensitive)",)
+    state = filter.NumberFilter(
+        field_name='state',
+        lookup_expr='exact',
+        help_text="Filter products by state (case insensitive)",)
+    quantity = filter.NumberFilter(
+        field_name='quantity',
+        lookup_expr='exact',
+        help_text="Filter products by quantity (case insensitive)",)
     state = filter.NumberFilter(
         field_name='state',
         lookup_expr='exact',
@@ -23,7 +36,7 @@ class ProductFilter(filter.FilterSet):
     class Meta:
         model = OfflineProducts
         fields = [
-            'id',
+            'pk',
             'barcode',
             'start_barcode',
             'state',

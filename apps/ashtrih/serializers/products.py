@@ -74,12 +74,13 @@ class OnlineProductGetSerializer(serializers.ModelSerializer):
         return None
 
     def get_color_code(self, obj) -> str:
-        obj = Products.objects.get(id=obj.id)
-        if not obj.color_id:
-            return None
-        return obj.color_id.color_code
+        color_relation = getattr(obj, 'color_id', None)
+        if color_relation:
+            return obj.color_id.color_code
+        return None
 
     def get_russian_title(self, obj) -> str:
-        if not obj.color_id:
-            return None
-        return obj.color_id.russian_title
+        color_relation = getattr(obj, 'color_id', None)
+        if color_relation:
+            return obj.color_id.russian_title
+        return None
