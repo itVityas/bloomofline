@@ -347,13 +347,15 @@ class OfflineWarehouseDoShipmentDeleteAPIView(CreateAPIView):
             if global_state.get():
                 serializer = WarehouseDoShipmentDeleteSerializer(data=request.data, context={'request': request})
                 if serializer.is_valid():
-                    serializer.save()
+                    warehouse_do = serializer.save()
+                    serializer = WarehouseDoGetSerializer(warehouse_do)
                     return Response(serializer.data, status=201)
                 return Response(serializer.errors, status=400)
             else:
                 serializer = self.serializer_class(data=request.data, context={'request': request})
                 if serializer.is_valid():
-                    serializer.save()
+                    warehouse_do = serializer.save()
+                    serializer = OfflineWarehouseDoGetSerializer(warehouse_do)
                     return Response(serializer.data, status=201)
                 return Response(serializer.errors, status=400)
         except Exception as e:

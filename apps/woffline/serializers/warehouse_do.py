@@ -311,13 +311,15 @@ class OfflineWarehouseDoShipmentDeleteSerializer(serializers.ModelSerializer):
         if not user:
             raise serializers.ValidationError('Нету пользователя')
 
-        warehouse_ttn = OfflineWarehouseTTN(onec_ttn__number=onec_number, onec_ttn__series=onec_series).first()
+        warehouse_ttn = OfflineWarehouseTTN.objects.filter(
+            onec_ttn__number=onec_number, onec_ttn__series=onec_series).first()
         if not warehouse_ttn:
             raise serializers.ValidationError('ТТН не найдена')
 
         warehouse_do = OfflineWarehouseDo.objects.filter(
             warehouse_ttn=warehouse_ttn,
-            product__barcode=barcode
+            product__barcode=barcode,
+            is_deleted=False
         ).first()
         if not warehouse_do:
             raise serializers.ValidationError('Данные не найдены')
