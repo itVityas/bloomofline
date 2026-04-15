@@ -4,7 +4,8 @@ from django.db import transaction
 from apps.woffline.models import (
     OfflineWarehouseDo,
     OfflineWarehouseTTN,
-    OfflineWarehouseAction
+    OfflineWarehouseAction,
+    OfflinePallet,
 )
 from apps.aonec.models import OfflineOneCTTN, OfflineOneCTTNItem
 from apps.ashtrih.models import OfflineProducts
@@ -320,7 +321,13 @@ class OfflineWarehouseDoShipmentDeleteSerializer(serializers.ModelSerializer):
             warehouse_ttn=warehouse_ttn,
             product__barcode=barcode,
             is_deleted=False
-        ).first()
+        )
+
+        pallet = None
+        if len(barcode) > 18:
+            pallet = OfflinePallet.objects.filter(barcode=barcode).first()
+            warehouse_do = OfflineWarehouseDo.objects.filter(warehouse_ttn=pallet.ttn_number)
+
         if not warehouse_do:
             raise serializers.ValidationError('Данные не найдены')
 
@@ -338,10 +345,19 @@ class OfflineWarehouseDoShipmentDeleteSerializer(serializers.ModelSerializer):
                     user_id=user.id,
                     onec_ttn=None,
                 )
-
-            warehouse_do_new = OfflineWarehouseDo.objects.create(
-                product=warehouse_do.product,
-                warehouse_ttn=warehouse_ttn,
-                quantity=warehouse_do.quantity
-            )
+            if pallet:
+                list_new_do = []
+                for i in warehouse_do:
+                    warehouse_do_new = OfflineWarehouseDo.objects.create(
+                        product=i.product,
+                        warehouse_ttn=warehouse_ttn,
+                        quantity=i.quantity
+                    )
+                list_new_do.append(warehouse_do_new)
+            else:
+                warehouse_do_new = OfflineWarehouseDo.objects.create(
+                    product=warehouse_do.product,
+                    warehouse_ttn=warehouse_ttn,
+                    quantity=warehouse_do.quantity
+                )
             return warehouse_do_new
