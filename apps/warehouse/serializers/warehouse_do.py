@@ -355,8 +355,8 @@ class WarehouseDoShipmentDeleteSerializer(serializers.ModelSerializer):
                 list_new_do.append(warehouse_do_new)
             else:
                 warehouse_do_new = WarehouseDo.objects.create(
-                    product=warehouse_do.product,
+                    product=warehouse_do[0].product,
                     warehouse_ttn=warehouse_ttn,
-                    quantity=warehouse_do.quantity
+                    quantity=warehouse_do[0].quantity
                 )
             return warehouse_do_new
