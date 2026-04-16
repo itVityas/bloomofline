@@ -12,6 +12,9 @@ from apps.onec.models import OneCTTN
 from apps.aonec.serializers.onec_ttn import (
     OfflineOneCTTNGetSerializer,
 )
+from apps.onec.serializers.onec_ttn import (
+    OneCTTNGetSerializer,
+)
 from apps.aonec.permissions import Warehouse1CPermission
 from apps.aonec.filters import OneCTTNFilter
 from apps.onec.filters import OneCTTNFilter as OnlineOneCTTNFilter
@@ -58,7 +61,7 @@ class OfflineOneCTTNListAPIView(ListAPIView):
         try:
             if global_state.get():
                 query = self.filter_queryset(OneCTTN.objects.all())
-                serializer = self.serializer_class
+                serializer = OneCTTNGetSerializer
                 page = self.paginate_queryset(query)
                 return self.get_paginated_response(serializer(page, many=True).data)
             else:
@@ -87,7 +90,7 @@ class OfflineOneCTTNRetrieveAPIView(RetrieveAPIView):
         try:
             if global_state.get():
                 query = OneCTTN.objects.filter(pk=pk).first()
-                serializer = self.serializer_class
+                serializer = OneCTTNGetSerializer
                 if not query:
                     return Response({'error': 'not found'}, status=404)
                 return Response(serializer(query, many=False).data)
