@@ -33,8 +33,8 @@ class FullSyncAllView(APIView):
             if not sync_date:
                 sync_date = SyncDate(last_sync='1970-01-01 00:00:00')
             time_account = AccountFullSynchronization().full_sync()
-            time_ttn = OneCFullSync(sync_date=sync_date).full_sync()
             time_shtrih = ShtrihFullSync(sync_date=sync_date).full_sync()
+            time_ttn = OneCFullSync(sync_date=sync_date).full_sync()
             time_warehouse = WarehouseFullSync(sync_date=sync_date).full_sync()
             full_time = time_account.get('full', 0) + time_shtrih.get('full', 0) \
                 + time_ttn.get('full', 0) + time_warehouse.get('full', 0)

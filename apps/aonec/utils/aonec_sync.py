@@ -62,7 +62,7 @@ class OneCFullSync:
         try:
             start_time = time.time()
             offline_OneCTTItem.objects.all().delete()
-            onec_ttn_items = OneCTTNItem.objects.select_related('onec_ttn').all().order_by('id').values(
+            onec_ttn_items = OneCTTNItem.objects.all().order_by('id').values(
                 'id', 'onec_ttn_id', 'model_name_id', 'count', 'create_at', 'update_at')
             list_ttn_item = []
             for i in onec_ttn_items.iterator(chunk_size=self.batch_size):
