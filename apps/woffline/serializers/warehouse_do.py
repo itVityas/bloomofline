@@ -332,8 +332,7 @@ class OfflineWarehouseDoShipmentDeleteSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Данные не найдены')
 
         with transaction.atomic():
-            warehouse_do.is_deleted = True
-            warehouse_do.save()
+            warehouse_do.update(is_deleted=True)
 
             warehouse_ttn = OfflineWarehouseTTN.objects.filter(ttn_number=new_ttn).first()
             if not warehouse_ttn:
