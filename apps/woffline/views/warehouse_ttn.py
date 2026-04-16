@@ -378,7 +378,7 @@ class OfflineWarehouseTTNByOneCProductsAPIView(APIView):
                 return Response(serializer(query, many=False).data)
             else:
                 serializer = self.serializer_class
-                query = self.queryset.filter(onec_ttn__number=number, onec_ttn__series=series).first()
+                query = OfflineWarehouseTTN.objects.filter(onec_ttn__number=number, onec_ttn__series=series).first()
                 if not query:
                     return Response({'error': 'not found'}, status=404)
                 return Response(serializer(query, many=False).data)
