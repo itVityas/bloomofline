@@ -181,12 +181,24 @@ class OfflineWarehouseDoRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIVie
             if global_state.get():
                 query = WarehouseDo.objects.filter(pk=pk).first()
                 if query:
+                    if query.warehouse_ttn.warehouse_action_id == 3:
+                        query.product.is_shipment = False
+                        query.product.available_quantity += query.quantity
+                        if query.product.available_quantity > query.product.quantity:
+                            query.product.available_quantity = query.product.quantity
+                        query.product.save()
                     query.delete()
                     return Response({'message': 'deleted'}, status=204)
                 return Response({'error': 'not found'}, status=404)
             else:
                 query = self.queryset.filter(pk=pk).first()
                 if query:
+                    if query.warehouse_ttn.warehouse_action_id == 3:
+                        query.product.is_shipment = False
+                        query.product.available_quantity += query.quantity
+                        if query.product.available_quantity > query.product.quantity:
+                            query.product.available_quantity = query.product.quantity
+                        query.product.save()
                     query.delete()
                     return Response({'message': 'deleted'}, status=204)
                 return Response({'error': 'not found'}, status=404)
