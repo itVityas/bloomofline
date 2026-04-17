@@ -351,6 +351,9 @@ class OfflineWarehouseDoShipmentDeleteSerializer(serializers.ModelSerializer):
                         warehouse_ttn=warehouse_ttn,
                         quantity=i.quantity
                     )
+                    i.product.available_quantity += i.quantity
+                    i.product.is_shipment = False
+                    i.product.save()
                 list_new_do.append(warehouse_do_new)
             else:
                 warehouse_do_new = OfflineWarehouseDo.objects.create(
@@ -358,5 +361,8 @@ class OfflineWarehouseDoShipmentDeleteSerializer(serializers.ModelSerializer):
                     warehouse_ttn=warehouse_ttn,
                     quantity=warehouse_do[0].quantity
                 )
+                warehouse_do[0].product.available_quantity += warehouse_do[0].quantity
+                warehouse_do[0].product.is_shipment = False
+                warehouse_do[0].product.save()
         warehouse_do.update(is_deleted=True)
         return warehouse_do_new
