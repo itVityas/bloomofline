@@ -317,6 +317,7 @@ class OfflineWarehouseDoShipmentDeleteSerializer(serializers.ModelSerializer):
             onec_ttn__number=onec_number, onec_ttn__series=onec_series).first()
         if not warehouse_ttn:
             raise serializers.ValidationError('ТТН не найдена')
+        onec_ttn = warehouse_ttn.onec_ttn
 
         warehouse_do = OfflineWarehouseDo.objects.filter(
             warehouse_ttn=warehouse_ttn,
@@ -341,7 +342,7 @@ class OfflineWarehouseDoShipmentDeleteSerializer(serializers.ModelSerializer):
                     warehouse_id=warehouse_id,
                     warehouse_action_id=warehouse_action_id,
                     user_id=user.id,
-                    onec_ttn=None,
+                    onec_ttn=onec_ttn,
                 )
             if pallet:
                 list_new_do = []
