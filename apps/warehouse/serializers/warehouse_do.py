@@ -314,12 +314,12 @@ class WarehouseDoShipmentDeleteSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Нету пользователя')
 
         warehouse_ttn = WarehouseTTN.objects.filter(
-            onec_ttn__number=onec_number, onec_ttn__series=onec_series).first()
+            onec_ttn__number=onec_number, onec_ttn__series=onec_series)
         if not warehouse_ttn:
             raise serializers.ValidationError('ТТН не найдена')
 
         warehouse_do = WarehouseDo.objects.filter(
-            warehouse_ttn=warehouse_ttn,
+            warehouse_ttn__in=warehouse_ttn,
             product__barcode=barcode,
             is_deleted=False
         )
@@ -351,6 +351,9 @@ class WarehouseDoShipmentDeleteSerializer(serializers.ModelSerializer):
                         warehouse_ttn=warehouse_ttn,
                         quantity=i.quantity
                     )
+                    i.product.available_quantity += i.quantity
+                    i.product.is_shipment = False
+                    i.product.save()
                 list_new_do.append(warehouse_do_new)
             else:
                 warehouse_do_new = WarehouseDo.objects.create(
@@ -358,5 +361,8 @@ class WarehouseDoShipmentDeleteSerializer(serializers.ModelSerializer):
                     warehouse_ttn=warehouse_ttn,
                     quantity=warehouse_do[0].quantity
                 )
+                warehouse_do[0].product.available_quantity += warehouse_do[0].quantity
+                warehouse_do[0].product.is_shipment = False
+                warehouse_do[0].product.save()
         warehouse_do.update(is_deleted=True)
         return warehouse_do_new
