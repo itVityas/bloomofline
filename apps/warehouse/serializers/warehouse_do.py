@@ -241,6 +241,10 @@ class WarehouseDoShipmentSerializer(serializers.ModelSerializer):
         else:
             if product.model.name.id not in model_name_ids:
                 raise serializers.ValidationError('Модель не найдена в выбранной 1C накладной')
+        product.is_shipment = True
+        product.available_quantity -= quantity
+        if product.available_quantity < 0:
+            raise serializers.ValidationError('Недостаточно товара на складе ' + str(product.available_quantity))
 
         with transaction.atomic():
             # получает ttn
@@ -258,10 +262,6 @@ class WarehouseDoShipmentSerializer(serializers.ModelSerializer):
             if warehouse_ttn.is_close:
                 raise serializers.ValidationError('ТТН уже закрыто')
 
-            product.is_shipment = True
-            product.available_quantity -= quantity
-            if product.available_quantity < 0:
-                raise serializers.ValidationError('Недостаточно товара на складе ' + str(product.available_quantity))
             product.save()
 
             # проверка на дублирование в ttn
