@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
-from apps.warehouse.models import WarehouseTTN
-from apps.shtrih.models import Products
+from apps.warehouse.models import WarehouseTTN, WarehouseDo
 from apps.warehouse.serializers.warehouse import WarehouseSerializer
 from apps.warehouse.serializers.warehouse_action import WarehouseActionGetSerializer
 from apps.account.serializers.user import UserSerializer
@@ -33,16 +32,24 @@ class WarehouseTTNGetSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class WarehouseDoTTNSerializer(serializers.ModelSerializer):
+    product = ProductGetSerializer(many=False)
+
+    class Meta:
+        model = WarehouseDo
+        fields = '__all__'
+
+
 class WarehouseTTNProductSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True, many=False)
     warehouse = WarehouseSerializer(read_only=True, many=False)
     warehouse_action = WarehouseActionGetSerializer(read_only=True, many=False)
-    products = serializers.SerializerMethodField()
+    warehousedo = serializers.SerializerMethodField()
 
     class Meta:
         model = WarehouseTTN
         fields = '__all__'
 
-    def get_products(self, obj) -> list:
-        products = Products.objects.filter(warehousedo__warehouse_ttn=obj)
-        return ProductGetSerializer(products, many=True).data
+    def get_warehousedo(self, obj) -> list:
+        warehouse_do = WarehouseDo.objects.filter(warehouse_ttn=obj)
+        return WarehouseDoTTNSerializer(warehouse_do, many=True).data
