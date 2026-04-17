@@ -71,6 +71,13 @@ class WarehouseDoBarcodeSerializer(serializers.ModelSerializer):
         if not warehouse_action or warehouse_action.type_of_work.id == 2 or warehouse_action.type_of_work.id == 3:
             raise serializers.ValidationError('Эта операция ну доступна для операций типа Отгрузка и Палетирование')
 
+        # получаем или создаем warehouse product
+        product = Products.objects.filter(
+            barcode=barcode
+        ).first()
+        if not product:
+            raise serializers.ValidationError('Продукт не найден')
+
         with transaction.atomic():
             # получает ttn
             warehouse_ttn = WarehouseTTN.objects.filter(ttn_number=number).first()
@@ -82,13 +89,6 @@ class WarehouseDoBarcodeSerializer(serializers.ModelSerializer):
                     warehouse_action_id=warehouse_action_id,
                     user_id=user.id
                 )
-
-            # получаем или создаем warehouse product
-            product = Products.objects.filter(
-                barcode=barcode
-            ).first()
-            if not product:
-                raise serializers.ValidationError('Продукт не найден')
 
             # проверка на дублирование в ttn
             if WarehouseDo.objects.filter(warehouse_ttn=warehouse_ttn, product=product).exists():
@@ -148,6 +148,16 @@ class WarehouseDoPalletSerializer(serializers.ModelSerializer):
         if not warehouse_action or warehouse_action.type_of_work.id != 2:
             raise serializers.ValidationError('Эта операция доступна для операций типа Палетирование')
 
+        # получаем или создаем warehouse product
+        product = Products.objects.filter(
+            barcode=barcode
+        ).first()
+        if product:
+            if model_name_id != product.model.name.id:
+                raise WrongModel()
+        else:
+            raise serializers.ValidationError('Продукт не найден')
+
         with transaction.atomic():
             # получает ttn
             warehouse_ttn = WarehouseTTN.objects.filter(ttn_number=number).first()
@@ -159,16 +169,6 @@ class WarehouseDoPalletSerializer(serializers.ModelSerializer):
                     warehouse_action_id=warehouse_action_id,
                     user_id=user.id
                 )
-
-            # получаем или создаем warehouse product
-            product = Products.objects.filter(
-                barcode=barcode
-            ).first()
-            if product:
-                if model_name_id != product.model.name.id:
-                    raise WrongModel()
-            else:
-                raise serializers.ValidationError('Продукт не найден')
 
             # проверка на дублирование в ttn
             if WarehouseDo.objects.filter(warehouse_ttn=warehouse_ttn, product=product).exists():
@@ -232,6 +232,16 @@ class WarehouseDoShipmentSerializer(serializers.ModelSerializer):
 
         model_name_ids = OneCTTNItem.objects.filter(onec_ttn=onec_ttn).values_list('model_name', flat=True)
 
+        # получаем или создаем warehouse product
+        product = Products.objects.filter(
+            barcode=barcode
+        ).first()
+        if not product:
+            raise serializers.ValidationError('Продукт не найден')
+        else:
+            if product.model.name.id not in model_name_ids:
+                raise serializers.ValidationError('Модель не найдена в выбранной 1C накладной')
+
         with transaction.atomic():
             # получает ttn
             warehouse_ttn = WarehouseTTN.objects.filter(ttn_number=number).first()
@@ -248,15 +258,6 @@ class WarehouseDoShipmentSerializer(serializers.ModelSerializer):
             if warehouse_ttn.is_close:
                 raise serializers.ValidationError('ТТН уже закрыто')
 
-            # получаем или создаем warehouse product
-            product = Products.objects.filter(
-                barcode=barcode
-            ).first()
-            if not product:
-                raise serializers.ValidationError('Продукт не найден')
-            else:
-                if product.model.name.id not in model_name_ids:
-                    raise serializers.ValidationError('Модель не найдена в выбранной 1C накладной')
             product.is_shipment = True
             product.available_quantity -= quantity
             if product.available_quantity < 0:
