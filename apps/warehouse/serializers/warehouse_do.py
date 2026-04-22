@@ -317,7 +317,7 @@ class WarehouseDoShipmentDeleteSerializer(serializers.ModelSerializer):
             onec_ttn__number=onec_number, onec_ttn__series=onec_series)
         if not warehouse_ttn:
             raise serializers.ValidationError('ТТН не найдена')
-        onec_ttn = warehouse_ttn.onec_ttn
+        onec_ttn = warehouse_ttn[0].onec_ttn
 
         warehouse_do = WarehouseDo.objects.filter(
             warehouse_ttn__in=warehouse_ttn,
