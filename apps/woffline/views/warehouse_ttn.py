@@ -385,17 +385,17 @@ class OfflineWarehouseTTNByOneCProductsAPIView(APIView):
             if not number or not series:
                 return Response({'error': 'Не все параметры даны'}, status=400)
             if global_state.get():
-                query = WarehouseTTN.objects.filter(onec_ttn__number=number, onec_ttn__series=series).first()
+                query = WarehouseTTN.objects.filter(onec_ttn__number=number, onec_ttn__series=series)
                 serializer = WarehouseTTNProductSerializer
                 if not query:
                     return Response({'error': 'not found'}, status=404)
-                return Response(serializer(query, many=False).data)
+                return Response(serializer(query, many=True).data)
             else:
                 serializer = self.serializer_class
-                query = OfflineWarehouseTTN.objects.filter(onec_ttn__number=number, onec_ttn__series=series).first()
+                query = OfflineWarehouseTTN.objects.filter(onec_ttn__number=number, onec_ttn__series=series)
                 if not query:
                     return Response({'error': 'not found'}, status=404)
-                return Response(serializer(query, many=False).data)
+                return Response(serializer(query, many=True).data)
         except Exception as e:
             global_state.set()
             return Response({'error': str(e)}, status=400)
