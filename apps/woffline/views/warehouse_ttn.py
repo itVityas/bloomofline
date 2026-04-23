@@ -220,8 +220,8 @@ class OfflineWarehouseTTNRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIVi
                     if query.warehouse_action_id == 3:
                         for i in warehouse_do:
                             onec_item = OneCTTNItem.objects.filter(
-                                onec_ttn=query.warehouse_ttn.onec_ttn, model_name=query.product.model.name).first()
-                            onec_item.available_quantity += query.quantity
+                                onec_ttn=query.onec_ttn, model_name=i.product.model.name).first()
+                            onec_item.available_quantity += i.quantity
                             if onec_item.available_quantity > onec_item.count:
                                 onec_item.available_quantity = onec_item.count
                             i.product.is_shipment = False
@@ -241,8 +241,8 @@ class OfflineWarehouseTTNRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIVi
                     if query.warehouse_action_id == 3:
                         for i in warehouse_do:
                             onec_item = OfflineOneCTTNItem.objects.filter(
-                                onec_ttn=query.warehouse_ttn.onec_ttn, model_name=query.product.model.name).first()
-                            onec_item.available_quantity += query.quantity
+                                onec_ttn=query.onec_ttn, model_name=i.product.model.name).first()
+                            onec_item.available_quantity += i.quantity
                             if onec_item.available_quantity > onec_item.count:
                                 onec_item.available_quantity = onec_item.count
                             i.product.is_shipment = False
