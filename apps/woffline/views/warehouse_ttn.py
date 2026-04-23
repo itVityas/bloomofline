@@ -29,6 +29,8 @@ from apps.woffline.serializers.warehouse_ttn import (
     OfflineWarehouseTTNProductSerializer,
     OfflineWarehouseTTNVisibleSerializer
 )
+from apps.onec.models import OneCTTNItem
+from apps.aonec.models import OfflineOneCTTNItem
 from apps.woffline.permissions import WarehousePermission
 from bloomofline.paginator import StandartResultPaginator
 from apps.woffline.filters import WarehouseTTNFilter
@@ -217,11 +219,17 @@ class OfflineWarehouseTTNRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIVi
                     warehouse_do = WarehouseDo.objects.filter(warehouse_ttn=query)
                     if query.warehouse_action_id == 3:
                         for i in warehouse_do:
+                            onec_item = OneCTTNItem.objects.filter(
+                                onec_ttn=query.warehouse_ttn.onec_ttn, model_name=query.product.model.name).first()
+                            onec_item.available_quantity += query.quantity
+                            if onec_item.available_quantity > onec_item.count:
+                                onec_item.available_quantity = onec_item.count
                             i.product.is_shipment = False
                             i.product.available_quantity += i.quantity
                             if i.product.available_quantity > i.product.quantity:
                                 i.product.available_quantity = i.product.quantity
                             i.product.save()
+                            onec_item.save()
                     warehouse_do.delete()
                     query.delete()
                     return Response({'message': 'deleted'}, status=204)
@@ -232,11 +240,17 @@ class OfflineWarehouseTTNRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIVi
                     warehouse_do = OfflineWarehouseDo.objects.filter(warehouse_ttn=query)
                     if query.warehouse_action_id == 3:
                         for i in warehouse_do:
+                            onec_item = OfflineOneCTTNItem.objects.filter(
+                                onec_ttn=query.warehouse_ttn.onec_ttn, model_name=query.product.model.name).first()
+                            onec_item.available_quantity += query.quantity
+                            if onec_item.available_quantity > onec_item.count:
+                                onec_item.available_quantity = onec_item.count
                             i.product.is_shipment = False
                             i.product.available_quantity += i.quantity
                             if i.product.available_quantity > i.product.quantity:
                                 i.product.available_quantity = i.product.quantity
                             i.product.save()
+                            onec_item.save()
                     warehouse_do.delete()
                     query.delete()
                     return Response({'message': 'deleted'}, status=204)

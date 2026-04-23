@@ -245,6 +245,12 @@ class OfflineWarehouseDoShipmentSerializer(serializers.ModelSerializer):
         product.available_quantity -= quantity
         if product.available_quantity < 0:
             raise serializers.ValidationError('Недостаточно товара на складе ' + str(product.available_quantity))
+        onec_item = OfflineOneCTTNItem.objects.filter(onec_ttn=onec_ttn, model_name=product.model.name).first()
+        if not onec_item:
+            raise serializers.ValidationError('Товары 1C накладной не найдены')
+        if onec_item.available_quantity < quantity:
+            raise serializers.ValidationError('Недостаточно товара в 1C накладной')
+        onec_item.available_quantity -= quantity
 
         with transaction.atomic():
             # получает ttn
@@ -263,6 +269,7 @@ class OfflineWarehouseDoShipmentSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError('ТТН уже закрыто')
 
             product.save()
+            onec_item.save()
 
             # проверка на дублирование в ttn
             if OfflineWarehouseDo.objects.filter(warehouse_ttn=warehouse_ttn, product=product).exists():
@@ -352,9 +359,15 @@ class OfflineWarehouseDoShipmentDeleteSerializer(serializers.ModelSerializer):
                         warehouse_ttn=warehouse_ttn,
                         quantity=i.quantity
                     )
+                    onec_item = OfflineOneCTTNItem.objects.filter(
+                        onec_ttn=onec_ttn, model_name=i.product.model.name).first()
+                    onec_item.available_quantity += i.quantity
+                    if onec_item.available_quantity > onec_item.count:
+                        onec_item.available_quantity = onec_item.count
                     i.product.available_quantity += i.quantity
                     i.product.is_shipment = False
                     i.product.save()
+                    onec_item.save()
                 list_new_do.append(warehouse_do_new)
             else:
                 warehouse_do_new = OfflineWarehouseDo.objects.create(
@@ -362,8 +375,14 @@ class OfflineWarehouseDoShipmentDeleteSerializer(serializers.ModelSerializer):
                     warehouse_ttn=warehouse_ttn,
                     quantity=warehouse_do[0].quantity
                 )
+                onec_item = OfflineOneCTTNItem.objects.filter(
+                    onec_ttn=onec_ttn, model_name=warehouse_do[0].product.model.name).first()
+                onec_item.available_quantity += i.quantity
+                if onec_item.available_quantity > onec_item.count:
+                    onec_item.available_quantity = onec_item.count
                 warehouse_do[0].product.available_quantity += warehouse_do[0].quantity
                 warehouse_do[0].product.is_shipment = False
                 warehouse_do[0].product.save()
+                onec_item.save()
         warehouse_do.update(is_deleted=True)
         return warehouse_do_new
