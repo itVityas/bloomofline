@@ -18,7 +18,8 @@ class OneCTTNItemListSerializer(serializers.ModelSerializer):
         model = OneCTTNItem
         fields = [
             'model_name',
-            'count'
+            'count',
+            'available_quantity'
         ]
 
 

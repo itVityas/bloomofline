@@ -21,6 +21,7 @@ class OfflineOneCTTNItem(models.Model):
     onec_ttn = models.ForeignKey(OfflineOneCTTN, on_delete=models.CASCADE)
     model_name = models.ForeignKey(OfflineModelNames, on_delete=models.CASCADE, db_constraint=False)
     count = models.PositiveIntegerField(default=1)
+    available_quantity = models.PositiveIntegerField(default=1)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 

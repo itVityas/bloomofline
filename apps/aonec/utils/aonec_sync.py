@@ -63,7 +63,7 @@ class OneCFullSync:
             start_time = time.time()
             offline_OneCTTItem.objects.all().delete()
             onec_ttn_items = OneCTTNItem.objects.all().order_by('id').values(
-                'id', 'onec_ttn_id', 'model_name_id', 'count', 'create_at', 'update_at')
+                'id', 'onec_ttn_id', 'model_name_id', 'count', 'available_quantity', 'create_at', 'update_at')
             list_ttn_item = []
             for i in onec_ttn_items.iterator(chunk_size=self.batch_size):
                 list_ttn_item.append(offline_OneCTTItem(
@@ -71,6 +71,7 @@ class OneCFullSync:
                     onec_ttn_id=i['onec_ttn_id'],
                     model_name_id=i['model_name_id'],
                     count=i['count'],
+                    available_quantity=i['available_quantity'],
                     create_at=i['create_at'],
                     update_at=i['update_at'],
                 ))
@@ -150,7 +151,7 @@ class OneCSync:
             start_time = time.time()
             onec_ttn_item = OneCTTNItem.objects.filter(
                 update_at__gt=self.sync_date.last_sync).values(
-                'id', 'onec_ttn_id', 'model_name_id', 'count', 'create_at', 'update_at')
+                'id', 'onec_ttn_id', 'model_name_id', 'count', 'available_quantity', 'create_at', 'update_at')
             existing_ids = set(offline_OneCTTItem.objects.values_list('id', flat=True))
             list_items = []
             list_update = []
@@ -165,6 +166,7 @@ class OneCSync:
                         onec_ttn_id=i['onec_ttn_id'],
                         model_name_id=i['model_name_id'],
                         count=i['count'],
+                        available_quantity=i['available_quantity'],
                         create_at=i['create_at'],
                         update_at=i['update_at'],
                     ))

@@ -17,5 +17,6 @@ class OfflineOneCTTNItemListSerializer(serializers.ModelSerializer):
         model = OfflineOneCTTNItem
         fields = [
             'model_name',
-            'count'
+            'count',
+            'available_quantity'
         ]
