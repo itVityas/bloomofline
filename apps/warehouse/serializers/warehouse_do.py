@@ -377,7 +377,7 @@ class WarehouseDoShipmentDeleteSerializer(serializers.ModelSerializer):
                 )
                 onec_item = OneCTTNItem.objects.filter(
                     onec_ttn=onec_ttn, model_name=warehouse_do[0].product.model.name).first()
-                onec_item.available_quantity += i.quantity
+                onec_item.available_quantity += warehouse_do[0].quantity
                 if onec_item.available_quantity > onec_item.count:
                     onec_item.available_quantity = onec_item.count
                 warehouse_do[0].product.available_quantity += warehouse_do[0].quantity
