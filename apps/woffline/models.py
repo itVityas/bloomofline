@@ -36,6 +36,7 @@ class OfflineTypeOfWork(models.Model):
 class OfflineWarehouseAction(models.Model):
     name = models.CharField(max_length=100)
     type_of_work = models.ForeignKey(OfflineTypeOfWork, on_delete=models.CASCADE)
+    operation = models.CharField(max_length=2, default='+')
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 

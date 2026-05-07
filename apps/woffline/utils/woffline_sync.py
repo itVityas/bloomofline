@@ -138,7 +138,7 @@ class WarehouseFullSync:
         try:
             start_time = time.time()
             action_list = WarehouseAction.objects.all().values(
-                'id', 'name', 'type_of_work_id', 'create_at', 'update_at'
+                'id', 'name', 'type_of_work_id', 'operation', 'create_at', 'update_at'
             )
             bulk_list = []
             for i in action_list:
@@ -146,6 +146,7 @@ class WarehouseFullSync:
                     id=i['id'],
                     name=i['name'],
                     type_of_work_id=i['type_of_work_id'],
+                    operation=i['operation'],
                     create_at=i['create_at'],
                     update_at=i['update_at']
                 ))
@@ -351,7 +352,7 @@ class WarehouseSync:
             action_list = WarehouseAction.objects.filter(
                 update_at__gt=self.sync_date.last_sync
             ).values(
-                'id', 'name', 'type_of_work_id', 'create_at', 'update_at'
+                'id', 'name', 'type_of_work_id', 'operation', 'create_at', 'update_at'
             )
             bulk_list = []
             for i in action_list:
@@ -359,6 +360,7 @@ class WarehouseSync:
                     id=i['id'],
                     name=i['name'],
                     type_of_work_id=i['type_of_work_id'],
+                    operation=i['operation'],
                     create_at=i['create_at'],
                     update_at=i['update_at']
                 ))

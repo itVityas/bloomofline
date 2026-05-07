@@ -38,6 +38,7 @@ class TypeOfWork(models.Model):
 class WarehouseAction(models.Model):
     name = models.CharField(max_length=100)
     type_of_work = models.ForeignKey(TypeOfWork, on_delete=models.CASCADE)
+    operation = models.CharField(max_length=2)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 
