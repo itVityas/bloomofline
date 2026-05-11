@@ -37,13 +37,14 @@ class OneCFullSync:
             start_time = time.time()
             offline_OneCTTN.objects.all().delete()
             onec_ttn = OneCTTN.objects.all().order_by('id').values(
-                'id', 'number', 'series', 'create_at', 'update_at')
+                'id', 'number', 'series', 'create_at', 'update_at', 'shipment_date')
             list_ttn = []
             for i in onec_ttn.iterator(chunk_size=self.batch_size):
                 list_ttn.append(offline_OneCTTN(
                     id=i['id'],
                     number=i['number'],
                     series=i['series'],
+                    shipment_date=i['shipment_date'],
                     create_at=i['create_at'],
                     update_at=i['update_at'],
                 ))
@@ -109,7 +110,7 @@ class OneCSync:
         try:
             start_time = time.time()
             onec_tnn = OneCTTN.objects.filter(update_at__gt=self.sync_date.last_sync).values(
-                'id', 'number', 'series', 'create_at', 'update_at')
+                'id', 'number', 'series', 'create_at', 'update_at', 'shipment_date')
             existing_ids = set(offline_OneCTTN.objects.values_list('id', flat=True))
             list_ttn = []
             list_update = []
@@ -123,6 +124,7 @@ class OneCSync:
                         id=i['id'],
                         number=i['number'],
                         series=i['series'],
+                        shipment_date=i['shipment_date'],
                         create_at=i['create_at'],
                         update_at=i['update_at'],
                     ))

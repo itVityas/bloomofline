@@ -33,6 +33,7 @@ class OneCTTNFullSerializer(serializers.ModelSerializer):
             'number',
             'series',
             'items',
+            'shipment_date',
         ]
 
     def create(self, validated_data):
