@@ -78,6 +78,9 @@ class WarehouseDoBarcodeSerializer(serializers.ModelSerializer):
         if not product:
             raise serializers.ValidationError('Продукт не найден')
 
+        if product.available_quantity <=0 and not (warehouse_action.type_of_work.id == 4 or warehouse_action == 9 or warehouse_action == 10):
+            raise serializers.ValidationError('Товаров 0 и не action 9 action 10 type_of_work 4')
+
         with transaction.atomic():
             # получает ttn
             warehouse_ttn = WarehouseTTN.objects.filter(ttn_number=number).first()
@@ -162,6 +165,9 @@ class WarehouseDoPalletSerializer(serializers.ModelSerializer):
                 raise WrongModel()
         else:
             raise serializers.ValidationError('Продукт не найден')
+
+        if product.available_quantity <=0 and not (warehouse_action.type_of_work.id == 4 or warehouse_action == 9 or warehouse_action == 10):
+            raise serializers.ValidationError('Товаров 0 и не action 9 action 10 type_of_work 4')
 
         with transaction.atomic():
             # получает ttn
