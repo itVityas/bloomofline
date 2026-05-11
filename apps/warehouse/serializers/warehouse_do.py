@@ -69,7 +69,7 @@ class WarehouseDoBarcodeSerializer(serializers.ModelSerializer):
 
         warehouse_action = WarehouseAction.objects.get(id=warehouse_action_id)
         if not warehouse_action or warehouse_action.type_of_work.id == 2 or warehouse_action.type_of_work.id == 3:
-            raise serializers.ValidationError('Эта операция ну доступна для операций типа Отгрузка и Палетирование')
+            raise serializers.ValidationError('Эта операция не доступна для операций типа Отгрузка и Палетирование')
 
         # получаем или создаем warehouse product
         product = Products.objects.filter(
@@ -96,6 +96,11 @@ class WarehouseDoBarcodeSerializer(serializers.ModelSerializer):
 
             if warehouse_ttn.is_close:
                 raise serializers.ValidationError('ТТН уже закрыто')
+
+            if warehouse_action.type_of_work == 4:
+                product.is_shipment = False
+                product.available_quantity += quantity
+                product.save()
 
             warehouse_do = WarehouseDo.objects.create(
                 product=product,
