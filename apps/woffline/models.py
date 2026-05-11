@@ -52,7 +52,7 @@ class OfflineWarehouseTTN(models.Model):
     ttn_number = models.CharField(max_length=50, primary_key=True)
     is_close = models.BooleanField(default=False)
     is_offline = models.BooleanField(default=True)
-    date = models. DateField(null=True, blank=True)
+    date = models.DateField(null=True, blank=True)
     warehouse = models.ForeignKey(OfflineWarehouse, on_delete=models.CASCADE)
     warehouse_action = models.ForeignKey(OfflineWarehouseAction, on_delete=models.CASCADE)
     onec_ttn = models.ForeignKey(OfflineOneCTTN, on_delete=models.CASCADE, null=True, blank=True)
