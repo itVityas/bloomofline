@@ -289,6 +289,33 @@ class OfflineWarehouseDoBarcodeAPIView(CreateAPIView):
 @extend_schema(tags=["Offline WarehouseDo"])
 @extend_schema_view(
     post=extend_schema(
+        summary='Create a WarehouseDo by product barcode, only Offline',
+        description='''Permission: admin, warehouse, warehouse_writer
+        product barcode and add it to warhouse_ttn, if not warehouse_ttn create it
+        not for shipment and palleting operations ''',
+    ),
+)
+class OnlyOfflineWarehouseDoBarcodeAPIView(CreateAPIView):
+    queryset = OfflineWarehouseDo.objects.all()
+    serializer_class = OfflineWarehouseDoBarcodeSerializer
+    permission_classes = [IsAuthenticated, WarehousePermission]
+
+    def post(self, request):
+        try:
+            request.data['user'] = request.user.id
+            serializer = self.serializer_class(data=request.data, context={'request': request})
+            if serializer.is_valid():
+                do = serializer.save()
+                return Response(OfflineWarehouseDoGetSerializer(do).data, status=201)
+            return Response(serializer.errors, status=400)
+        except Exception as e:
+            global_state.set()
+            return Response({'error': str(e)}, status=400)
+
+
+@extend_schema(tags=["Offline WarehouseDo"])
+@extend_schema_view(
+    post=extend_schema(
         summary='Create a WarehouseDo by product barcode for palleting',
         description='''Permission: admin, warehouse, warehouse_writer
         product barcode and add it to warhouse_ttn, if not warehouse_ttn create it
@@ -315,6 +342,33 @@ class OfflineWarehouseDoPalletAPIView(CreateAPIView):
                     do = serializer.save()
                     return Response(OfflineWarehouseDoGetSerializer(do).data, status=201)
                 return Response(serializer.errors, status=400)
+        except Exception as e:
+            global_state.set()
+            return Response({'error': str(e)}, status=400)
+
+
+@extend_schema(tags=["Offline WarehouseDo"])
+@extend_schema_view(
+    post=extend_schema(
+        summary='Create a WarehouseDo by product barcode for palleting, only Offline',
+        description='''Permission: admin, warehouse, warehouse_writer
+        product barcode and add it to warhouse_ttn, if not warehouse_ttn create it
+        only for palleting operations ''',
+    ),
+)
+class OnlyOfflineWarehouseDoPalletAPIView(CreateAPIView):
+    queryset = OfflineWarehouseDo.objects.all()
+    serializer_class = OfflineWarehouseDoPalletSerializer
+    permission_classes = [IsAuthenticated, WarehousePermission]
+
+    def post(self, request):
+        try:
+            request.data['user'] = request.user.id
+            serializer = self.serializer_class(data=request.data, context={'request': request})
+            if serializer.is_valid():
+                do = serializer.save()
+                return Response(OfflineWarehouseDoGetSerializer(do).data, status=201)
+            return Response(serializer.errors, status=400)
         except Exception as e:
             global_state.set()
             return Response({'error': str(e)}, status=400)
@@ -357,6 +411,33 @@ class OfflineWarehouseDoShipmentAPIView(CreateAPIView):
 @extend_schema(tags=["Offline WarehouseDo"])
 @extend_schema_view(
     post=extend_schema(
+        summary='Create a WarehouseDo by product barcode for shipment, only Offline',
+        description='''Permission: admin, warehouse, warehouse_writer
+        product barcode and add it to warhouse_ttn, if not warehouse_ttn create it
+        only for shipment operations ''',
+    ),
+)
+class OnlyOfflineWarehouseDoShipmentAPIView(CreateAPIView):
+    queryset = OfflineWarehouseDo.objects.all()
+    serializer_class = OfflineWarehouseDoShipmentSerializer
+    permission_classes = [IsAuthenticated, WarehousePermission]
+
+    def post(self, request):
+        try:
+            request.data['user'] = request.user.id
+            serializer = self.serializer_class(data=request.data, context={'request': request})
+            if serializer.is_valid():
+                do = serializer.save()
+                return Response(OfflineWarehouseDoGetSerializer(do).data, status=201)
+            return Response(serializer.errors, status=400)
+        except Exception as e:
+            global_state.set()
+            return Response({'error': str(e)}, status=400)
+
+
+@extend_schema(tags=["Offline WarehouseDo"])
+@extend_schema_view(
+    post=extend_schema(
         summary='Delete product from shipment ttn',
         description='''Permission: admin, warehouse, warehouse_writer
         check barcode in warehouse ttn filtered by onec number and series,
@@ -386,4 +467,30 @@ class OfflineWarehouseDoShipmentDeleteAPIView(CreateAPIView):
                 return Response(serializer.errors, status=400)
         except Exception as e:
             global_state.set()
+            return Response({'error': str(e)}, status=400)
+
+
+@extend_schema(tags=["Offline WarehouseDo"])
+@extend_schema_view(
+    post=extend_schema(
+        summary='Delete product from shipment ttn, Only offline',
+        description='''Permission: admin, warehouse, warehouse_writer
+        check barcode in warehouse ttn filtered by onec number and series,
+        if warehouse ttn exist, set it to is_deleted and add this barcode to new ttn''',
+    ),
+)
+class OnlyOfflineWarehouseDoShipmentDeleteAPIView(CreateAPIView):
+    queryset = OfflineWarehouseDo.objects.all()
+    serializer_class = OfflineWarehouseDoShipmentDeleteSerializer
+    permission_classes = [IsAuthenticated, WarehousePermission]
+
+    def post(self, request):
+        try:
+            serializer = self.serializer_class(data=request.data, context={'request': request})
+            if serializer.is_valid():
+                warehouse_do = serializer.save()
+                serializer = OfflineWarehouseDoGetSerializer(warehouse_do)
+                return Response(serializer.data, status=201)
+            return Response(serializer.errors, status=400)
+        except Exception as e:
             return Response({'error': str(e)}, status=400)

@@ -21,6 +21,7 @@ from apps.woffline.views.warehouse_ttn import (
     OfflineWarehouseTTNProductsByUserIdAPIView,
     OfflineWarehouseTTNRetrieveUpdateDestroyAPIView,
     OfflineWarehouseTTNByOneCProductsAPIView,
+    OnlyOfflineWarehouseTTNRetrieveUpdateDestroyAPIView,
 )
 from apps.woffline.views.warehouse_do import (
     OfflineWarehouseDoBarcodeAPIView,
@@ -30,6 +31,10 @@ from apps.woffline.views.warehouse_do import (
     OfflineWarehouseDoPalletAPIView,
     OfflineWarehouseDoShipmentAPIView,
     OfflineWarehouseDoShipmentDeleteAPIView,
+    OnlyOfflineWarehouseDoShipmentDeleteAPIView,
+    OnlyOfflineWarehouseDoShipmentAPIView,
+    OnlyOfflineWarehouseDoPalletAPIView,
+    OnlyOfflineWarehouseDoBarcodeAPIView,
 )
 
 urlpatterns = [
@@ -53,6 +58,8 @@ urlpatterns = [
     path('warehouse/ttn/products/<str:ttn_number>/', OfflineWarehouseTTNProductsAPIView.as_view()),
     path('warehouse/ttn/product/user/', OfflineWarehouseTTNProductsByUserIdAPIView.as_view()),
     path('warehouse/ttn/products_by_onec/', OfflineWarehouseTTNByOneCProductsAPIView.as_view()),
+    path('warehouse/ttn/offline_update/<str:ttn_number>/',
+         OnlyOfflineWarehouseTTNRetrieveUpdateDestroyAPIView.as_view()),
     path('warehouse/do/', OfflineWarehouseDoListAPIView.as_view()),
     path('warehouse/do/retrieve/<int:pk>/', OfflineWarehouseDoRetrieveAPIView.as_view()),
     path('warehouse/do/update/<int:pk>/', OfflineWarehouseDoRetrieveUpdateDestroyAPIView.as_view()),
@@ -60,4 +67,8 @@ urlpatterns = [
     path('warehouse/do/pallet/', OfflineWarehouseDoPalletAPIView.as_view()),
     path('warehouse/do/shipment/', OfflineWarehouseDoShipmentAPIView.as_view()),
     path('warehouse/do/shipment/delete_barcode/', OfflineWarehouseDoShipmentDeleteAPIView.as_view()),
+    path('warehouse/do/shipment/offline_delete_barcode/', OnlyOfflineWarehouseDoShipmentDeleteAPIView.as_view()),
+    path('warehouse/do/offline_shipment/', OnlyOfflineWarehouseDoShipmentAPIView.as_view()),
+    path('warehouse/do/offline_pallet/', OnlyOfflineWarehouseDoPalletAPIView.as_view()),
+    path('warehousedo/offline_barcode/', OnlyOfflineWarehouseDoBarcodeAPIView.as_view()),
 ]
