@@ -224,6 +224,95 @@ class OfflineWarehouseDoRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIVie
 @extend_schema(tags=["Offline WarehouseDo"])
 @extend_schema_view(
     get=extend_schema(
+        summary='Get a WarehouseDo, only Offline',
+        description='Permission: admin, warehouse, warehouse_writer',
+    ),
+    patch=extend_schema(
+        summary='Update a WarehouseDo, only Offline',
+        description='Permission: admin warehouse_writer',
+    ),
+    put=extend_schema(
+        summary='Update a WarehouseDo, only Offline',
+        description='Permission: admin warehouse_writer',
+    ),
+    delete=extend_schema(
+        summary='Delete a WarehouseDo, only Offline',
+        description='Permission: admin warehouse_writer',
+    ),
+)
+class OnlyOfflineWarehouseDoRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
+    queryset = OfflineWarehouseDo.objects.all()
+    serializer_class = OfflineWarehouseDoPostSerializer
+    permission_classes = [IsAuthenticated, WarehousePermission]
+
+    def get(self, request, pk):
+        try:
+            serializer = self.serializer_class
+            query = self.queryset.filter(pk=pk).first()
+            if not query:
+                return Response({'error': 'not found'}, status=404)
+            return Response(serializer(query, many=False).data)
+        except Exception as e:
+            global_state.set()
+            return Response({'error': str(e)}, status=400)
+
+    def put(self, request, pk):
+        try:
+            request.data['user'] = request.user.id
+            query = self.queryset.filter(pk=pk).first()
+            if not query:
+                return Response({'error': 'not found'}, status=404)
+            serializer = self.serializer_class(query, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=400)
+        except Exception as e:
+            global_state.set()
+            return Response({'error': str(e)}, status=400)
+
+    def patch(self, request, pk):
+        try:
+            request.data['user'] = request.user.id
+            query = self.queryset.filter(pk=pk).first()
+            if not query:
+                return Response({'error': 'not found'}, status=404)
+            serializer = self.serializer_class(query, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=400)
+        except Exception as e:
+            global_state.set()
+            return Response({'error': str(e)}, status=400)
+
+    def delete(self, request, pk):
+        try:
+            query = self.queryset.filter(pk=pk).first()
+            if query:
+                if query.warehouse_ttn.warehouse_action_id == 3:
+                    onec_item = OfflineOneCTTNItem.objects.filter(
+                        onec_ttn=query.warehouse_ttn.onec_ttn, model_name=query.product.model.name).first()
+                    onec_item.available_quantity += query.quantity
+                    if onec_item.available_quantity > onec_item.count:
+                        onec_item.available_quantity = onec_item.count
+                    query.product.is_shipment = False
+                    query.product.available_quantity += query.quantity
+                    if query.product.available_quantity > query.product.quantity:
+                        query.product.available_quantity = query.product.quantity
+                    query.product.save()
+                    onec_item.save()
+                query.delete()
+                return Response({'message': 'deleted'}, status=204)
+            return Response({'error': 'not found'}, status=404)
+        except Exception as e:
+            global_state.set()
+            return Response({'error': str(e)}, status=400)
+
+
+@extend_schema(tags=["Offline WarehouseDo"])
+@extend_schema_view(
+    get=extend_schema(
         summary='Get a WarehouseDo',
         description='Permission: admin, warehouse, warehouse_writer',
     ),
