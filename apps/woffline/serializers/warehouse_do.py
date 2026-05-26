@@ -82,7 +82,7 @@ class OfflineWarehouseDoBarcodeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Товаров 0 и не action 9 action 10 type_of_work 4')
 
         # Проверка на две одинаковые операции на складе с одним и тем же штрихкодом
-        last_ttn = OfflineWarehouseTTN.objects.filter(warehousedo__product=product).order_by('-date').first()
+        last_ttn = OfflineWarehouseTTN.objects.filter(offlinewarehousedo__product=product).order_by('-date').first()
         if last_ttn.warehouse_action == warehouse_action and last_ttn.warehouse_id == warehouse_id:
             raise serializers.ValidationError('Вы не можете добавить один и тот же штрихкод дважды подряд')
 
