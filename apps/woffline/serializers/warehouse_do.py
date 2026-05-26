@@ -339,8 +339,8 @@ class OfflineWarehouseDoShipmentDeleteSerializer(serializers.ModelSerializer):
         warehouse_ttn = OfflineWarehouseTTN.objects.filter(
             onec_ttn__number=onec_number, onec_ttn__series=onec_series).first()
         if not warehouse_ttn:
-            raise serializers.ValidationError('ТТН не найдена')
-        onec_ttn = warehouse_ttn[0].onec_ttn
+            raise serializers.ValidationError('Warehouse ТТН не найдена')
+        onec_ttn = warehouse_ttn.onec_ttn
 
         warehouse_do = OfflineWarehouseDo.objects.filter(
             warehouse_ttn=warehouse_ttn,
