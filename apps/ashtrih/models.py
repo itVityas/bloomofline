@@ -57,8 +57,8 @@ class OfflineProducts(models.Model):
     type_of_work_id = models.IntegerField()
     work_date = models.DateField()
     module_id = models.IntegerField()
-    color_code = models.CharField(max_length=4)
-    russian_title = models.CharField(max_length=50)
+    color_code = models.CharField(max_length=4, null=True, blank=True)
+    russian_title = models.CharField(max_length=50, null=True, blank=True)
 
     class Meta:
         ordering = ['-id']

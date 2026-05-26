@@ -10,6 +10,7 @@ from apps.shtrih.models import (
     Models,
     Products,
     Protocols,
+    Colors
 )
 from apps.ashtrih.models import (
     OfflineModels as AshtrihModels,
@@ -109,34 +110,37 @@ class ShtrihFullSync:
             latest_module_id = Subquery(
                 latest_protocol.values('workplace__module_id')[:1]
             )
-            products = Products.objects.select_related('model', 'color_id').all().annotate(
+            color_subquery = Colors.objects.filter(id=OuterRef('color_id'))
+            products = Products.objects.annotate(
                 work_date=latest_work_date,
                 type_of_work_id=latest_type_of_work_id,
-                module_id=latest_module_id
+                module_id=latest_module_id,
+                color_code=Subquery(color_subquery.values('color_code')[:1]),
+                russian_title=Subquery(color_subquery.values('russian_title')[:1])
             ).order_by('id').values(
                 'id', 'model_id', 'barcode', 'state', 'quantity', 'available_quantity', 'is_shipment',
-                'work_date', 'type_of_work_id', 'module_id', 'color_id__color_code', 'color_id__russian_title')
-            list_products = []
-            for i in products.iterator(chunk_size=self.batch_size):
-                list_products.append(AshtrihProducts(
-                    id=i['id'],
-                    model_id=i['model_id'],
-                    barcode=i['barcode'],
-                    state=i['state'],
-                    quantity=i['quantity'],
-                    available_quantity=i['available_quantity'],
-                    is_shipment=i['is_shipment'],
-                    work_date=i['work_date'],
-                    type_of_work_id=i['type_of_work_id'],
-                    module_id=i['module_id'],
-                    color_code=i['color_id__color_code'],
-                    russian_title=i['color_id__russian_title'],
-                ))
-                if len(list_products) >= self.batch_size:
-                    AshtrihProducts.objects.bulk_create(list_products)
-                    list_products.clear()
-            if list_products:
-                AshtrihProducts.objects.bulk_create(list_products)
+                'work_date', 'type_of_work_id', 'module_id', 'color_code', 'russian_title')
+            ashtrih_generator = (
+                AshtrihProducts(
+                    id=row['id'],
+                    model_id=row['model_id'],
+                    barcode=row['barcode'],
+                    state=row['state'],
+                    quantity=row['quantity'],
+                    available_quantity=row['available_quantity'],
+                    is_shipment=row['is_shipment'],
+                    work_date=row['work_date'],
+                    type_of_work_id=row['type_of_work_id'],
+                    module_id=row['module_id'],
+                    color_code=row['color_code'],
+                    russian_title=row['russian_title'],
+                )
+                for row in products.iterator(chunk_size=self.batch_size)
+            )
+            AshtrihProducts.objects.bulk_create(
+                ashtrih_generator,
+                batch_size=self.batch_size
+            )
             time_stop = time.time()
             return time_stop - time_start
         except Exception as e:
