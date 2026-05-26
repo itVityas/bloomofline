@@ -73,6 +73,7 @@ class ShtrihFullSync:
             list_models = []
             for i in models.iterator(chunk_size=self.batch_size):
                 list_models.append(AshtrihModels(
+                    id=i['id'],
                     code=i['code'],
                     name_id=i['name_id'],
                     diagonal=i['diagonal'],
