@@ -275,14 +275,17 @@ class ShtrihSync:
             latest_module_id = Subquery(
                 latest_protocol.values('workplace__module_id')[:1]
             )
-            products = Products.objects.select_related('model', 'color_id').filter(
+            color_subquery = Colors.objects.filter(id=OuterRef('color_id'))
+            products = Products.objects.filter(
                 id__gt=last_product.id if last_product else 0).annotate(
                 work_date=latest_work_date,
                 type_of_work_id=latest_type_of_work_id,
-                module_id=latest_module_id
+                module_id=latest_module_id,
+                color_code=Subquery(color_subquery.values('color_code')[:1]),
+                russian_title=Subquery(color_subquery.values('russian_title')[:1])
             ).order_by('id').values(
                 'id', 'model_id', 'barcode', 'state', 'quantity', 'available_quantity', 'is_shipment',
-                'work_date', 'type_of_work_id', 'module_id', 'color_id__color_code', 'color_id__russian_title')
+                'work_date', 'type_of_work_id', 'module_id', 'color_code', 'russian_title')
             list_products = []
             existing_ids = set(AshtrihProducts.objects.values_list('id', flat=True))
             list_products = []
