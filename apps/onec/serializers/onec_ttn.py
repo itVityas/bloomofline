@@ -34,6 +34,7 @@ class OneCTTNFullSerializer(serializers.ModelSerializer):
             'series',
             'items',
             'shipment_date',
+            'is_bel_receiver',
         ]
 
     def create(self, validated_data):

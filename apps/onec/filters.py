@@ -13,6 +13,7 @@ class OneCTTNFilter(filters.FilterSet):
     start_series = filters.CharFilter(field_name='series', lookup_expr='istartswith')
     end_series = filters.CharFilter(field_name='series', lookup_expr='iendswith')
     cont_series = filters.CharFilter(field_name='series', lookup_expr='icontains')
+    is_bel_receiver = filters.BooleanFilter(field_name='is_bel_receiver', lookup_expr='exact')
 
     ordering = filters.OrderingFilter(
         fields=(
@@ -34,4 +35,5 @@ class OneCTTNFilter(filters.FilterSet):
             'start_series',
             'end_series',
             'cont_series',
+            'is_bel_receiver',
         )

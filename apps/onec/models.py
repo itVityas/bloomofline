@@ -7,6 +7,7 @@ class OneCTTN(models.Model):
     number = models.CharField(max_length=50)
     series = models.CharField(max_length=50, blank=True, null=True)
     shipment_date = models.DateField(blank=True, null=True)
+    is_bel_receiver = models.BooleanField(null=True, blank=True)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 

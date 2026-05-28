@@ -37,7 +37,7 @@ class OneCFullSync:
             start_time = time.time()
             offline_OneCTTN.objects.all().delete()
             onec_ttn = OneCTTN.objects.all().order_by('id').values(
-                'id', 'number', 'series', 'create_at', 'update_at', 'shipment_date')
+                'id', 'number', 'series', 'create_at', 'update_at', 'shipment_date', 'is_bel_receiver')
             list_ttn = []
             for i in onec_ttn.iterator(chunk_size=self.batch_size):
                 list_ttn.append(offline_OneCTTN(
@@ -47,6 +47,7 @@ class OneCFullSync:
                     shipment_date=i['shipment_date'],
                     create_at=i['create_at'],
                     update_at=i['update_at'],
+                    is_bel_receiver=i['is_bel_receiver']
                 ))
                 if len(list_ttn) >= self.batch_size:
                     offline_OneCTTN.objects.bulk_create(list_ttn)
@@ -110,7 +111,7 @@ class OneCSync:
         try:
             start_time = time.time()
             onec_tnn = OneCTTN.objects.filter(update_at__gt=self.sync_date.last_sync).values(
-                'id', 'number', 'series', 'create_at', 'update_at', 'shipment_date')
+                'id', 'number', 'series', 'create_at', 'update_at', 'shipment_date', 'is_bel_receiver')
             existing_ids = set(offline_OneCTTN.objects.values_list('id', flat=True))
             list_ttn = []
             list_update = []
@@ -127,6 +128,7 @@ class OneCSync:
                         shipment_date=i['shipment_date'],
                         create_at=i['create_at'],
                         update_at=i['update_at'],
+                        is_bel_receiver=i['is_bel_receiver']
                     ))
                 if buf >= self.batch_size:
                     offline_OneCTTN.objects.bulk_create(list_ttn)
