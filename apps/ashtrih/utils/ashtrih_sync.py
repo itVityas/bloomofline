@@ -102,7 +102,7 @@ class ShtrihFullSync:
             AshtrihProducts.objects.all().delete()
             latest_protocol = Protocols.objects.filter(
                 product_id=OuterRef('id')
-            ).order_by('-work_date')
+            ).order_by('-id')
             latest_work_date = Subquery(latest_protocol.values('work_date')[:1])
             latest_type_of_work_id = Subquery(
                 latest_protocol.values('workplace__type_of_work_id')[:1]

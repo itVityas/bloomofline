@@ -131,9 +131,9 @@ class WarehouseDo(models.Model):
 
 
 class NotPackaging(models.Model):
-    product = models.ForeignKey(Products, on_delete=models.PROTECT, db_constraint=False)
-    warehouse = models.ForeignKey(Warehouse, on_delete=models.PROTECT)
-    bloom_user = models.ForeignKey(User, on_delete=models.PROTECT)
+    product = models.ForeignKey(Products, on_delete=models.CASCADE, db_constraint=False)
+    warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE)
+    bloom_user = models.ForeignKey(User, on_delete=models.CASCADE)
     found_date = models.DateTimeField(auto_now_add=True)
     solve_date = models.DateTimeField(blank=True, null=True)
     is_solved = models.BooleanField(default=False)

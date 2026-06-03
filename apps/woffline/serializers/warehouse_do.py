@@ -6,6 +6,7 @@ from apps.woffline.models import (
     OfflineWarehouseTTN,
     OfflineWarehouseAction,
     OfflinePallet,
+    OfflineNotPackaging,
 )
 from apps.aonec.models import OfflineOneCTTN, OfflineOneCTTNItem
 from apps.ashtrih.models import OfflineProducts
@@ -77,8 +78,19 @@ class OfflineWarehouseDoBarcodeSerializer(serializers.ModelSerializer):
         ).first()
         if not product:
             raise serializers.ValidationError('Продукт не найден')
-    
-        if product.available_quantity <=0 and not (warehouse_action.type_of_work.id == 4 or warehouse_action == 9 or warehouse_action == 10):
+        if product.type_of_work_id != 3:
+            OfflineNotPackaging.objects.create(
+                product=product,
+                warehouse_id=warehouse_id,
+                bloom_user_id=user.id,
+                found_date=date,
+                is_solved=False,
+                is_offline=False,
+                solve_date=None
+            )
+            raise serializers.ValidationError('Товар не прошел Упаковку')
+
+        if product.available_quantity <= 0 and not (warehouse_action.type_of_work.id == 4 or warehouse_action == 9 or warehouse_action == 10):
             raise serializers.ValidationError('Товаров 0 и не action 9 action 10 type_of_work 4')
 
         # Проверка на две одинаковые операции на складе с одним и тем же штрихкодом
@@ -170,8 +182,19 @@ class OfflineWarehouseDoPalletSerializer(serializers.ModelSerializer):
                 raise WrongModel()
         else:
             raise serializers.ValidationError('Продукт не найден')
+        if product.type_of_work_id != 3:
+            OfflineNotPackaging.objects.create(
+                product=product,
+                warehouse_id=warehouse_id,
+                bloom_user_id=user.id,
+                found_date=date,
+                is_solved=False,
+                is_offline=False,
+                solve_date=None
+            )
+            raise serializers.ValidationError('Товар не прошел Упаковку')
 
-        if product.available_quantity <=0 and not (warehouse_action.type_of_work.id == 4 or warehouse_action == 9 or warehouse_action == 10):
+        if product.available_quantity <= 0 and not (warehouse_action.type_of_work.id == 4 or warehouse_action == 9 or warehouse_action == 10):
             raise serializers.ValidationError('Товаров 0 и не action 9 action 10 type_of_work 4')
 
         with transaction.atomic():

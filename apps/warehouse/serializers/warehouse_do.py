@@ -6,9 +6,10 @@ from apps.warehouse.models import (
     WarehouseTTN,
     WarehouseAction,
     Pallet,
+    NotPackaging,
 )
 from apps.onec.models import OneCTTN, OneCTTNItem
-from apps.shtrih.models import Products
+from apps.shtrih.models import Products, Workplaces
 from apps.shtrih.serializers.products import ProductGetSerializer
 from apps.warehouse.serializers.warehouse_ttn import WarehouseTTNGetSerializer
 from apps.warehouse.exceptions.barcode import WrongModel
@@ -77,8 +78,19 @@ class WarehouseDoBarcodeSerializer(serializers.ModelSerializer):
         ).first()
         if not product:
             raise serializers.ValidationError('Продукт не найден')
+        last_workplace = Workplaces.objects.filter(protocols__product=product).order_by('-id').first()
+        if last_workplace and last_workplace.type_of_work.id != 3:
+            NotPackaging.objects.create(
+                product=product,
+                warehouse_id=warehouse_id,
+                bloom_user_id=user.id,
+                found_date=date,
+                is_solved=False,
+                solve_date=None
+            )
+            raise serializers.ValidationError('Товар не прошел отгрузку')
 
-        if product.available_quantity <=0 and not (warehouse_action.type_of_work.id == 4 or warehouse_action == 9 or warehouse_action == 10):
+        if product.available_quantity <= 0 and not (warehouse_action.type_of_work.id == 4 or warehouse_action == 9 or warehouse_action == 10):
             raise serializers.ValidationError('Товаров 0 и не action 9 action 10 type_of_work 4')
 
         # Проверка на две одинаковые операции на складе с одним и тем же штрихкодом
@@ -170,6 +182,17 @@ class WarehouseDoPalletSerializer(serializers.ModelSerializer):
                 raise WrongModel()
         else:
             raise serializers.ValidationError('Продукт не найден')
+        last_workplace = Workplaces.objects.filter(protocols__product=product).order_by('-id').first()
+        if last_workplace and last_workplace.type_of_work.id != 3:
+            NotPackaging.objects.create(
+                product=product,
+                warehouse_id=warehouse_id,
+                bloom_user_id=user.id,
+                found_date=date,
+                is_solved=False,
+                solve_date=None
+            )
+            raise serializers.ValidationError('Товар не прошел отгрузку')
 
         if product.available_quantity <=0 and not (warehouse_action.type_of_work.id == 4 or warehouse_action == 9 or warehouse_action == 10):
             raise serializers.ValidationError('Товаров 0 и не action 9 action 10 type_of_work 4')
