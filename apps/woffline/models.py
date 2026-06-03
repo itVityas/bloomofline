@@ -137,6 +137,7 @@ class OfflineNotPackaging(models.Model):
     found_date = models.DateTimeField(auto_now_add=True)
     solve_date = models.DateTimeField(blank=True, null=True)
     is_solved = models.BooleanField(default=False)
+    is_offline = models.BooleanField(default=True)
 
     class Meta:
         app_label = "woffline"

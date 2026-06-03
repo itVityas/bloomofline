@@ -12,6 +12,7 @@ from apps.woffline.models import (
     OfflineWarehouseTTN,
     OfflinePallet,
     OfflineOldProduct,
+    OfflineNotPackaging,
 )
 from apps.warehouse.models import (
     TypeOfWork,
@@ -21,6 +22,7 @@ from apps.warehouse.models import (
     WarehouseTTN,
     OldProduct,
     WarehouseDo,
+    NotPackaging,
 )
 
 
@@ -83,6 +85,24 @@ def warehouse_do_upload():
     WarehouseDo.objects.bulk_create(warehouse_do_list)
 
 
+def not_packaging_upload():
+    not_packaging = OfflineNotPackaging.objects.filter(is_offline=True)
+    not_packaging_list = []
+    for i in not_packaging:
+        not_packaging_list.append(
+            NotPackaging(
+                product_id=i.product_id,
+                warehouse_id=i.warehouse_id,
+                bloom_user_id=i.bloom_user_id,
+                found_date=i.found_date,
+                solve_date=i.solve_date,
+                is_solved=i.is_solved,
+            )
+        )
+        i.delete()
+    NotPackaging.objects.bulk_create(not_packaging_list)
+
+
 class WarehouseFullSync:
     def __init__(self, sync_date: SyncDate, batch_size: int = 1000):
         self.sync_date = sync_date
@@ -99,6 +119,7 @@ class WarehouseFullSync:
                 OfflineWarehouse.objects.all().delete()
                 OfflineWarehouseAction.objects.all().delete()
                 OfflineTypeOfWork.objects.all().delete()
+                OfflineNotPackaging.objects.all().delete()
 
                 time_full['type_of_work'] = self.type_of_work_full_sync()
                 time_full['action'] = self.action_full_sync()
@@ -107,6 +128,7 @@ class WarehouseFullSync:
                 time_full['pallet'] = self.pallet_full_sync()
                 time_full['old_product'] = self.old_product_full_sync()
                 time_full['do'] = self.warehouse_do_full_sync()
+                time_full['not_packaging'] = self.NotPackaging_full_sync()
                 time_full['full'] = sum(time_full.values())
             return time_full
         except Exception as e:
@@ -298,6 +320,37 @@ class WarehouseFullSync:
             logger.error('warehouse_do_full_sync' + str(e))
             raise e
 
+    def NotPackaging_full_sync(self):
+        try:
+            start_time = time.time()
+            not_packaging_upload()
+            not_packaging_list = NotPackaging.objects.all().values(
+                'id', 'product_id', 'warehouse_id', 'bloom_user_id', 'found_date',
+                'solve_date', 'is_solved',
+            )
+            bulk_list = []
+            for i in not_packaging_list.iterator(chunk_size=self.batch_size):
+                bulk_list.append(OfflineNotPackaging(
+                    id=i['id'],
+                    product_id=i['product_id'],
+                    warehouse_id=i['warehouse_id'],
+                    bloom_user_id=i['bloom_user_id'],
+                    found_date=i['found_date'],
+                    solve_date=i['solve_date'],
+                    is_solved=i['is_solved'],
+                    is_offline=False,
+                ))
+                if len(bulk_list) >= self.batch_size:
+                    OfflineNotPackaging.objects.bulk_create(bulk_list)
+                    bulk_list.clear()
+            if bulk_list:
+                OfflineNotPackaging.objects.bulk_create(bulk_list)
+            end_time = time.time()
+            return end_time - start_time
+        except Exception as e:
+            logger.error('NotPackaging_full_sync' + str(e))
+            raise e
+
 
 class WarehouseSync:
     def __init__(self, sync_date: SyncDate, batch_size: int = 10000):
@@ -314,6 +367,7 @@ class WarehouseSync:
             time_sync['pallet'] = self.pallet_sync()
             time_sync['old_product'] = self.old_product_sync()
             time_sync['do'] = self.warehouse_do_sync()
+            time_sync['not_packaging'] = self.not_packaging_sync()
             time_sync['full'] = sum(time_sync.values())
             return time_sync
         except Exception as e:
@@ -545,4 +599,32 @@ class WarehouseSync:
             return end_time - start_time
         except Exception as e:
             logger.error('warehouse_do_sync' + str(e))
+            raise e
+
+    def not_packaging_sync(self):
+        try:
+            start_time = time.time()
+            not_packaging_upload()
+            not_packaging_list = NotPackaging.objects.filter(
+                solve_date__gt=self.sync_date.last_sync
+            ).values(
+                'id', 'product_id', 'warehouse_id', 'bloom_user_id', 'found_date',
+                'solve_date', 'is_solved',
+            )
+            bulk_list = []
+            for i in not_packaging_list:
+                bulk_list.append(OfflineNotPackaging(
+                    id=i['id'],
+                    product_id=i['product_id'],
+                    warehouse_id=i['warehouse_id'],
+                    bloom_user_id=i['bloom_user_id'],
+                    found_date=i['found_date'],
+                    solve_date=i['solve_date'],
+                    is_solved=i['is_solved'],
+                ))
+            OfflineNotPackaging.objects.bulk_create(bulk_list)
+            end_time = time.time()
+            return end_time - start_time
+        except Exception as e:
+            logger.error('not_packaging_sync' + str(e))
             raise e
