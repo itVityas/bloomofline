@@ -549,3 +549,41 @@ class OfflineWarehouseTTNProductsByUserIdAPIView(APIView):
         except Exception as e:
             global_state.set()
             return Response({'error': str(e)}, status=400)
+
+
+@extend_schema(tags=['Offline WarehouseTTN'])
+@extend_schema_view(
+    get=extend_schema(
+        summary='Get latest offline WarehouseTTN with products by user_id',
+        description='Permission: admin, warehouse, warehouse_writer',
+        parameters=[
+            OpenApiParameter(
+                name='user_id',
+                description='User ID',
+                required=True,
+                type=int
+            )
+        ],
+        responses={
+            200: OfflineWarehouseTTNGetSerializer,
+            400: OpenApiResponse(description='WarehouseTTN not found')
+        },
+    ),
+)
+class OnlyOfflineWarehouseTTNProductsByUserIdAPIView(APIView):
+    permission_classes = [IsAuthenticated, WarehousePermission]
+    serializer_class = OfflineWarehouseTTNProductSerializer
+
+    def get(self, request):
+        try:
+            user_id = request.query_params.get('user_id')
+            if not user_id:
+                return Response(
+                    {'error': 'user_id is required'},
+                    status=status.HTTP_400_BAD_REQUEST
+                    )
+            serializer = self.serializer_class
+            query = OfflineWarehouseTTN.objects.filter(user_id=user_id).order_by('-create_at').first()
+            return Response(serializer(query, many=False).data)
+        except Exception as e:
+            return Response({'error': str(e)}, status=400)
