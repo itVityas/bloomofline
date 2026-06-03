@@ -128,3 +128,20 @@ class WarehouseDo(models.Model):
 
     def __str__(self):
         return f'{self.id}'
+
+
+class NotPackaging(models.Model):
+    product = models.ForeignKey(Products, on_delete=models.PROTECT, db_constraint=False)
+    warehouse = models.ForeignKey(Warehouse, on_delete=models.PROTECT)
+    bloom_user = models.ForeignKey(User, on_delete=models.PROTECT)
+    found_date = models.DateTimeField(auto_now_add=True)
+    solve_date = models.DateTimeField(blank=True, null=True)
+    is_solved = models.BooleanField(default=False)
+
+    class Meta:
+        managed = False
+        app_label = "warehouse"
+        ordering = ['-id']
+
+    def __str__(self):
+        return f'{self.id}'

@@ -128,3 +128,19 @@ class OfflineWarehouseDo(models.Model):
 
     def __str__(self):
         return f'{self.id}'
+
+
+class OfflineNotPackaging(models.Model):
+    product = models.ForeignKey(OfflineProducts, on_delete=models.PROTECT, db_constraint=False)
+    warehouse = models.ForeignKey(OfflineWarehouse, on_delete=models.PROTECT)
+    bloom_user = models.ForeignKey(OfflineUser, on_delete=models.PROTECT)
+    found_date = models.DateTimeField(auto_now_add=True)
+    solve_date = models.DateTimeField(blank=True, null=True)
+    is_solved = models.BooleanField(default=False)
+
+    class Meta:
+        app_label = "woffline"
+        ordering = ['-id']
+
+    def __str__(self):
+        return f'{self.id}'
