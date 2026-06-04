@@ -23,7 +23,7 @@ class OfflineStorageLimits(models.Model):
 
     class Meta:
         ordering = ['-id']
-        app_label = "sgp"
+        app_label = "osgp"
 
     def __str__(self):
         return f"StorageLimit #{self.id} (Code: {self.production_code})"
@@ -52,7 +52,7 @@ class OfflineShipmentBans(models.Model):
     message = models.CharField(max_length=50, blank=True, null=True)
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
-    production_code = models.IntegerField()
+    production_code = models.IntegerField(null=True, blank=True)
     model_name_id = models.ForeignKey(
         OfflineModelNames,
         on_delete=models.SET_NULL,
@@ -60,7 +60,7 @@ class OfflineShipmentBans(models.Model):
         db_constraint=False)
     barcode = models.CharField(max_length=18, blank=True, null=True)
     color_code = models.CharField(max_length=4, null=True, blank=True)
-    module_id = models.IntegerField()
+    module_id = models.IntegerField(null=True, blank=True)
     shift = models.CharField(max_length=3, blank=True, null=True)
     assembly_date_from = models.DateField(blank=True, null=True)
     assembly_date_to = models.DateField(blank=True, null=True)
@@ -73,7 +73,7 @@ class OfflineShipmentBans(models.Model):
 
     class Meta:
         ordering = ['-id']
-        app_label = "sgp"
+        app_label = "osgp"
 
     def __str__(self):
         return f"ShipmentBan #{self.id} ({self.order_number})"

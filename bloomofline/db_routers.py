@@ -17,7 +17,9 @@ class ModelDatabaseRouter:
         "sync": 'default',
         'aoffline': 'default',
         'aonec': 'default',
-        'ashtrih': 'default'
+        'ashtrih': 'default',
+        'osgp': 'default',
+        'sgp': 'bloom'
         }
 
     def check_mssql_connection(self):

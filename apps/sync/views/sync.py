@@ -7,6 +7,7 @@ from apps.aoffline.utils.aoffline_sync import AccountFullSynchronization, Accoun
 from apps.aonec.utils.aonec_sync import OneCFullSync, OneCSync
 from apps.ashtrih.utils.ashtrih_sync import ShtrihFullSync, ShtrihSync
 from apps.woffline.utils.woffline_sync import WarehouseFullSync, WarehouseSync
+from apps.osgp.utils.osgp_sync import SGPFullSync, SGPSync
 from apps.sync.models import SyncDate
 from bloomofline.db_routers import ModelDatabaseRouter
 
@@ -36,14 +37,17 @@ class FullSyncAllView(APIView):
             time_shtrih = ShtrihFullSync(sync_date=sync_date).full_sync()
             time_ttn = OneCFullSync(sync_date=sync_date).full_sync()
             time_warehouse = WarehouseFullSync(sync_date=sync_date).full_sync()
+            time_sgp = SGPFullSync(sync_date=sync_date).full_sync()
             full_time = time_account.get('full', 0) + time_shtrih.get('full', 0) \
-                + time_ttn.get('full', 0) + time_warehouse.get('full', 0)
+                + time_ttn.get('full', 0) + time_warehouse.get('full', 0) \
+                + time_sgp.get('full', 0)
             SyncDate.objects.create()
             return Response({
                 'account': time_account,
                 'onec': time_ttn,
                 'shtrih': time_shtrih,
                 'warehouse': time_warehouse,
+                'sgp': time_sgp,
                 'full_time': full_time,
                 'status': 'ok'})
         except Exception as e:
@@ -75,14 +79,17 @@ class SyncAllView(APIView):
             time_shtrih = ShtrihSync(sync_date=sync_date).sync()
             time_ttn = OneCSync(sync_date=sync_date).sync()
             time_warehouse = WarehouseSync(sync_date=sync_date).sync()
-            full_time = time_account.get('full', 0) + time_shtrih.get('full', 0) +\
-                time_ttn.get('full', 0) + time_warehouse.get('full', 0)
+            time_sgp = SGPSync(sync_date=sync_date).sync()
+            full_time = time_account.get('full', 0) + time_shtrih.get('full', 0) \
+                + time_ttn.get('full', 0) + time_warehouse.get('full', 0) \
+                + time_sgp.get('full', 0)
             SyncDate.objects.create()
             return Response({
                 'account': time_account,
                 'onec': time_ttn,
                 'shtrih': time_shtrih,
                 'warehouse': time_warehouse,
+                'sgp': time_sgp,
                 'full_time': full_time,
                 'status': 'ok'})
         except Exception as e:
