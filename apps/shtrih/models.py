@@ -224,6 +224,7 @@ class Protocols(models.Model):
     product = models.ForeignKey(Products, on_delete=models.CASCADE, db_column='product_id')
     workplace = models.ForeignKey(Workplaces, on_delete=models.CASCADE, db_column='workplace_id')
     work_date = models.DateField(db_column='work_date')
+    shift = models.CharField(max_length=1, db_column='shift')
 
     class Meta:
         managed = False

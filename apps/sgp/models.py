@@ -75,8 +75,6 @@ class ShipmentBans(models.Model):
         blank=True, null=True,
         db_constraint=False)
     shift = models.CharField(max_length=3, blank=True, null=True)
-    assembly_date_from = models.DateField(blank=True, null=True)
-    assembly_date_to = models.DateField(blank=True, null=True)
     pakaging_date_from = models.DateField(blank=True, null=True)
     pakaging_date_to = models.DateField(blank=True, null=True)
     is_active = models.BooleanField(default=True)

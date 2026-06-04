@@ -1,5 +1,8 @@
+from datetime import date as datetype
+
 from rest_framework import serializers
 from django.db import transaction
+from django.db.models import Q
 
 from apps.woffline.models import (
     OfflineWarehouseDo,
@@ -10,6 +13,7 @@ from apps.woffline.models import (
 )
 from apps.aonec.models import OfflineOneCTTN, OfflineOneCTTNItem
 from apps.ashtrih.models import OfflineProducts
+from apps.osgp.models import OfflineShipmentBans
 from apps.ashtrih.serializers.products import OfflineProductGetSerializer
 from apps.woffline.serializers.warehouse_ttn import OfflineWarehouseTTNGetSerializer
 from apps.woffline.exceptions.barcode import WrongModel
@@ -290,6 +294,23 @@ class OfflineWarehouseDoShipmentSerializer(serializers.ModelSerializer):
         if onec_item.available_quantity < quantity:
             raise serializers.ValidationError('Недостаточно товара в 1C накладной')
         onec_item.available_quantity -= quantity
+
+        bans = OfflineShipmentBans.objects.filter(
+            Q(start_date=None) | Q(start_date__lt=datetype.now()),
+            Q(end_date=None) | Q(end_date__gt=datetype.now()),
+            Q(barcode=None) | Q(barcode=product.barcode),
+            Q(production_code=None) | Q(production_code=product.model.production_code),
+            Q(model_name_id=None) | Q(model_name_id=product.model.name),
+            Q(color_code=None) | Q(color_code=product.color_code),
+            Q(module_id=None) | Q(module_id=product.module_id),
+            Q(shift=None) | Q(shift=product.shift),
+            Q(pakaging_date_from=None) | Q(pakaging_date_from__lt=product.work_date),
+            Q(pakaging_date_to=None) | Q(pakaging_date_to__gt=product.work_date),
+            Q(apply_to_belarus=None) | Q(apply_to_belarus=onec_ttn.is_bel_receiver),
+            is_active=True,
+        )
+        if bans:
+            raise serializers.ValidationError('Товар в запрете на отгрузку: ', [i.order_number for i in bans])
 
         with transaction.atomic():
             # получает ttn

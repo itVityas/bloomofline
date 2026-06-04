@@ -49,7 +49,6 @@ class OfflineShipmentBans(models.Model):
     """
     order_number = models.CharField(max_length=10)
     order_date = models.DateField()
-    message = models.CharField(max_length=50, blank=True, null=True)
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
     production_code = models.IntegerField(null=True, blank=True)
@@ -62,8 +61,6 @@ class OfflineShipmentBans(models.Model):
     color_code = models.CharField(max_length=4, null=True, blank=True)
     module_id = models.IntegerField(null=True, blank=True)
     shift = models.CharField(max_length=3, blank=True, null=True)
-    assembly_date_from = models.DateField(blank=True, null=True)
-    assembly_date_to = models.DateField(blank=True, null=True)
     pakaging_date_from = models.DateField(blank=True, null=True)
     pakaging_date_to = models.DateField(blank=True, null=True)
     is_active = models.BooleanField(default=True)

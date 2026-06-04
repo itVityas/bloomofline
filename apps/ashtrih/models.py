@@ -60,6 +60,7 @@ class OfflineProducts(models.Model):
     module_id = models.IntegerField()
     color_code = models.CharField(max_length=4, null=True, blank=True)
     russian_title = models.CharField(max_length=50, null=True, blank=True)
+    shift = models.CharField(max_length=1, null=True, blank=True)
 
     class Meta:
         ordering = ['-id']

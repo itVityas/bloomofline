@@ -32,9 +32,9 @@ class SGPFullSync:
             start_time = time.time()
             OfflineShipmentBans.objects.all().delete()
             bans_items = ShipmentBans.objects.all().order_by('id').values(
-                'id', 'order_number', 'order_date', 'order_number', 'order_date', 'message',
+                'id', 'order_number', 'order_date', 'order_number', 'order_date',
                 'start_date', 'end_date', 'production_code_id_id', 'model_name_id_id', 'barcode',
-                'color_id__color_code', 'module_id_id', 'shift', 'assembly_date_from', 'assembly_date_to',
+                'color_id__color_code', 'module_id_id', 'shift',
                 'pakaging_date_from', 'pakaging_date_to', 'is_active', 'apply_to_belarus',
                 'created_at', 'updated_at')
             list_bans = []
@@ -43,7 +43,6 @@ class SGPFullSync:
                     id=i['id'],
                     order_number=i['order_number'],
                     order_date=i['order_date'],
-                    message=i['message'],
                     start_date=i['start_date'],
                     end_date=i['end_date'],
                     production_code=i['production_code_id_id'],
@@ -52,8 +51,6 @@ class SGPFullSync:
                     color_code=i['color_id__color_code'],
                     module_id=i['module_id_id'],
                     shift=i['shift'],
-                    assembly_date_from=i['assembly_date_from'],
-                    assembly_date_to=i['assembly_date_to'],
                     pakaging_date_from=i['pakaging_date_from'],
                     pakaging_date_to=i['pakaging_date_to'],
                     is_active=i['is_active'],
@@ -93,9 +90,9 @@ class SGPSync:
         try:
             start_time = time.time()
             bans = ShipmentBans.objects.filter(updated_at__gt=self.sync_date.last_sync).values(
-                'id', 'order_number', 'order_date', 'order_number', 'order_date', 'message',
+                'id', 'order_number', 'order_date', 'order_number', 'order_date',
                 'start_date', 'end_date', 'production_code_id_id', 'model_name_id_id', 'barcode',
-                'color_id__color_code', 'module_id_id', 'shift', 'assembly_date_from', 'assembly_date_to',
+                'color_id__color_code', 'module_id_id', 'shift',
                 'pakaging_date_from', 'pakaging_date_to', 'is_active', 'apply_to_belarus',
                 'created_at', 'updated_at')
             existing_ids = set(OfflineShipmentBans.objects.values_list('id', flat=True))
@@ -111,7 +108,6 @@ class SGPSync:
                         id=i['id'],
                         order_number=i['order_number'],
                         order_date=i['order_date'],
-                        message=i['message'],
                         start_date=i['start_date'],
                         end_date=i['end_date'],
                         production_code=i['production_code_id_id'],
@@ -120,8 +116,6 @@ class SGPSync:
                         color_code=i['color_id__color_code'],
                         module_id=i['module_id_id'],
                         shift=i['shift'],
-                        assembly_date_from=i['assembly_date_from'],
-                        assembly_date_to=i['assembly_date_to'],
                         pakaging_date_from=i['pakaging_date_from'],
                         pakaging_date_to=i['pakaging_date_to'],
                         is_active=i['is_active'],

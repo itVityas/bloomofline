@@ -105,6 +105,7 @@ class ShtrihFullSync:
                 product_id=OuterRef('id')
             ).order_by('-id')
             latest_work_date = Subquery(latest_protocol.values('work_date')[:1])
+            shift = Subquery(latest_protocol.values('shift')[:1])
             latest_type_of_work_id = Subquery(
                 latest_protocol.values('workplace__type_of_work_id')[:1]
             )
@@ -114,13 +115,14 @@ class ShtrihFullSync:
             color_subquery = Colors.objects.filter(id=OuterRef('color_id'))
             products = Products.objects.annotate(
                 work_date=latest_work_date,
+                shift=shift,
                 type_of_work_id=latest_type_of_work_id,
                 module_id=latest_module_id,
                 color_code=Subquery(color_subquery.values('color_code')[:1]),
                 russian_title=Subquery(color_subquery.values('russian_title')[:1])
             ).order_by('id').values(
                 'id', 'model_id', 'barcode', 'state', 'quantity', 'available_quantity', 'is_shipment',
-                'work_date', 'type_of_work_id', 'module_id', 'color_code', 'russian_title')
+                'work_date', 'type_of_work_id', 'module_id', 'color_code', 'russian_title', 'shift')
             ashtrih_generator = (
                 AshtrihProducts(
                     id=row['id'],
@@ -135,6 +137,7 @@ class ShtrihFullSync:
                     module_id=row['module_id'],
                     color_code=row['color_code'],
                     russian_title=row['russian_title'],
+                    shift=row['shift'],
                 )
                 for row in products.iterator(chunk_size=self.batch_size)
             )
@@ -269,8 +272,9 @@ class ShtrihSync:
             last_product = AshtrihProducts.objects.order_by('-id').first()
             latest_protocol = Protocols.objects.filter(
                 product_id=OuterRef('id')
-            ).order_by('-work_date')
+            ).order_by('-id')
             latest_work_date = Subquery(latest_protocol.values('work_date')[:1])
+            shift = Subquery(latest_protocol.values('shift')[:1])
             latest_type_of_work_id = Subquery(
                 latest_protocol.values('workplace__type_of_work_id')[:1]
             )
@@ -281,13 +285,14 @@ class ShtrihSync:
             products = Products.objects.filter(
                 id__gt=last_product.id if last_product else 0).annotate(
                 work_date=latest_work_date,
+                shift=shift,
                 type_of_work_id=latest_type_of_work_id,
                 module_id=latest_module_id,
                 color_code=Subquery(color_subquery.values('color_code')[:1]),
                 russian_title=Subquery(color_subquery.values('russian_title')[:1])
             ).order_by('id').values(
                 'id', 'model_id', 'barcode', 'state', 'quantity', 'available_quantity', 'is_shipment',
-                'work_date', 'type_of_work_id', 'module_id', 'color_code', 'russian_title')
+                'work_date', 'type_of_work_id', 'module_id', 'color_code', 'russian_title', 'shift')
             list_products = []
             existing_ids = set(AshtrihProducts.objects.values_list('id', flat=True))
             list_products = []
@@ -309,6 +314,7 @@ class ShtrihSync:
                         module_id=i['module_id'],
                         color_code=i['color_id__color_code'],
                         russian_title=i['color_id__russian_title'],
+                        shift=i['shift'],
                     ))
                 if len(list_products) >= self.batch_size:
                     AshtrihProducts.objects.bulk_create(list_products)
@@ -329,6 +335,7 @@ class ShtrihSync:
                         module_id=i['module_id'],
                         color_code=i['color_id__color_code'],
                         russian_title=i['color_id__russian_title'],
+                        shift=i['shift'],
                     )
             time_stop = time.time()
             return time_stop - time_start
