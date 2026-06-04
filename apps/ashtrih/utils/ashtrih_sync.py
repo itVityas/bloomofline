@@ -70,7 +70,7 @@ class ShtrihFullSync:
             models = Models.objects.select_related('name').all().order_by('id').values(
                 'id', 'code', 'name_id', 'diagonal', 'weight', 'quantity',
                 'product_warranty', 'storage_warranty',
-                'create_at', 'update_at')
+                'create_at', 'update_at', 'production_code_id')
             list_models = []
             for i in models.iterator(chunk_size=self.batch_size):
                 list_models.append(AshtrihModels(
@@ -82,6 +82,7 @@ class ShtrihFullSync:
                     quantity=i['quantity'],
                     product_warranty=i['product_warranty'],
                     storage_warranty=i['storage_warranty'],
+                    production_code=i['production_code_id'],
                     create_at=i['create_at'],
                     update_at=i['update_at'],
                 ))
@@ -214,7 +215,7 @@ class ShtrihSync:
             models = Models.objects.filter(id__gt=last_model.id if last_model else 0).order_by('id').values(
                 'id', 'code', 'name_id', 'diagonal', 'weight', 'quantity',
                 'product_warranty', 'storage_warranty',
-                'create_at', 'update_at'
+                'create_at', 'update_at', 'production_code_id'
             )
             existing_ids = set(AshtrihModels.objects.values_list('id', flat=True))
             list_models = []
@@ -233,6 +234,7 @@ class ShtrihSync:
                         quantity=i['quantity'],
                         product_warranty=i['product_warranty'],
                         storage_warranty=i['storage_warranty'],
+                        production_code=i['production_code_id'],
                         create_at=i['create_at'],
                         update_at=i['update_at'],
                     ))

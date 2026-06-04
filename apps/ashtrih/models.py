@@ -28,6 +28,7 @@ class OfflineModels(models.Model):
     diagonal = models.FloatField(null=True, blank=True)
     weight = models.IntegerField(null=True, blank=True)
     quantity = models.IntegerField(null=True, blank=True)
+    production_code = models.IntegerField()
     product_warranty = models.IntegerField(null=True, blank=True)
     storage_warranty = models.IntegerField(null=True, blank=True)
     create_at = models.DateTimeField(null=True, blank=True)

@@ -62,6 +62,8 @@ INSTALLED_APPS = [
     'apps.sync',
     'apps.aonec',
     'apps.ashtrih',
+    'apps.sgp',
+    'apps.osgp',
 ]
 
 MIDDLEWARE = [
