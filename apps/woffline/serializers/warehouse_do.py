@@ -296,8 +296,8 @@ class OfflineWarehouseDoShipmentSerializer(serializers.ModelSerializer):
         onec_item.available_quantity -= quantity
 
         bans = OfflineShipmentBans.objects.filter(
-            Q(start_date=None) | Q(start_date__lt=datetype.now()),
-            Q(end_date=None) | Q(end_date__gt=datetype.now()),
+            Q(start_date=None) | Q(start_date__lt=datetype.today()),
+            Q(end_date=None) | Q(end_date__gt=datetype.today()),
             Q(barcode=None) | Q(barcode=product.barcode),
             Q(production_code=None) | Q(production_code=product.model.production_code),
             Q(model_name_id=None) | Q(model_name_id=product.model.name),
