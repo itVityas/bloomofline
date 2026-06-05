@@ -90,8 +90,8 @@ class WarehouseDoBarcodeSerializer(serializers.ModelSerializer):
             )
             raise serializers.ValidationError('Товар не прошел отгрузку')
 
-        if product.available_quantity <= 0 and not (warehouse_action.type_of_work.id == 4 or warehouse_action == 9 or warehouse_action == 10):
-            raise serializers.ValidationError('Товаров 0 и не action 9 action 10 type_of_work 4')
+        if product.available_quantity <= 0 and not (warehouse_action.type_of_work.id == 4 or warehouse_action.type_of_work.id == 1):
+            raise serializers.ValidationError('Доступных товаров 0 или тип операции не возврат и приход')
 
         # Проверка на две одинаковые операции на складе с одним и тем же штрихкодом
         last_ttn = WarehouseTTN.objects.filter(warehousedo__product=product).order_by('-date').first()
@@ -194,8 +194,8 @@ class WarehouseDoPalletSerializer(serializers.ModelSerializer):
             )
             raise serializers.ValidationError('Товар не прошел отгрузку')
 
-        if product.available_quantity <=0 and not (warehouse_action.type_of_work.id == 4 or warehouse_action == 9 or warehouse_action == 10):
-            raise serializers.ValidationError('Товаров 0 и не action 9 action 10 type_of_work 4')
+        if product.available_quantity <= 0 and not (warehouse_action.type_of_work.id == 4 or warehouse_action.type_of_work.id == 1):
+            raise serializers.ValidationError('Доступных товаров 0 или тип операции не возврат и приход')
 
         with transaction.atomic():
             # получает ttn
