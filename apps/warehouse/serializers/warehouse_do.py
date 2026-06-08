@@ -92,7 +92,7 @@ class WarehouseDoBarcodeSerializer(serializers.ModelSerializer):
                 is_solved=False,
                 solve_date=None
             )
-            raise serializers.ValidationError('Товар не прошел отгрузку')
+            raise serializers.ValidationError('Товар не прошел упаковку')
 
         if product.available_quantity <= 0 and not (warehouse_action.type_of_work.id == 4 or warehouse_action.type_of_work.id == 1):
             raise serializers.ValidationError('Доступных товаров 0 или тип операции не возврат и приход')
@@ -196,7 +196,7 @@ class WarehouseDoPalletSerializer(serializers.ModelSerializer):
                 is_solved=False,
                 solve_date=None
             )
-            raise serializers.ValidationError('Товар не прошел отгрузку')
+            raise serializers.ValidationError('Товар не прошел упаковку')
 
         if product.available_quantity <= 0 and not (warehouse_action.type_of_work.id == 4 or warehouse_action.type_of_work.id == 1):
             raise serializers.ValidationError('Доступных товаров 0 или тип операции не возврат и приход')
