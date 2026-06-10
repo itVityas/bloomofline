@@ -160,7 +160,13 @@ class WarehouseFullSync:
         try:
             start_time = time.time()
             action_list = WarehouseAction.objects.all().values(
-                'id', 'name', 'type_of_work_id', 'operation', 'create_at', 'update_at'
+                'id',
+                'name',
+                'type_of_work_id',
+                'operation',
+                'is_deleted',
+                'create_at',
+                'update_at'
             )
             bulk_list = []
             for i in action_list:
@@ -169,6 +175,7 @@ class WarehouseFullSync:
                     name=i['name'],
                     type_of_work_id=i['type_of_work_id'],
                     operation=i['operation'],
+                    is_deleted=i['is_deleted'],
                     create_at=i['create_at'],
                     update_at=i['update_at']
                 ))
@@ -184,7 +191,7 @@ class WarehouseFullSync:
             start_time = time.time()
             pallet_upload()
             pallet_list = Pallet.objects.all().values(
-                'id', 'barcode', 'ttn_number', 'create_at', 'update_at'
+                'id', 'barcode', 'ttn_number', 'is_deleted', 'create_at', 'update_at'
             )
             bulk_list = []
             for i in pallet_list:
@@ -193,6 +200,7 @@ class WarehouseFullSync:
                     id=i['id'],
                     ttn_number=ttn,
                     barcode=i['barcode'],
+                    is_deleted=i['is_deleted'],
                     create_at=i['create_at'],
                     update_at=i['update_at'],
                     is_offline=False
@@ -233,7 +241,7 @@ class WarehouseFullSync:
             warehouse_ttn_upload()
             warehouse_ttn_list = WarehouseTTN.objects.all().values(
                 'ttn_number', 'is_close', 'date', 'warehouse_id', 'warehouse_action_id',
-                'onec_ttn_id', 'user_id', 'create_at', 'update_at'
+                'onec_ttn_id', 'user_id', 'is_deleted', 'create_at', 'update_at'
             )
             bulk_list = []
             for i in warehouse_ttn_list.iterator(chunk_size=self.batch_size):
@@ -245,6 +253,7 @@ class WarehouseFullSync:
                     warehouse_action_id=i['warehouse_action_id'],
                     onec_ttn_id=i['onec_ttn_id'],
                     user_id=i['user_id'],
+                    is_deleted=i['is_deleted'],
                     create_at=i['create_at'],
                     update_at=i['update_at'],
                     is_offline=False
@@ -406,7 +415,13 @@ class WarehouseSync:
             action_list = WarehouseAction.objects.filter(
                 update_at__gt=self.sync_date.last_sync
             ).values(
-                'id', 'name', 'type_of_work_id', 'operation', 'create_at', 'update_at'
+                'id',
+                'name',
+                'type_of_work_id',
+                'operation',
+                'is_deleted',
+                'create_at',
+                'update_at'
             )
             bulk_list = []
             for i in action_list:
@@ -415,6 +430,7 @@ class WarehouseSync:
                     name=i['name'],
                     type_of_work_id=i['type_of_work_id'],
                     operation=i['operation'],
+                    is_deleted=i['is_deleted'],
                     create_at=i['create_at'],
                     update_at=i['update_at']
                 ))
@@ -490,7 +506,7 @@ class WarehouseSync:
             pallet_list = Pallet.objects.filter(
                 update_at__gt=self.sync_date.last_sync
             ).values(
-                'id', 'barcode', 'ttn_number', 'create_at', 'update_at'
+                'id', 'barcode', 'ttn_number', 'is_deleted', 'create_at', 'update_at'
             )
             bulk_list = []
             for i in pallet_list:
@@ -499,6 +515,7 @@ class WarehouseSync:
                     id=i['id'],
                     ttn_number=ttn,
                     barcode=i['barcode'],
+                    is_deleted=i['is_deleted'],
                     create_at=i['create_at'],
                     update_at=i['update_at'],
                     is_offline=False,
@@ -512,7 +529,7 @@ class WarehouseSync:
                 bulk_list,
                 update_conflicts=True,
                 unique_fields=['id'],
-                update_fields=['barcode', 'ttn_number', 'create_at', 'update_at', 'is_offline'])
+                update_fields=['barcode', 'ttn_number', 'create_at', 'update_at', 'is_offline', 'is_deleted'])
             end_time = time.time()
             return end_time - start_time
         except Exception as e:
@@ -527,7 +544,7 @@ class WarehouseSync:
                 update_at__gt=self.sync_date.last_sync
             ).values(
                 'ttn_number', 'is_close', 'date', 'warehouse_id', 'warehouse_action_id',
-                'onec_ttn_id', 'user_id', 'create_at', 'update_at'
+                'onec_ttn_id', 'user_id', 'is_deleted', 'create_at', 'update_at'
             )
             bulk_list = []
             for i in warehouse_ttn_list:
@@ -539,6 +556,7 @@ class WarehouseSync:
                     warehouse_action_id=i['warehouse_action_id'],
                     onec_ttn_id=i['onec_ttn_id'],
                     user_id=i['user_id'],
+                    is_deleted=i['is_deleted'],
                     create_at=i['create_at'],
                     update_at=i['update_at'],
                     is_offline=False,
@@ -553,7 +571,7 @@ class WarehouseSync:
                 update_conflicts=True,
                 unique_fields=['ttn_number'],
                 update_fields=['is_close', 'date', 'warehouse_id', 'warehouse_action_id',
-                               'onec_ttn_id', 'user_id', 'create_at', 'update_at', 'is_offline'])
+                               'onec_ttn_id', 'user_id', 'is_deleted', 'create_at', 'update_at', 'is_offline'])
             end_time = time.time()
             return end_time - start_time
         except Exception as e:
