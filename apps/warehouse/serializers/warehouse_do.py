@@ -84,14 +84,15 @@ class WarehouseDoBarcodeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Продукт не найден')
         last_workplace = Workplaces.objects.filter(protocols__product=product).order_by('-id').first()
         if last_workplace and last_workplace.type_of_work.id != 3:
-            NotPackaging.objects.create(
-                product=product,
-                warehouse_id=warehouse_id,
-                bloom_user_id=user.id,
-                found_date=date,
-                is_solved=False,
-                solve_date=None
-            )
+            if NotPackaging.objects.filter(product=product, is_solved=False).exists():
+                NotPackaging.objects.create(
+                    product=product,
+                    warehouse_id=warehouse_id,
+                    bloom_user_id=user.id,
+                    found_date=date,
+                    is_solved=False,
+                    solve_date=None
+                )
             raise serializers.ValidationError('Товар не прошел упаковку')
 
         if product.available_quantity <= 0 and not (warehouse_action.type_of_work.id == 4 or warehouse_action.type_of_work.id == 1):
@@ -188,14 +189,15 @@ class WarehouseDoPalletSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Продукт не найден')
         last_workplace = Workplaces.objects.filter(protocols__product=product).order_by('-id').first()
         if last_workplace and last_workplace.type_of_work.id != 3:
-            NotPackaging.objects.create(
-                product=product,
-                warehouse_id=warehouse_id,
-                bloom_user_id=user.id,
-                found_date=date,
-                is_solved=False,
-                solve_date=None
-            )
+            if NotPackaging.objects.filter(product=product, is_solved=False).exists():
+                NotPackaging.objects.create(
+                    product=product,
+                    warehouse_id=warehouse_id,
+                    bloom_user_id=user.id,
+                    found_date=date,
+                    is_solved=False,
+                    solve_date=None
+                )
             raise serializers.ValidationError('Товар не прошел упаковку')
 
         if product.available_quantity <= 0 and not (warehouse_action.type_of_work.id == 4 or warehouse_action.type_of_work.id == 1):

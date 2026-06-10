@@ -83,15 +83,16 @@ class OfflineWarehouseDoBarcodeSerializer(serializers.ModelSerializer):
         if not product:
             raise serializers.ValidationError('Продукт не найден')
         if product.type_of_work_id != 3:
-            OfflineNotPackaging.objects.create(
-                product=product,
-                warehouse_id=warehouse_id,
-                bloom_user_id=user.id,
-                found_date=date,
-                is_solved=False,
-                is_offline=False,
-                solve_date=None
-            )
+            if OfflineNotPackaging.objects.filter(product=product, is_solved=False).exists():
+                OfflineNotPackaging.objects.create(
+                    product=product,
+                    warehouse_id=warehouse_id,
+                    bloom_user_id=user.id,
+                    found_date=date,
+                    is_solved=False,
+                    is_offline=False,
+                    solve_date=None
+                )
             raise serializers.ValidationError('Товар не прошел Упаковку')
 
         if product.available_quantity <= 0 and not (warehouse_action.type_of_work.id == 4 or warehouse_action.type_of_work.id == 1):
@@ -187,15 +188,16 @@ class OfflineWarehouseDoPalletSerializer(serializers.ModelSerializer):
         else:
             raise serializers.ValidationError('Продукт не найден')
         if product.type_of_work_id != 3:
-            OfflineNotPackaging.objects.create(
-                product=product,
-                warehouse_id=warehouse_id,
-                bloom_user_id=user.id,
-                found_date=date,
-                is_solved=False,
-                is_offline=False,
-                solve_date=None
-            )
+            if OfflineNotPackaging.objects.filter(product=product, is_solved=False).exists():
+                OfflineNotPackaging.objects.create(
+                    product=product,
+                    warehouse_id=warehouse_id,
+                    bloom_user_id=user.id,
+                    found_date=date,
+                    is_solved=False,
+                    is_offline=False,
+                    solve_date=None
+                )
             raise serializers.ValidationError('Товар не прошел Упаковку')
 
         if product.available_quantity <= 0 and not (warehouse_action.type_of_work.id == 4 or warehouse_action.type_of_work.id == 1):
