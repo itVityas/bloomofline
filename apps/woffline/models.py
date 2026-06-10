@@ -37,6 +37,7 @@ class OfflineWarehouseAction(models.Model):
     name = models.CharField(max_length=100)
     type_of_work = models.ForeignKey(OfflineTypeOfWork, on_delete=models.CASCADE)
     operation = models.CharField(max_length=2, default='+')
+    is_deleted = models.BooleanField(default=False)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 
@@ -57,6 +58,7 @@ class OfflineWarehouseTTN(models.Model):
     warehouse_action = models.ForeignKey(OfflineWarehouseAction, on_delete=models.CASCADE)
     onec_ttn = models.ForeignKey(OfflineOneCTTN, on_delete=models.CASCADE, null=True, blank=True)
     user = models.ForeignKey(OfflineUser, on_delete=models.CASCADE)
+    is_deleted = models.BooleanField(default=False)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 
@@ -71,6 +73,7 @@ class OfflineWarehouseTTN(models.Model):
 class OfflinePallet(models.Model):
     ttn_number = models.ForeignKey(OfflineWarehouseTTN, on_delete=models.CASCADE)
     barcode = models.CharField(max_length=50)
+    is_deleted = models.BooleanField(default=False)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
     is_offline = models.BooleanField(default=True)

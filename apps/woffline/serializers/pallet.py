@@ -54,7 +54,15 @@ class OfflinePalletProductsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OfflinePallet
-        fields = ['id', 'barcode', 'ttn_number', 'products', 'create_at', 'update_at']
+        fields = [
+            'id',
+            'barcode',
+            'ttn_number',
+            'products',
+            'is_deleted',
+            'create_at',
+            'update_at'
+        ]
 
     def get_products(self, obj) -> dict:
         products = OfflineProducts.objects.filter(offlinewarehousedo__warehouse_ttn__ttn_number=obj.ttn_number)

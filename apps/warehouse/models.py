@@ -39,6 +39,7 @@ class WarehouseAction(models.Model):
     name = models.CharField(max_length=100)
     type_of_work = models.ForeignKey(TypeOfWork, on_delete=models.CASCADE)
     operation = models.CharField(max_length=2)
+    is_deleted = models.BooleanField(default=False)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 
@@ -59,6 +60,7 @@ class WarehouseTTN(models.Model):
     warehouse_action = models.ForeignKey(WarehouseAction, on_delete=models.PROTECT)
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     onec_ttn = models.ForeignKey(OneCTTN, on_delete=models.PROTECT, null=True, blank=True)
+    is_deleted = models.BooleanField(default=False)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 
@@ -74,6 +76,7 @@ class WarehouseTTN(models.Model):
 class Pallet(models.Model):
     ttn_number = models.ForeignKey(WarehouseTTN, on_delete=models.PROTECT)
     barcode = models.CharField(max_length=50)
+    is_deleted = models.BooleanField(default=False)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 
