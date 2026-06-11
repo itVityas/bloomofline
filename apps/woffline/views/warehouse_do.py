@@ -195,7 +195,8 @@ class OfflineWarehouseDoRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIVie
                             query.product.available_quantity = query.product.quantity
                         query.product.save()
                         onec_item.save()
-                    query.delete()
+                    query.is_deleted = True
+                    query.save()
                     return Response({'message': 'deleted'}, status=204)
                 return Response({'error': 'not found'}, status=404)
             else:
@@ -213,7 +214,8 @@ class OfflineWarehouseDoRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIVie
                             query.product.available_quantity = query.product.quantity
                         query.product.save()
                         onec_item.save()
-                    query.delete()
+                    query.is_deleted = True
+                    query.save()
                     return Response({'message': 'deleted'}, status=204)
                 return Response({'error': 'not found'}, status=404)
         except Exception as e:
@@ -302,7 +304,8 @@ class OnlyOfflineWarehouseDoRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAP
                         query.product.available_quantity = query.product.quantity
                     query.product.save()
                     onec_item.save()
-                query.delete()
+                query.is_deleted = True
+                query.save()
                 return Response({'message': 'deleted'}, status=204)
             return Response({'error': 'not found'}, status=404)
         except Exception as e:

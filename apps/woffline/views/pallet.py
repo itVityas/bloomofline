@@ -153,13 +153,15 @@ class OfflinePalletRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
             if global_state.get():
                 query = Pallet.objects.filter(pk=pk).first()
                 if query:
-                    query.delete()
+                    query.is_deleted = False
+                    query.save()
                     return Response({'message': 'deleted'}, status=200)
                 return Response({'error': 'not found'}, status=404)
             else:
                 query = self.queryset.filter(pk=pk).first()
                 if query:
-                    query.delete()
+                    query.is_deleted = False
+                    query.save()
                     return Response({'message': 'deleted'}, status=200)
                 return Response({'error': 'not found'}, status=404)
         except Exception as e:

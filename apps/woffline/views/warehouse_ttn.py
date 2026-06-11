@@ -230,8 +230,10 @@ class OfflineWarehouseTTNRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIVi
                                 i.product.available_quantity = i.product.quantity
                             i.product.save()
                             onec_item.save()
-                    warehouse_do.delete()
-                    query.delete()
+                    warehouse_do.is_deleted = True
+                    warehouse_do.save()
+                    query.is_deleted = True
+                    query.save()
                     return Response({'message': 'deleted'}, status=204)
                 return Response({'error': 'not found'}, status=404)
             else:
@@ -251,8 +253,10 @@ class OfflineWarehouseTTNRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIVi
                                 i.product.available_quantity = i.product.quantity
                             i.product.save()
                             onec_item.save()
-                    warehouse_do.delete()
-                    query.delete()
+                    warehouse_do.is_deleted = True
+                    warehouse_do.save()
+                    query.is_deleted = True
+                    query.save()
                     return Response({'message': 'deleted'}, status=204)
                 return Response({'error': 'not found'}, status=404)
         except Exception as e:
@@ -343,8 +347,10 @@ class OnlyOfflineWarehouseTTNRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyA
                             i.product.available_quantity = i.product.quantity
                         i.product.save()
                         onec_item.save()
-                warehouse_do.delete()
-                query.delete()
+                warehouse_do.is_deleted = True
+                warehouse_do.save()
+                query.is_deleted = True
+                query.save()
                 return Response({'message': 'deleted'}, status=204)
             return Response({'error': 'not found'}, status=404)
         except Exception as e:

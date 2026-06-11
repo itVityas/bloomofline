@@ -34,11 +34,11 @@ class PalletGenerateSerializer(serializers.ModelSerializer):
         if 'Error' in barcode or not isinstance(barcode, str):
             raise serializers.ValidationError('Не удалось сгенерировать штрих-код' + barcode)
 
-        pallet = Pallet.objects.filter(barcode=barcode).first()
+        pallet = Pallet.objects.filter(barcode=barcode, is_deleted=False).first()
         if pallet:
             return pallet
 
-        warehouse_ttn = WarehouseTTN.objects.filter(ttn_number=ttn_number).first()
+        warehouse_ttn = WarehouseTTN.objects.filter(ttn_number=ttn_number, is_deleted=False).first()
         if not warehouse_ttn:
             raise serializers.ValidationError('ТТН не найден')
 

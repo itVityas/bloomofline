@@ -72,7 +72,7 @@ class WarehouseDoBarcodeSerializer(serializers.ModelSerializer):
         barcode = validated_data.pop('barcode')
         user = self.context['request'].user
 
-        warehouse_action = WarehouseAction.objects.get(id=warehouse_action_id)
+        warehouse_action = WarehouseAction.objects.get(id=warehouse_action_id, is_deleted=False)
         if not warehouse_action or warehouse_action.type_of_work.id == 2 or warehouse_action.type_of_work.id == 3:
             raise serializers.ValidationError('Эта операция не доступна для операций типа Отгрузка и Палетирование')
 
@@ -95,11 +95,13 @@ class WarehouseDoBarcodeSerializer(serializers.ModelSerializer):
                 )
             raise serializers.ValidationError('Товар не прошел упаковку')
 
-        if product.available_quantity <= 0 and not (warehouse_action.type_of_work.id == 4 or warehouse_action.type_of_work.id == 1):
+        if product.available_quantity <= 0 and not (
+                    warehouse_action.type_of_work.id == 4 or warehouse_action.type_of_work.id == 1
+                ):
             raise serializers.ValidationError('Доступных товаров 0 или тип операции не возврат и приход')
 
         # Проверка на две одинаковые операции на складе с одним и тем же штрихкодом
-        last_ttn = WarehouseTTN.objects.filter(warehousedo__product=product).order_by('-date').first()
+        last_ttn = WarehouseTTN.objects.filter(warehousedo__product=product, is_deleted=False).order_by('-date').first()
         if last_ttn.warehouse_action == warehouse_action and last_ttn.warehouse_id == warehouse_id:
             raise serializers.ValidationError('Вы не можете добавить один и тот же штрихкод дважды подряд')
 
@@ -116,11 +118,17 @@ class WarehouseDoBarcodeSerializer(serializers.ModelSerializer):
                 )
 
             # проверка на дублирование в ttn
-            if WarehouseDo.objects.filter(warehouse_ttn=warehouse_ttn, product=product).exists():
+            if WarehouseDo.objects.filter(
+                    warehouse_ttn=warehouse_ttn,
+                    product=product,
+                    is_deleted=False).exists():
                 raise serializers.ValidationError('Продукт уже добавлен в эту ТТН')
 
             if warehouse_ttn.is_close:
                 raise serializers.ValidationError('ТТН уже закрыто')
+
+            if warehouse_ttn.is_deleted:
+                raise serializers.ValidationError('ТТН уже удалено')
 
             if warehouse_action.type_of_work == 4:
                 product.is_shipment = False
@@ -174,7 +182,7 @@ class WarehouseDoPalletSerializer(serializers.ModelSerializer):
         barcode = validated_data.pop('barcode')
         user = self.context['request'].user
 
-        warehouse_action = WarehouseAction.objects.get(id=warehouse_action_id)
+        warehouse_action = WarehouseAction.objects.get(id=warehouse_action_id, is_deleted=False)
         if not warehouse_action or warehouse_action.type_of_work.id != 2:
             raise serializers.ValidationError('Эта операция доступна для операций типа Палетирование')
 
@@ -200,7 +208,9 @@ class WarehouseDoPalletSerializer(serializers.ModelSerializer):
                 )
             raise serializers.ValidationError('Товар не прошел упаковку')
 
-        if product.available_quantity <= 0 and not (warehouse_action.type_of_work.id == 4 or warehouse_action.type_of_work.id == 1):
+        if product.available_quantity <= 0 and not (
+                    warehouse_action.type_of_work.id == 4 or warehouse_action.type_of_work.id == 1
+                ):
             raise serializers.ValidationError('Доступных товаров 0 или тип операции не возврат и приход')
 
         with transaction.atomic():
@@ -216,11 +226,17 @@ class WarehouseDoPalletSerializer(serializers.ModelSerializer):
                 )
 
             # проверка на дублирование в ttn
-            if WarehouseDo.objects.filter(warehouse_ttn=warehouse_ttn, product=product).exists():
+            if WarehouseDo.objects.filter(
+                    warehouse_ttn=warehouse_ttn,
+                    product=product,
+                    is_deleted=False).exists():
                 raise serializers.ValidationError('Продукт уже добавлен в эту ТТН')
 
             if warehouse_ttn.is_close:
                 raise serializers.ValidationError('ТТН уже закрыто')
+
+            if warehouse_ttn.is_deleted:
+                raise serializers.ValidationError('ТТН уже удалено')
 
             warehouse_do = WarehouseDo.objects.create(
                 product=product,
@@ -267,7 +283,7 @@ class WarehouseDoShipmentSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         onec_ttn_id = validated_data.pop('onec_ttn')
 
-        warehouse_action = WarehouseAction.objects.get(id=warehouse_action_id)
+        warehouse_action = WarehouseAction.objects.get(id=warehouse_action_id, is_deleted=False)
         if not warehouse_action or warehouse_action.type_of_work.id != 3:
             raise serializers.ValidationError('Эта операция доступна для операций типа Отгрузка')
 
@@ -330,11 +346,14 @@ class WarehouseDoShipmentSerializer(serializers.ModelSerializer):
             if warehouse_ttn.is_close:
                 raise serializers.ValidationError('ТТН уже закрыто')
 
+            if warehouse_ttn.is_deleted:
+                raise serializers.ValidationError('ТТН уже удалено')
+
             product.save()
             onec_item.save()
 
             # проверка на дублирование в ttn
-            if WarehouseDo.objects.filter(warehouse_ttn=warehouse_ttn, product=product).exists():
+            if WarehouseDo.objects.filter(warehouse_ttn=warehouse_ttn, product=product, is_deleted=False).exists():
                 raise serializers.ValidationError('Продукт уже добавлен в эту ТТН')
 
             warehouse_do = WarehouseDo.objects.create(
@@ -383,7 +402,7 @@ class WarehouseDoShipmentDeleteSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Нету пользователя')
 
         warehouse_ttn = WarehouseTTN.objects.filter(
-            onec_ttn__number=onec_number, onec_ttn__series=onec_series)
+            onec_ttn__number=onec_number, onec_ttn__series=onec_series, is_deleted=False)
         if not warehouse_ttn:
             raise serializers.ValidationError('ТТН не найдена')
         onec_ttn = warehouse_ttn[0].onec_ttn
@@ -397,7 +416,7 @@ class WarehouseDoShipmentDeleteSerializer(serializers.ModelSerializer):
         pallet = None
         if len(barcode) > 18:
             pallet = Pallet.objects.filter(barcode=barcode).first()
-            warehouse_do = WarehouseDo.objects.filter(warehouse_ttn=pallet.ttn_number)
+            warehouse_do = WarehouseDo.objects.filter(warehouse_ttn=pallet.ttn_number, is_deleted=False)
 
         if not warehouse_do:
             raise serializers.ValidationError('Данные не найдены')
@@ -413,6 +432,13 @@ class WarehouseDoShipmentDeleteSerializer(serializers.ModelSerializer):
                     user_id=user.id,
                     onec_ttn=onec_ttn,
                 )
+
+            if warehouse_ttn.is_close:
+                raise serializers.ValidationError('ТТН уже закрыто')
+
+            if warehouse_ttn.is_deleted:
+                raise serializers.ValidationError('ТТН уже удалено')
+
             if pallet:
                 list_new_do = []
                 for i in warehouse_do:
