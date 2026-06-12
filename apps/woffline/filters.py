@@ -12,6 +12,7 @@ class WarehouseTTNFilter(filters.FilterSet):
     number_end = filters.CharFilter(field_name='ttn_number', lookup_expr='iendswith')
     number_cont = filters.CharFilter(field_name='ttn_number', lookup_expr='icontains')
     is_close = filters.BooleanFilter(field_name='is_close')
+    is_deleted = filters.BooleanFilter(field_name='is_deleted')
     date = filters.DateFilter(field_name='date', lookup_expr='exact')
     onec_number = filters.CharFilter(field_name='onec_ttn__number', lookup_expr='iexact')
     onec_series = filters.CharFilter(field_name='onec_ttn__series', lookup_expr='iexact')
@@ -40,6 +41,7 @@ class WarehouseTTNFilter(filters.FilterSet):
             'date',
             'onec_number',
             'onec_series',
+            'is_deleted',
         )
 
 
