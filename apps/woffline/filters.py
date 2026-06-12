@@ -48,6 +48,7 @@ class WarehouseDoFilter(filters.FilterSet):
     quantity = filters.NumberFilter(field_name='quantity', lookup_expr='exact')
     create_at = filters.DateFilter(field_name='create_at', lookup_expr='exact')
     update_at = filters.DateFilter(field_name='update_at', lookup_expr='exact')
+    is_deleted = filters.BooleanFilter(field_name='is_deleted', lookup_expr='exact')
     product = filters.NumberFilter(
         field_name='product', lookup_expr='exact')
     warehouse_ttn = filters.CharFilter(
@@ -79,4 +80,5 @@ class WarehouseDoFilter(filters.FilterSet):
             'warehouse_ttn',
             'start_warehouse_ttn',
             'cont_warehouse_ttn',
+            'is_deleted',
         )
