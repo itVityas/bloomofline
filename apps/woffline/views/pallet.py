@@ -202,6 +202,30 @@ class OfflinePalletCreateByTTNAPIView(CreateAPIView):
 
 @extend_schema(tags=["Offline Pallet"])
 @extend_schema_view(
+    post=extend_schema(
+        summary='create offline pallet by ttn_number or return existing',
+        description='Permission: admin, warehouse_writer'
+    )
+)
+class OnlyOfflinePalletCreateByTTNAPIView(CreateAPIView):
+    queryset = OfflinePallet.objects.all()
+    serializer_class = OfflinePalletGenerateSerializer
+    permission_classes = (IsAuthenticated, WarehousePermission)
+
+    def post(self, request):
+        try:
+            serializer = self.serializer_class(data=request.data)
+            if serializer.is_valid():
+                warehouse_ttn = serializer.save()
+                return Response(OfflinePalletSerializer(warehouse_ttn).data, status=201)
+            return Response(serializer.errors, status=400)
+        except Exception as e:
+            global_state.set()
+            return Response({'error': str(e)}, status=400)
+
+
+@extend_schema(tags=["Offline Pallet"])
+@extend_schema_view(
     get=extend_schema(
         summary='get pallet with products by warehouse ttn',
         description='Permission: admin, warehouse, warehouse_writer',
