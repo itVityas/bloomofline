@@ -30,6 +30,7 @@ logger = logging.getLogger(__name__)
 
 
 def pallet_upload():
+    OfflinePallet.objects.filter(is_offline=True, is_deleted=True).delete()
     pallet = OfflinePallet.objects.filter(is_offline=True)
     pallet_list = []
     for i in pallet:
@@ -46,6 +47,7 @@ def pallet_upload():
 
 
 def warehouse_ttn_upload():
+    OfflineWarehouseTTN.objects.filter(is_offline=True, is_deleted=True).delete()
     warehouse_ttn = OfflineWarehouseTTN.objects.filter(is_offline=True)
     warehouse_ttn_list = []
     for i in warehouse_ttn:
@@ -67,6 +69,7 @@ def warehouse_ttn_upload():
 
 
 def warehouse_do_upload():
+    OfflineWarehouseDo.objects.filter(is_offline=True, is_deleted=True).delete()
     warehouse_do = OfflineWarehouseDo.objects.filter(is_offline=True)
     warehouse_do_list = []
     for i in warehouse_do:
