@@ -65,7 +65,9 @@ class OfflinePalletProductsSerializer(serializers.ModelSerializer):
         ]
 
     def get_products(self, obj) -> dict:
-        products = OfflineProducts.objects.filter(offlinewarehousedo__warehouse_ttn__ttn_number=obj.ttn_number)
+        products = OfflineProducts.objects.filter(
+            offlinewarehousedo__warehouse_ttn__ttn_number=obj.ttn_number,
+            offlinewarehousedo__is_deleted=False)
         return OfflineProductGetSerializer(products, many=True).data
 
 
