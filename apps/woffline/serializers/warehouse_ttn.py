@@ -63,5 +63,5 @@ class OfflineWarehouseTTNProductSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_warehousedo(self, obj) -> list:
-        warehouse_do = OfflineWarehouseDo.objects.filter(warehouse_ttn=obj)
+        warehouse_do = OfflineWarehouseDo.objects.filter(warehouse_ttn=obj, is_deleted=False)
         return OfflineWarehouseDoTTNSerializer(warehouse_do, many=True).data

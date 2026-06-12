@@ -51,5 +51,5 @@ class WarehouseTTNProductSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_warehousedo(self, obj) -> list:
-        warehouse_do = WarehouseDo.objects.filter(warehouse_ttn=obj)
+        warehouse_do = WarehouseDo.objects.filter(warehouse_ttn=obj, is_deleted=False)
         return WarehouseDoTTNSerializer(warehouse_do, many=True).data
