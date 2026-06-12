@@ -299,6 +299,35 @@ class OfflinePalletByBarcodeWithProductsListAPIView(ListAPIView):
 @extend_schema(tags=["Offline Pallet"])
 @extend_schema_view(
     get=extend_schema(
+        summary='get offline pallet with products by barcode',
+        description='Permission: admin, warehouse, warehouse_writer',
+        parameters=[
+            OpenApiParameter(name='barcode', description='barcode', required=True, type=str),
+        ]
+    ),
+)
+class OnlyOfflinePalletByBarcodeWithProductsListAPIView(ListAPIView):
+    queryset = OfflinePallet.objects.all()
+    serializer_class = OfflinePalletProductsSerializer
+    permission_classes = [IsAuthenticated, WarehousePermission]
+    pagination_class = None
+
+    def get(self, request):
+        try:
+            barcode = request.query_params.get('barcode', None)
+            query = OfflinePallet.objects.filter(barcode=barcode).first()
+            if not query:
+                return Response({'error': 'Палет не найден'}, status=404)
+            serializer = self.serializer_class
+            return Response(serializer(query, many=False).data)
+        except Exception as e:
+            global_state.set()
+            return Response({'error': str(e)}, status=400)
+
+
+@extend_schema(tags=["Offline Pallet"])
+@extend_schema_view(
+    get=extend_schema(
         summary='decompose pallet barcode',
         description='''Permission: admin, warehouse_writer
         barcode 20 symbols:
