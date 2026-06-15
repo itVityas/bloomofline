@@ -53,7 +53,7 @@ def warehouse_ttn_upload():
     for i in warehouse_ttn:
         warehouse_ttn_list.append(
             WarehouseTTN(
-                ttn_number_id=i.ttn_number_id,
+                ttn_number=i.ttn_number,
                 is_close=i.is_close,
                 date=i.date,
                 warehouse_id=i.warehouse_id,
