@@ -36,7 +36,7 @@ def pallet_upload():
     for i in pallet:
         pallet_list.append(
             Pallet(
-                ttn_number=i.ttn_number,
+                ttn_number_id=i.ttn_number_id,
                 barcode=i.barcode,
                 create_at=i.create_at,
                 update_at=i.update_at,
@@ -53,7 +53,7 @@ def warehouse_ttn_upload():
     for i in warehouse_ttn:
         warehouse_ttn_list.append(
             WarehouseTTN(
-                ttn_number=i.ttn_number,
+                ttn_number_id=i.ttn_number_id,
                 is_close=i.is_close,
                 date=i.date,
                 warehouse_id=i.warehouse_id,
@@ -75,7 +75,7 @@ def warehouse_do_upload():
     for i in warehouse_do:
         warehouse_do_list.append(
             WarehouseDo(
-                warehouse_ttn_ttn_number=i.warehouse_ttn_ttn_number,
+                warehouse_ttn_id=i.warehouse_ttn_id,
                 product_id=i.product_id,
                 old_product_id=i.old_product_id,
                 quantity=i.quantity,
