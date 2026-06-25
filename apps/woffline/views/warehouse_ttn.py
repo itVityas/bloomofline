@@ -631,7 +631,19 @@ class OnlyOfflineWarehouseTTNProductsByUserIdAPIView(APIView):
                     status=status.HTTP_400_BAD_REQUEST
                     )
             serializer = self.serializer_class
-            query = OfflineWarehouseTTN.objects.filter(user_id=user_id).order_by('-create_at').first()
-            return Response(serializer(query, many=False).data)
+            query = OfflineWarehouseTTN.objects.raw('''
+                SELECT * FROM woffline_offlinewarehousettn
+                WHERE user_id = %s AND is_deleted = 0
+                ORDER BY create_at DESC
+                LIMIT 1
+            ''', [user_id])
+
+            result = list(query)
+            if not result:
+                return Response(
+                    {'error': 'No records found for this user'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+            return Response(serializer(result[0], many=False).data)
         except Exception as e:
             return Response({'error': str(e)}, status=400)

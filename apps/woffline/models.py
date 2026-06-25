@@ -37,7 +37,7 @@ class OfflineWarehouseAction(models.Model):
     name = models.CharField(max_length=100)
     type_of_work = models.ForeignKey(OfflineTypeOfWork, on_delete=models.CASCADE)
     operation = models.CharField(max_length=2, default='+')
-    is_deleted = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False, db_index=True)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 
@@ -51,16 +51,16 @@ class OfflineWarehouseAction(models.Model):
 
 class OfflineWarehouseTTN(models.Model):
     ttn_number = models.CharField(max_length=50, primary_key=True)
-    is_close = models.BooleanField(default=False)
-    is_offline = models.BooleanField(default=True)
+    is_close = models.BooleanField(default=False, db_index=True)
+    is_offline = models.BooleanField(default=True, db_index=True)
     date = models.DateField(null=True, blank=True)
     warehouse = models.ForeignKey(OfflineWarehouse, on_delete=models.CASCADE)
     warehouse_action = models.ForeignKey(OfflineWarehouseAction, on_delete=models.CASCADE)
     onec_ttn = models.ForeignKey(OfflineOneCTTN, on_delete=models.CASCADE, null=True, blank=True)
     user = models.ForeignKey(OfflineUser, on_delete=models.CASCADE)
-    is_deleted = models.BooleanField(default=False)
-    create_at = models.DateTimeField(auto_now_add=True)
-    update_at = models.DateTimeField(auto_now=True)
+    is_deleted = models.BooleanField(default=False, db_index=True)
+    create_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    update_at = models.DateTimeField(auto_now=True, db_index=True)
 
     class Meta:
         app_label = "woffline"
@@ -72,8 +72,8 @@ class OfflineWarehouseTTN(models.Model):
 
 class OfflinePallet(models.Model):
     ttn_number = models.ForeignKey(OfflineWarehouseTTN, on_delete=models.CASCADE)
-    barcode = models.CharField(max_length=50)
-    is_deleted = models.BooleanField(default=False)
+    barcode = models.CharField(max_length=50, db_index=True)
+    is_deleted = models.BooleanField(default=False, db_index=True)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
     is_offline = models.BooleanField(default=True)
@@ -121,7 +121,7 @@ class OfflineWarehouseDo(models.Model):
     old_product = models.ForeignKey(OfflineOldProduct, on_delete=models.CASCADE, null=True, blank=True)
     quantity = models.PositiveIntegerField(default=1)
     is_offline = models.BooleanField(default=True)
-    is_deleted = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False, db_index=True)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 
