@@ -252,7 +252,9 @@ class OfflineWarehouseDoPalletSerializer(serializers.ModelSerializer):
             warehouse_do = OfflineWarehouseDo.objects.create(
                 product=product,
                 warehouse_ttn=warehouse_ttn,
-                quantity=quantity
+                quantity=quantity,
+                is_offline=True,
+                is_deleted=False
             )
 
         return warehouse_do
@@ -461,7 +463,9 @@ class OfflineWarehouseDoShipmentDeleteSerializer(serializers.ModelSerializer):
                     warehouse_do_new = OfflineWarehouseDo.objects.create(
                         product=i.product,
                         warehouse_ttn=warehouse_ttn,
-                        quantity=i.quantity
+                        quantity=i.quantity,
+                        is_offline=True,
+                        is_deleted=False
                     )
                     onec_item = OfflineOneCTTNItem.objects.filter(
                         onec_ttn=onec_ttn, model_name=i.product.model.name).first()
@@ -477,7 +481,9 @@ class OfflineWarehouseDoShipmentDeleteSerializer(serializers.ModelSerializer):
                 warehouse_do_new = OfflineWarehouseDo.objects.create(
                     product=warehouse_do[0].product,
                     warehouse_ttn=warehouse_ttn,
-                    quantity=warehouse_do[0].quantity
+                    quantity=warehouse_do[0].quantity,
+                    is_offline=True,
+                    is_deleted=False
                 )
                 onec_item = OfflineOneCTTNItem.objects.filter(
                     onec_ttn=onec_ttn, model_name=warehouse_do[0].product.model.name).first()
