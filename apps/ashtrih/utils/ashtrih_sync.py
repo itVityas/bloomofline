@@ -312,8 +312,8 @@ class ShtrihSync:
                         work_date=i['work_date'],
                         type_of_work_id=i['type_of_work_id'],
                         module_id=i['module_id'],
-                        color_code=i['color_id__color_code'],
-                        russian_title=i['color_id__russian_title'],
+                        color_code=i['color_code'],
+                        russian_title=i['russian_title'],
                         shift=i['shift'],
                     ))
                 if len(list_products) >= self.batch_size:
@@ -333,8 +333,8 @@ class ShtrihSync:
                         work_date=i['work_date'],
                         type_of_work_id=i['type_of_work_id'],
                         module_id=i['module_id'],
-                        color_code=i['color_id__color_code'],
-                        russian_title=i['color_id__russian_title'],
+                        color_code=i['color_code'],
+                        russian_title=i['russian_title'],
                         shift=i['shift'],
                     )
             time_stop = time.time()
