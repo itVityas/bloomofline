@@ -99,10 +99,8 @@ def warehouse_ttn_upload(update_date: datetime = None):
 def warehouse_do_upload(update_date: datetime = None):
     OfflineWarehouseDo.objects.filter(is_offline=True, is_deleted=True).delete()
     warehouse_do = OfflineWarehouseDo.objects.filter(is_offline=True)
-    # я хз нафига она нужна, но без нее не работает))
-    print(warehouse_do.count())
     warehouse_do_list = []
-    for i in warehouse_do:
+    for i in warehouse_do.iterator(chunk_size=1000):
         warehouse_do_list.append(
             WarehouseDo(
                 warehouse_ttn_id=i.warehouse_ttn_id,
