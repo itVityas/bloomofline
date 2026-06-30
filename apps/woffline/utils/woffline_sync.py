@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 
 from django.db import transaction
 import logging
@@ -29,7 +30,7 @@ from apps.warehouse.models import (
 logger = logging.getLogger(__name__)
 
 
-def pallet_upload():
+def pallet_upload(update_date: datetime = None):
     OfflinePallet.objects.filter(is_offline=True, is_deleted=True).delete()
     pallet = OfflinePallet.objects.filter(is_offline=True)
     pallet_list = []
@@ -40,13 +41,24 @@ def pallet_upload():
                 barcode=i.barcode,
                 create_at=i.create_at,
                 update_at=i.update_at,
+                is_deleted=i.is_deleted
             )
         )
         i.delete()
     Pallet.objects.bulk_create(pallet_list)
+    if update_date:
+        pallet = OfflinePallet.objects.filter(update_at__gt=update_date)
+        for i in pallet.iterator(chunk_size=1000):
+            Pallet.objects.filter(id=i.id).update(
+                ttn_number_id=i.ttn_number_id,
+                barcode=i.barcode,
+                create_at=i.create_at,
+                update_at=i.update_at,
+                is_deleted=i.is_deleted
+            )
 
 
-def warehouse_ttn_upload():
+def warehouse_ttn_upload(update_date: datetime = None):
     OfflineWarehouseTTN.objects.filter(is_offline=True, is_deleted=True).delete()
     warehouse_ttn = OfflineWarehouseTTN.objects.filter(is_offline=True)
     warehouse_ttn_list = []
@@ -62,13 +74,29 @@ def warehouse_ttn_upload():
                 create_at=i.create_at,
                 update_at=i.update_at,
                 onec_ttn_id=i.onec_ttn_id,
+                is_deleted=i.is_deleted
             )
         )
         i.delete()
     WarehouseTTN.objects.bulk_create(warehouse_ttn_list)
+    if update_date:
+        warehouse_ttn = OfflineWarehouseTTN.objects.filter(update_at__gt=update_date)
+        for i in warehouse_ttn.iterator(chunk_size=1000):
+            WarehouseTTN.objects.filter(ttn_number=i.ttn_number).update(
+                ttn_number=i.ttn_number,
+                is_close=i.is_close,
+                date=i.date,
+                warehouse_id=i.warehouse_id,
+                warehouse_action_id=i.warehouse_action_id,
+                user_id=i.user_id,
+                create_at=i.create_at,
+                update_at=i.update_at,
+                onec_ttn_id=i.onec_ttn_id,
+                is_deleted=i.is_deleted
+            )
 
 
-def warehouse_do_upload():
+def warehouse_do_upload(update_date: datetime = None):
     OfflineWarehouseDo.objects.filter(is_offline=True, is_deleted=True).delete()
     warehouse_do = OfflineWarehouseDo.objects.filter(is_offline=True)
     warehouse_do_list = []
@@ -86,6 +114,18 @@ def warehouse_do_upload():
         )
         i.delete()
     WarehouseDo.objects.bulk_create(warehouse_do_list)
+    if update_date:
+        warehouse_do = OfflineWarehouseDo.objects.filter(update_at__gt=update_date)
+        for i in warehouse_do.iterator(chunk_size=1000):
+            WarehouseDo.objects.filter(id=i.id).update(
+                warehouse_ttn_id=i.warehouse_ttn_id,
+                product_id=i.product_id,
+                old_product_id=i.old_product_id,
+                quantity=i.quantity,
+                create_at=i.create_at,
+                update_at=i.update_at,
+                is_deleted=i.is_deleted
+            )
 
 
 def not_packaging_upload():
@@ -192,7 +232,7 @@ class WarehouseFullSync:
     def pallet_full_sync(self):
         try:
             start_time = time.time()
-            pallet_upload()
+            pallet_upload(self.sync_date.last_sync)
             pallet_list = Pallet.objects.all().values(
                 'id', 'barcode', 'ttn_number', 'is_deleted', 'create_at', 'update_at'
             )
@@ -241,7 +281,7 @@ class WarehouseFullSync:
     def warehouse_ttn_full_sync(self):
         try:
             start_time = time.time()
-            warehouse_ttn_upload()
+            warehouse_ttn_upload(self.sync_date.last_sync)
             warehouse_ttn_list = WarehouseTTN.objects.all().values(
                 'ttn_number', 'is_close', 'date', 'warehouse_id', 'warehouse_action_id',
                 'onec_ttn_id', 'user_id', 'is_deleted', 'create_at', 'update_at'
@@ -303,7 +343,7 @@ class WarehouseFullSync:
     def warehouse_do_full_sync(self):
         try:
             start_time = time.time()
-            warehouse_do_upload()
+            warehouse_do_upload(self.sync_date.last_sync)
             warehouse_do_list = WarehouseDo.objects.all().values(
                 'id', 'warehouse_ttn_id', 'product_id', 'quantity', 'old_product_id',
                 'create_at', 'update_at', 'is_deleted',
@@ -505,7 +545,7 @@ class WarehouseSync:
     def pallet_sync(self):
         try:
             start_time = time.time()
-            pallet_upload()
+            pallet_upload(self.sync_date.last_sync)
             pallet_list = Pallet.objects.filter(
                 update_at__gt=self.sync_date.last_sync
             ).values(
@@ -542,7 +582,7 @@ class WarehouseSync:
     def warehouse_ttn_sync(self):
         try:
             start_time = time.time()
-            warehouse_ttn_upload()
+            warehouse_ttn_upload(self.sync_date.last_sync)
             warehouse_ttn_list = WarehouseTTN.objects.filter(
                 update_at__gt=self.sync_date.last_sync
             ).values(
@@ -584,7 +624,7 @@ class WarehouseSync:
     def warehouse_do_sync(self):
         try:
             start_time = time.time()
-            warehouse_do_upload()
+            warehouse_do_upload(self.sync_date.last_sync)
             warehouse_do_list = WarehouseDo.objects.filter(
                 update_at__gt=self.sync_date.last_sync
             ).values(
