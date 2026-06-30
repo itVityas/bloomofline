@@ -347,8 +347,7 @@ class OnlyOfflineWarehouseTTNRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyA
                             i.product.available_quantity = i.product.quantity
                         i.product.save()
                         onec_item.save()
-                warehouse_do.is_deleted = True
-                warehouse_do.save()
+                warehouse_do.update(is_deleted=True)
                 query.is_deleted = True
                 query.save()
                 return Response({'message': 'deleted'}, status=204)
