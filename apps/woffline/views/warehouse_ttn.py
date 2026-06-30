@@ -641,8 +641,7 @@ class OnlyOfflineWarehouseTTNProductsByUserIdAPIView(APIView):
             result = list(query)
             if not result:
                 return Response(
-                    {'error': 'No records found for this user'},
-                    status=status.HTTP_404_NOT_FOUND
+                    serializer(None, many=False).data
                 )
             return Response(serializer(result[0], many=False).data)
         except Exception as e:
