@@ -147,7 +147,9 @@ class OfflineWarehouseDoBarcodeSerializer(serializers.ModelSerializer):
             warehouse_do = OfflineWarehouseDo.objects.create(
                 product=product,
                 warehouse_ttn=warehouse_ttn,
-                quantity=quantity
+                quantity=quantity,
+                is_deleted=False,
+                is_offline=True
             )
 
         return warehouse_do
