@@ -1,4 +1,5 @@
 import time
+from datetime import timedelta
 
 from django.db import transaction
 import logging
@@ -16,6 +17,7 @@ logger = logging.getLogger(__name__)
 class OneCFullSync:
     def __init__(self, sync_date: SyncDate, batch_size: int = 1000):
         self.sync_date = sync_date
+        self.sync_date.last_sync = self.sync_date.last_sync - timedelta(hours=3)
         self.batch_size = batch_size
 
     def full_sync(self) -> dict:
@@ -92,6 +94,7 @@ class OneCFullSync:
 class OneCSync:
     def __init__(self, sync_date: SyncDate, batch_size: int = 1000):
         self.sync_date = sync_date
+        self.sync_date.last_sync = self.sync_date.last_sync - timedelta(hours=3)
         self.batch_size = batch_size
 
     def sync(self) -> dict:

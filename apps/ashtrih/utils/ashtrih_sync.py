@@ -1,4 +1,5 @@
 import time
+from datetime import timedelta
 
 from django.db import transaction
 from django.db.models import OuterRef, Subquery
@@ -27,6 +28,7 @@ class ShtrihFullSync:
     def __init__(self, sync_date: SyncDate, batch_size: int = 1000):
         self.batch_size = batch_size
         self.sync_date = sync_date
+        self.sync_date.last_sync = self.sync_date.last_sync - timedelta(hours=3)
 
     def full_sync(self) -> dict:
         try:
@@ -156,6 +158,7 @@ class ShtrihSync:
     def __init__(self, sync_date: SyncDate, batch_size: int = 1000):
         self.sync_date = sync_date
         self.batch_size = batch_size
+        self.sync_date.last_sync = self.sync_date.last_sync - timedelta(hours=3)
 
     def sync(self) -> dict:
         try:

@@ -1,5 +1,5 @@
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.db import transaction
 import logging
@@ -149,6 +149,7 @@ def not_packaging_upload():
 class WarehouseFullSync:
     def __init__(self, sync_date: SyncDate, batch_size: int = 1000):
         self.sync_date = sync_date
+        self.sync_date.last_sync = self.sync_date.last_sync - timedelta(hours=3)
         self.batch_size = batch_size
 
     def full_sync(self):
@@ -407,6 +408,7 @@ class WarehouseFullSync:
 class WarehouseSync:
     def __init__(self, sync_date: SyncDate, batch_size: int = 10000):
         self.sync_date = sync_date
+        self.sync_date.last_sync = self.sync_date.last_sync - timedelta(hours=3)
         self.batch_size = batch_size
 
     def sync(self):
