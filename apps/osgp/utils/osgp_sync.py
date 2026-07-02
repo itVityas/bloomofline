@@ -1,5 +1,4 @@
 import time
-from datetime import timedelta
 
 from django.db import transaction
 import logging
@@ -15,7 +14,6 @@ class SGPFullSync:
     def __init__(self, sync_date: SyncDate, batch_size: int = 1000):
         self.sync_date = sync_date
         self.batch_size = batch_size
-        self.sync_date.last_sync = self.sync_date.last_sync - timedelta(hours=3)
 
     def full_sync(self) -> dict:
         try:
@@ -76,7 +74,6 @@ class SGPSync:
     def __init__(self, sync_date: SyncDate, batch_size: int = 1000):
         self.sync_date = sync_date
         self.batch_size = batch_size
-        self.sync_date.last_sync = self.sync_date.last_sync - timedelta(hours=3)
 
     def sync(self) -> dict:
         try:

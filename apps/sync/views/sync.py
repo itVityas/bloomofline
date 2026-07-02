@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiResponse
+from django.db.models.functions import Now
 
 from apps.aoffline.utils.aoffline_sync import AccountFullSynchronization, AccountSync
 from apps.aonec.utils.aonec_sync import OneCFullSync, OneCSync
@@ -10,6 +11,7 @@ from apps.woffline.utils.woffline_sync import WarehouseFullSync, WarehouseSync
 from apps.osgp.utils.osgp_sync import SGPFullSync, SGPSync
 from apps.sync.models import SyncDate
 from bloomofline.db_routers import ModelDatabaseRouter
+from apps.warehouse.models import WarehouseAction
 
 
 @extend_schema(tags=['Synchronization'])
@@ -33,6 +35,9 @@ class FullSyncAllView(APIView):
             sync_date = SyncDate.objects.all().order_by('-last_sync').first()
             if not sync_date:
                 sync_date = SyncDate(last_sync='1970-01-01 00:00:00')
+            server_time = WarehouseAction.objects.annotate(current_time=Now()).first().current_time
+            new_sync_date = SyncDate(last_sync=server_time)
+
             time_account = AccountFullSynchronization().full_sync()
             time_shtrih = ShtrihFullSync(sync_date=sync_date).full_sync()
             time_ttn = OneCFullSync(sync_date=sync_date).full_sync()
@@ -41,7 +46,7 @@ class FullSyncAllView(APIView):
             full_time = time_account.get('full', 0) + time_shtrih.get('full', 0) \
                 + time_ttn.get('full', 0) + time_warehouse.get('full', 0) \
                 + time_sgp.get('full', 0)
-            SyncDate.objects.create()
+            new_sync_date.save()
             return Response({
                 'account': time_account,
                 'onec': time_ttn,
@@ -75,6 +80,9 @@ class SyncAllView(APIView):
             sync_date = SyncDate.objects.all().order_by('-last_sync').first()
             if not sync_date:
                 sync_date = SyncDate(last_sync='1970-01-01 00:00:00')
+            server_time = WarehouseAction.objects.annotate(current_time=Now()).first().current_time
+            new_sync_date = SyncDate(last_sync=server_time)
+
             time_account = AccountSync().sync()
             time_shtrih = ShtrihSync(sync_date=sync_date).sync()
             time_ttn = OneCSync(sync_date=sync_date).sync()
@@ -83,7 +91,7 @@ class SyncAllView(APIView):
             full_time = time_account.get('full', 0) + time_shtrih.get('full', 0) \
                 + time_ttn.get('full', 0) + time_warehouse.get('full', 0) \
                 + time_sgp.get('full', 0)
-            SyncDate.objects.create()
+            new_sync_date.save()
             return Response({
                 'account': time_account,
                 'onec': time_ttn,
