@@ -36,7 +36,6 @@ class FullSyncAllView(APIView):
             if not sync_date:
                 sync_date = SyncDate(last_sync='1970-01-01 00:00:00')
             server_time = WarehouseAction.objects.annotate(current_time=Now()).first().current_time
-            new_sync_date = SyncDate(last_sync=server_time)
 
             time_account = AccountFullSynchronization().full_sync()
             time_shtrih = ShtrihFullSync(sync_date=sync_date).full_sync()
@@ -46,6 +45,7 @@ class FullSyncAllView(APIView):
             full_time = time_account.get('full', 0) + time_shtrih.get('full', 0) \
                 + time_ttn.get('full', 0) + time_warehouse.get('full', 0) \
                 + time_sgp.get('full', 0)
+            new_sync_date = SyncDate(last_sync=server_time)
             new_sync_date.save()
             return Response({
                 'account': time_account,
@@ -81,7 +81,6 @@ class SyncAllView(APIView):
             if not sync_date:
                 sync_date = SyncDate(last_sync='1970-01-01 00:00:00')
             server_time = WarehouseAction.objects.annotate(current_time=Now()).first().current_time
-            new_sync_date = SyncDate(last_sync=server_time)
 
             time_account = AccountSync().sync()
             time_shtrih = ShtrihSync(sync_date=sync_date).sync()
@@ -91,6 +90,7 @@ class SyncAllView(APIView):
             full_time = time_account.get('full', 0) + time_shtrih.get('full', 0) \
                 + time_ttn.get('full', 0) + time_warehouse.get('full', 0) \
                 + time_sgp.get('full', 0)
+            new_sync_date = SyncDate(last_sync=server_time)
             new_sync_date.save()
             return Response({
                 'account': time_account,
