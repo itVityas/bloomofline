@@ -113,6 +113,7 @@ def warehouse_do_upload(update_date: datetime = None):
             )
         )
         i.delete()
+    time.sleep(1)
     WarehouseDo.objects.bulk_create(warehouse_do_list)
     if update_date:
         warehouse_do = OfflineWarehouseDo.objects.filter(update_at__gt=update_date)
