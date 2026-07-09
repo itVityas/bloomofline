@@ -113,6 +113,7 @@ class OfflineWarehouseTTNCreateAPIView(CreateAPIView):
                     return Response(serializer.data, status=201)
                 return Response(serializer.errors, status=400)
             else:
+                request.data['is_offline'] = True
                 serializer = OfflineWarehouseTTNPostSerializer(data=request.data)
                 if serializer.is_valid():
                     serializer.save()
@@ -179,6 +180,7 @@ class OfflineWarehouseTTNRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIVi
                 query = self.queryset.filter(ttn_number=ttn_number).first()
                 if not query:
                     return Response({'error': 'not found'}, status=404)
+                request.data['is_offline'] = True
                 serializer = self.serializer_class(query, data=request.data)
                 if serializer.is_valid():
                     serializer.save()
@@ -202,6 +204,7 @@ class OfflineWarehouseTTNRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIVi
                 query = self.queryset.filter(ttn_number=ttn_number).first()
                 if not query:
                     return Response({'error': 'not found'}, status=404)
+                request.data['is_offline'] = True
                 serializer = self.serializer_class(query, data=request.data, partial=True)
                 if serializer.is_valid():
                     serializer.save()
@@ -245,17 +248,21 @@ class OfflineWarehouseTTNRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIVi
                             onec_item = OfflineOneCTTNItem.objects.filter(
                                 onec_ttn=query.onec_ttn, model_name=i.product.model.name).first()
                             onec_item.available_quantity += i.quantity
+                            onec_item.is_offline = True
                             if onec_item.available_quantity > onec_item.count:
                                 onec_item.available_quantity = onec_item.count
                             i.product.is_shipment = False
                             i.product.available_quantity += i.quantity
+                            i.product.is_offline = True
                             if i.product.available_quantity > i.product.quantity:
                                 i.product.available_quantity = i.product.quantity
                             i.product.save()
                             onec_item.save()
                     warehouse_do.is_deleted = True
+                    warehouse_do.is_offline = True
                     warehouse_do.save()
                     query.is_deleted = True
+                    query.is_offline = True
                     query.save()
                     return Response({'message': 'deleted'}, status=204)
                 return Response({'error': 'not found'}, status=404)
@@ -305,6 +312,7 @@ class OnlyOfflineWarehouseTTNRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyA
             query = self.queryset.filter(ttn_number=ttn_number).first()
             if not query:
                 return Response({'error': 'not found'}, status=404)
+            request.data['is_offline'] = True
             serializer = self.serializer_class(query, data=request.data)
             if serializer.is_valid():
                 serializer.save()
@@ -320,6 +328,7 @@ class OnlyOfflineWarehouseTTNRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyA
             query = self.queryset.filter(ttn_number=ttn_number).first()
             if not query:
                 return Response({'error': 'not found'}, status=404)
+            request.data['is_offline'] = True
             serializer = self.serializer_class(query, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
@@ -339,16 +348,19 @@ class OnlyOfflineWarehouseTTNRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyA
                         onec_item = OfflineOneCTTNItem.objects.filter(
                             onec_ttn=query.onec_ttn, model_name=i.product.model.name).first()
                         onec_item.available_quantity += i.quantity
+                        onec_item.is_offline = True
                         if onec_item.available_quantity > onec_item.count:
                             onec_item.available_quantity = onec_item.count
                         i.product.is_shipment = False
                         i.product.available_quantity += i.quantity
+                        i.product.is_offline = True
                         if i.product.available_quantity > i.product.quantity:
                             i.product.available_quantity = i.product.quantity
                         i.product.save()
                         onec_item.save()
-                warehouse_do.update(is_deleted=True)
+                warehouse_do.update(is_deleted=True, is_offline=True)
                 query.is_deleted = True
+                query.is_offline = True
                 query.save()
                 return Response({'message': 'deleted'}, status=204)
             return Response({'error': 'not found'}, status=404)

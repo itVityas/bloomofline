@@ -117,6 +117,7 @@ class OfflinePalletRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
                 query = self.queryset.filter(pk=pk).first()
                 if not query:
                     return Response({'error': 'not found'}, status=404)
+                request.data['is_offline'] = True
                 serializer = self.serializer_class(query, data=request.data)
                 if serializer.is_valid():
                     serializer.save()
@@ -139,6 +140,7 @@ class OfflinePalletRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
                 query = self.queryset.filter(pk=pk).first()
                 if not query:
                     return Response({'error': 'not found'}, status=404)
+                request.data['is_offline'] = True
                 serializer = self.serializer_class(query, data=request.data, partial=True)
                 if serializer.is_valid():
                     serializer.save()
@@ -161,6 +163,7 @@ class OfflinePalletRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
                 query = self.queryset.filter(pk=pk).first()
                 if query:
                     query.is_deleted = True
+                    query.is_offline = True
                     query.save()
                     return Response({'message': 'deleted'}, status=200)
                 return Response({'error': 'not found'}, status=404)

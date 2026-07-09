@@ -41,11 +41,13 @@ class OfflinePalletGenerateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('ТТН не найден')
 
         warehouse_ttn.is_close = True
+        warehouse_ttn.is_offline = True
         warehouse_ttn.save()
 
         return OfflinePallet.objects.create(
             barcode=barcode,
             ttn_number=warehouse_ttn,
+            is_offline=True
         )
 
 

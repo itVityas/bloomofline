@@ -83,14 +83,14 @@ class OfflineWarehouseDoBarcodeSerializer(serializers.ModelSerializer):
         if not product:
             raise serializers.ValidationError('Продукт не найден')
         if product.type_of_work_id != 3:
-            if OfflineNotPackaging.objects.filter(product=product, is_solved=False).exists():
+            if not OfflineNotPackaging.objects.filter(product=product, is_solved=False).exists():
                 OfflineNotPackaging.objects.create(
                     product=product,
                     warehouse_id=warehouse_id,
                     bloom_user_id=user.id,
                     found_date=date,
                     is_solved=False,
-                    is_offline=False,
+                    is_offline=True,
                     solve_date=None
                 )
             raise serializers.ValidationError('Товар не прошел Упаковку')
@@ -116,7 +116,10 @@ class OfflineWarehouseDoBarcodeSerializer(serializers.ModelSerializer):
                     date=date,
                     warehouse_id=warehouse_id,
                     warehouse_action_id=warehouse_action_id,
-                    user_id=user.id
+                    user_id=user.id,
+                    is_close=False,
+                    is_deleted=False,
+                    is_offline=True
                 )
 
             # проверка на дублирование в ttn
@@ -132,16 +135,10 @@ class OfflineWarehouseDoBarcodeSerializer(serializers.ModelSerializer):
             if warehouse_ttn.is_deleted:
                 raise serializers.ValidationError('ТТН уже удалено')
 
-            # проверка на дублирование в ttn
-            if OfflineWarehouseDo.objects.filter(
-                    warehouse_ttn=warehouse_ttn,
-                    product=product,
-                    is_deleted=False).exists():
-                raise serializers.ValidationError('Продукт уже добавлен в эту ТТН')
-
             if warehouse_action.type_of_work == 4:
                 product.is_shipment = False
                 product.available_quantity += quantity
+                product.is_offline = True
                 product.save()
 
             warehouse_do = OfflineWarehouseDo.objects.create(
@@ -207,14 +204,14 @@ class OfflineWarehouseDoPalletSerializer(serializers.ModelSerializer):
         else:
             raise serializers.ValidationError('Продукт не найден')
         if product.type_of_work_id != 3:
-            if OfflineNotPackaging.objects.filter(product=product, is_solved=False).exists():
+            if not OfflineNotPackaging.objects.filter(product=product, is_solved=False).exists():
                 OfflineNotPackaging.objects.create(
                     product=product,
                     warehouse_id=warehouse_id,
                     bloom_user_id=user.id,
                     found_date=date,
                     is_solved=False,
-                    is_offline=False,
+                    is_offline=True,
                     solve_date=None
                 )
             raise serializers.ValidationError('Товар не прошел Упаковку')
@@ -233,7 +230,10 @@ class OfflineWarehouseDoPalletSerializer(serializers.ModelSerializer):
                     date=date,
                     warehouse_id=warehouse_id,
                     warehouse_action_id=warehouse_action_id,
-                    user_id=user.id
+                    user_id=user.id,
+                    is_close=False,
+                    is_deleted=False,
+                    is_offline=True
                 )
 
             # проверка на дублирование в ttn
@@ -316,6 +316,7 @@ class OfflineWarehouseDoShipmentSerializer(serializers.ModelSerializer):
             if product.model.name.id not in model_name_ids:
                 raise serializers.ValidationError('Модель не найдена в выбранной 1C накладной')
         product.is_shipment = True
+        product.is_offline = True
         product.available_quantity -= quantity
         if product.available_quantity < 0:
             raise serializers.ValidationError('Недостаточно товара на складе ' + str(product.available_quantity))
@@ -325,6 +326,7 @@ class OfflineWarehouseDoShipmentSerializer(serializers.ModelSerializer):
         if onec_item.available_quantity < quantity:
             raise serializers.ValidationError('Недостаточно товара в 1C накладной')
         onec_item.available_quantity -= quantity
+        onec_item.is_offline = True
 
         bans = OfflineShipmentBans.objects.filter(
             Q(start_date=None) | Q(start_date__lt=datetype.today()),
@@ -354,6 +356,9 @@ class OfflineWarehouseDoShipmentSerializer(serializers.ModelSerializer):
                     warehouse_action_id=warehouse_action_id,
                     user_id=user.id,
                     onec_ttn=onec_ttn,
+                    is_close=False,
+                    is_deleted=False,
+                    is_offline=True
                 )
 
             if warehouse_ttn.is_close:
@@ -376,7 +381,9 @@ class OfflineWarehouseDoShipmentSerializer(serializers.ModelSerializer):
             warehouse_do = OfflineWarehouseDo.objects.create(
                 product=product,
                 warehouse_ttn=warehouse_ttn,
-                quantity=quantity
+                quantity=quantity,
+                is_offline=True,
+                is_deleted=False
             )
 
         return warehouse_do
@@ -449,6 +456,9 @@ class OfflineWarehouseDoShipmentDeleteSerializer(serializers.ModelSerializer):
                     warehouse_action_id=warehouse_action_id,
                     user_id=user.id,
                     onec_ttn=onec_ttn,
+                    is_close=False,
+                    is_deleted=False,
+                    is_offline=True
                 )
 
             if warehouse_ttn.is_close:
@@ -470,10 +480,12 @@ class OfflineWarehouseDoShipmentDeleteSerializer(serializers.ModelSerializer):
                     onec_item = OfflineOneCTTNItem.objects.filter(
                         onec_ttn=onec_ttn, model_name=i.product.model.name).first()
                     onec_item.available_quantity += i.quantity
+                    onec_item.is_offline = True
                     if onec_item.available_quantity > onec_item.count:
                         onec_item.available_quantity = onec_item.count
                     i.product.available_quantity += i.quantity
                     i.product.is_shipment = False
+                    i.product.is_offline = True
                     i.product.save()
                     onec_item.save()
                 list_new_do.append(warehouse_do_new)
@@ -488,11 +500,13 @@ class OfflineWarehouseDoShipmentDeleteSerializer(serializers.ModelSerializer):
                 onec_item = OfflineOneCTTNItem.objects.filter(
                     onec_ttn=onec_ttn, model_name=warehouse_do[0].product.model.name).first()
                 onec_item.available_quantity += warehouse_do[0].quantity
+                onec_item.is_offline = True
                 if onec_item.available_quantity > onec_item.count:
                     onec_item.available_quantity = onec_item.count
                 warehouse_do[0].product.available_quantity += warehouse_do[0].quantity
                 warehouse_do[0].product.is_shipment = False
+                warehouse_do[0].product.is_offline = True
                 warehouse_do[0].product.save()
                 onec_item.save()
-        warehouse_do.update(is_deleted=True)
+        warehouse_do.update(is_deleted=True, is_offline=True)
         return warehouse_do_new

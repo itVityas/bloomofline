@@ -59,7 +59,7 @@ class OfflineWarehouseTTN(models.Model):
     onec_ttn = models.ForeignKey(OfflineOneCTTN, on_delete=models.CASCADE, null=True, blank=True)
     user = models.ForeignKey(OfflineUser, on_delete=models.CASCADE)
     is_deleted = models.BooleanField(default=False, db_index=True)
-    create_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True, db_index=True)
 
     class Meta:
@@ -75,8 +75,8 @@ class OfflinePallet(models.Model):
     barcode = models.CharField(max_length=50, db_index=True)
     is_deleted = models.BooleanField(default=False, db_index=True)
     create_at = models.DateTimeField(auto_now_add=True)
-    update_at = models.DateTimeField(auto_now=True)
-    is_offline = models.BooleanField(default=True)
+    update_at = models.DateTimeField(auto_now=True, db_index=True)
+    is_offline = models.BooleanField(default=True, db_index=True)
 
     class Meta:
         app_label = "woffline"
@@ -120,10 +120,10 @@ class OfflineWarehouseDo(models.Model):
     product = models.ForeignKey(OfflineProducts, on_delete=models.CASCADE, db_constraint=False, null=True, blank=True)
     old_product = models.ForeignKey(OfflineOldProduct, on_delete=models.CASCADE, null=True, blank=True)
     quantity = models.PositiveIntegerField(default=1)
-    is_offline = models.BooleanField(default=True)
+    is_offline = models.BooleanField(default=True, db_index=True)
     is_deleted = models.BooleanField(default=False, db_index=True)
     create_at = models.DateTimeField(auto_now_add=True)
-    update_at = models.DateTimeField(auto_now=True)
+    update_at = models.DateTimeField(auto_now=True, db_index=True)
 
     class Meta:
         app_label = "woffline"
@@ -140,7 +140,7 @@ class OfflineNotPackaging(models.Model):
     found_date = models.DateTimeField(auto_now_add=True)
     solve_date = models.DateTimeField(blank=True, null=True)
     is_solved = models.BooleanField(default=False)
-    is_offline = models.BooleanField(default=True)
+    is_offline = models.BooleanField(default=True, db_index=True)
 
     class Meta:
         app_label = "woffline"

@@ -46,7 +46,7 @@ class OfflineProducts(models.Model):
     """
     Individual product items with barcodes, colors, and inventory information.
     """
-    barcode = models.CharField(max_length=18)
+    barcode = models.CharField(max_length=18, db_index=True)
     model = models.ForeignKey(
         OfflineModels,
         on_delete=models.CASCADE,
@@ -54,13 +54,14 @@ class OfflineProducts(models.Model):
     state = models.IntegerField()
     quantity = models.IntegerField(null=True, blank=True)
     available_quantity = models.IntegerField()
-    is_shipment = models.BooleanField(default=False)
+    is_shipment = models.BooleanField(default=False, db_index=True)
     type_of_work_id = models.IntegerField()
     work_date = models.DateField()
     module_id = models.IntegerField()
     color_code = models.CharField(max_length=4, null=True, blank=True)
     russian_title = models.CharField(max_length=50, null=True, blank=True)
     shift = models.CharField(max_length=1, null=True, blank=True)
+    is_offline = models.BooleanField(default=False, db_index=True)
 
     class Meta:
         ordering = ['-id']

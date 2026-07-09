@@ -146,6 +146,7 @@ class OfflineWarehouseDoRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIVie
                 query = self.queryset.filter(pk=pk).first()
                 if not query:
                     return Response({'error': 'not found'}, status=404)
+                request.data['is_offline'] = True
                 serializer = self.serializer_class(query, data=request.data)
                 if serializer.is_valid():
                     serializer.save()
@@ -169,6 +170,7 @@ class OfflineWarehouseDoRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIVie
                 query = self.queryset.filter(pk=pk).first()
                 if not query:
                     return Response({'error': 'not found'}, status=404)
+                request.data['is_offline'] = True
                 serializer = self.serializer_class(query, data=request.data, partial=True)
                 if serializer.is_valid():
                     serializer.save()
@@ -210,11 +212,14 @@ class OfflineWarehouseDoRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIVie
                             onec_item.available_quantity = onec_item.count
                         query.product.is_shipment = False
                         query.product.available_quantity += query.quantity
+                        query.product.is_offline = True
                         if query.product.available_quantity > query.product.quantity:
                             query.product.available_quantity = query.product.quantity
                         query.product.save()
+                        onec_item.is_offline = True
                         onec_item.save()
                     query.is_deleted = True
+                    query.is_offline = True
                     query.save()
                     return Response({'message': 'deleted'}, status=204)
                 return Response({'error': 'not found'}, status=404)
@@ -264,6 +269,7 @@ class OnlyOfflineWarehouseDoRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAP
             query = self.queryset.filter(pk=pk).first()
             if not query:
                 return Response({'error': 'not found'}, status=404)
+            request.data['is_offline'] = True
             serializer = self.serializer_class(query, data=request.data)
             if serializer.is_valid():
                 serializer.save()
@@ -279,6 +285,7 @@ class OnlyOfflineWarehouseDoRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAP
             query = self.queryset.filter(pk=pk).first()
             if not query:
                 return Response({'error': 'not found'}, status=404)
+            request.data['is_offline'] = True
             serializer = self.serializer_class(query, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
@@ -300,11 +307,14 @@ class OnlyOfflineWarehouseDoRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAP
                         onec_item.available_quantity = onec_item.count
                     query.product.is_shipment = False
                     query.product.available_quantity += query.quantity
+                    query.product.is_offline = True
                     if query.product.available_quantity > query.product.quantity:
                         query.product.available_quantity = query.product.quantity
                     query.product.save()
+                    onec_item.is_offline = True
                     onec_item.save()
                 query.is_deleted = True
+                query.is_offline = True
                 query.save()
                 return Response({'message': 'deleted'}, status=204)
             return Response({'error': 'not found'}, status=404)

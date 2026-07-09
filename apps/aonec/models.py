@@ -4,12 +4,13 @@ from apps.ashtrih.models import OfflineModelNames
 
 
 class OfflineOneCTTN(models.Model):
-    number = models.CharField(max_length=50)
-    series = models.CharField(max_length=50, blank=True, null=True)
+    number = models.CharField(max_length=50, db_index=True)
+    series = models.CharField(max_length=50, blank=True, null=True, db_index=True)
     shipment_date = models.DateField(blank=True, null=True)
     is_bel_receiver = models.BooleanField(null=True, blank=True)
     create_at = models.DateTimeField(auto_now_add=True)
-    update_at = models.DateTimeField(auto_now=True)
+    update_at = models.DateTimeField(auto_now=True, db_index=True)
+    is_offline = models.BooleanField(default=False, db_index=True)
 
     class Meta:
         app_label = "aonec"
@@ -25,7 +26,8 @@ class OfflineOneCTTNItem(models.Model):
     count = models.PositiveIntegerField(default=1)
     available_quantity = models.PositiveIntegerField(default=1)
     create_at = models.DateTimeField(auto_now_add=True)
-    update_at = models.DateTimeField(auto_now=True)
+    update_at = models.DateTimeField(auto_now=True, db_index=True)
+    is_offline = models.BooleanField(default=False, db_index=True)
 
     class Meta:
         app_label = "aonec"
