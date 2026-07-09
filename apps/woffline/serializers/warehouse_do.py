@@ -38,6 +38,10 @@ class OfflineWarehouseDoPostSerializer(serializers.ModelSerializer):
             'quantity',
         ]
 
+    def save(self, **kwargs):
+        kwargs['is_offline'] = True
+        return super().save(**kwargs)
+
 
 class OfflineWarehouseDoBarcodeSerializer(serializers.ModelSerializer):
     warehouse_ttn_number = serializers.CharField(write_only=True, required=True)

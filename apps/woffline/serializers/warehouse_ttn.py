@@ -33,6 +33,10 @@ class OfflineWarehouseTTNPostSerializer(serializers.ModelSerializer):
             'onec_ttn',
         ]
 
+    def save(self, **kwargs):
+        kwargs['is_offline'] = True
+        return super().save(**kwargs)
+
 
 class OfflineWarehouseTTNGetSerializer(serializers.ModelSerializer):
     user = OfflineUserSerializer(read_only=True, many=False)
