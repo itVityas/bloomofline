@@ -32,73 +32,46 @@ logger = logging.getLogger(__name__)
 
 def pallet_upload(update_date: datetime = None):
     pallets = OfflinePallet.objects.filter(is_offline=True)
-    pallet_list = []
     for i in pallets.iterator(chunk_size=1000):
-        pallet_list.append(
-            Pallet(
-                barcode=i.barcode,
-                ttn_number_id=i.ttn_number_id,
-                is_deleted=i.is_deleted,
-            )
+        Pallet.objects.update_or_create(
+            ttn_number=i.ttn_number,
+            barcode=i.barcode,
+            defaults={
+                'is_deleted': i.is_deleted,
+            }
         )
-    pallets.delete()
-    Pallet.objects.abulk_create(
-        pallet_list,
-        update_conflicts=True,
-        unique_fields=['id'],
-        update_fields=['barcode', 'ttn_number_id', 'is_deleted'])
 
 
 def warehouse_ttn_upload(update_date: datetime = None):
     warehouse_ttn = OfflineWarehouseTTN.objects.filter(is_offline=True)
-    warehouse_ttn_list = []
     for i in warehouse_ttn:
-        warehouse_ttn_list.append(
-            WarehouseTTN(
-                ttn_number=i.ttn_number,
-                is_close=i.is_close,
-                date=i.date,
-                warehouse_id=i.warehouse_id,
-                warehouse_action_id=i.warehouse_action_id,
-                user_id=i.user_id,
-                onec_ttn_id=i.onec_ttn_id,
-                is_deleted=i.is_deleted
-            )
+        WarehouseTTN.objects.update_or_create(
+            ttn_number=i.ttn_number,
+            user_id=i.user_id,
+            warehouse_id=i.warehouse_id,
+            warehouse_action_id=i.warehouse_action_id,
+            defaults={
+                'is_close': i.is_close,
+                'date': i.date,
+                'onec_ttn_id': i.onec_ttn_id,
+                'is_deleted': i.is_deleted,
+            }
         )
-    warehouse_ttn.delete()
-    WarehouseTTN.objects.bulk_create(
-        warehouse_ttn_list,
-        update_conflicts=True,
-        unique_fields=['ttn_number'],
-        update_fields=[
-            'is_close', 'date', 'warehouse_id', 'warehouse_action_id',
-            'user_id', 'onec_ttn_id', 'is_deleted'
-        ]
-    )
 
 
 def warehouse_do_upload(update_date: datetime = None):
     warehouse_do = OfflineWarehouseDo.objects.filter(is_offline=True)
-    warehouse_do_list = []
     for i in warehouse_do.iterator(chunk_size=1000):
-        warehouse_do_list.append(
-            WarehouseDo(
-                warehouse_ttn_id=i.warehouse_ttn_id,
-                product_id=i.product_id,
-                old_product_id=i.old_product_id,
-                quantity=i.quantity,
-                is_deleted=i.is_deleted,
-            )
+        WarehouseDo.objects.update_or_create(
+            id=i.id,
+            warehouse_ttn_id=i.warehouse_ttn_id,
+            product_id=i.product_id,
+            old_product_id=i.old_product_id,
+            defaults={
+                'quantity': i.quantity,
+                'is_deleted': i.is_deleted,
+            }
         )
-    warehouse_do.delete()
-    WarehouseDo.objects.bulk_create(
-        warehouse_do_list,
-        update_conflicts=True,
-        unique_fields=['id'],
-        update_fields=[
-            'warehouse_ttn_id', 'product_id', 'old_product_id', 'quantity', 'is_deleted'
-        ]
-    )
 
 
 def not_packaging_upload():
