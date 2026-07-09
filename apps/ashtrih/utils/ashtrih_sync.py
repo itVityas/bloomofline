@@ -23,6 +23,23 @@ from apps.sync.models import SyncDate
 logger = logging.getLogger(__name__)
 
 
+def product_update(update_date: SyncDate = None):
+    products = AshtrihProducts.objects.filter(is_offline=True)
+    products_ids = []
+    products_dict = {}
+    for i in products:
+        products_ids.append(i.id)
+        products_dict[i.id] = i
+    product_to_update = Products.objects.filter(id__in=products_ids)
+    for i in product_to_update:
+        buf = products_dict.get(i.id)
+        if buf:
+            i.available_quantity = buf.available_quantity
+            i.is_shipment = buf.is_shipment
+    products.delete()
+    Products.objects.bulk_update(product_to_update, ['available_quantity', 'is_shipment'])
+
+
 class ShtrihFullSync:
     def __init__(self, sync_date: SyncDate, batch_size: int = 1000):
         self.batch_size = batch_size
@@ -100,6 +117,7 @@ class ShtrihFullSync:
     def products_full_sync(self) -> float:
         try:
             time_start = time.time()
+            product_update()
             AshtrihProducts.objects.all().delete()
             latest_protocol = Protocols.objects.filter(
                 product_id=OuterRef('id')
@@ -269,6 +287,7 @@ class ShtrihSync:
     def product_sync(self) -> float:
         try:
             time_start = time.time()
+            product_update()
             last_product = AshtrihProducts.objects.order_by('-id').first()
             latest_protocol = Protocols.objects.filter(
                 product_id=OuterRef('id')

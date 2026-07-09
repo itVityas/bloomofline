@@ -13,6 +13,22 @@ from apps.sync.models import SyncDate
 logger = logging.getLogger(__name__)
 
 
+def onec_item_update(update_date: SyncDate = None):
+    onec_ttn_items = offline_OneCTTItem.objects.filter(is_offline=True)
+    items_ids = []
+    items_dict = {}
+    for i in onec_ttn_items:
+        items_ids.append(i.id)
+        items_dict[i.id] = i
+    onec_items_to_update = OneCTTNItem.objects.filter(id__in=items_ids)
+    for i in onec_items_to_update:
+        buf = items_dict.get(i.id)
+        if buf:
+            i.available_quantity = buf.available_quantity
+    onec_ttn_items.delete()
+    OneCTTNItem.objects.bulk_update(onec_ttn_items, ['available_quantity'])
+
+
 class OneCFullSync:
     def __init__(self, sync_date: SyncDate, batch_size: int = 1000):
         self.sync_date = sync_date
@@ -63,6 +79,7 @@ class OneCFullSync:
     def onec_ttn_item_full_sync(self) -> float:
         try:
             start_time = time.time()
+            onec_item_update()
             offline_OneCTTItem.objects.all().delete()
             onec_ttn_items = OneCTTNItem.objects.all().order_by('id').values(
                 'id', 'onec_ttn_id', 'model_name_id', 'count', 'available_quantity', 'create_at', 'update_at')
@@ -153,6 +170,7 @@ class OneCSync:
     def onec_ttn_item_sync(self) -> float:
         try:
             start_time = time.time()
+            onec_item_update()
             onec_ttn_item = OneCTTNItem.objects.filter(
                 update_at__gt=self.sync_date.last_sync).values(
                 'id', 'onec_ttn_id', 'model_name_id', 'count', 'available_quantity', 'create_at', 'update_at')
