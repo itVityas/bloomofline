@@ -25,7 +25,6 @@ def onec_item_update(update_date: SyncDate = None):
         buf = items_dict.get(i.id)
         if buf:
             i.available_quantity = buf.available_quantity
-    onec_ttn_items.delete()
     OneCTTNItem.objects.bulk_update(onec_ttn_items, ['available_quantity'])
 
 

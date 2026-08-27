@@ -36,7 +36,6 @@ def product_update(update_date: SyncDate = None):
         if buf:
             i.available_quantity = buf.available_quantity
             i.is_shipment = buf.is_shipment
-    products.delete()
     Products.objects.bulk_update(product_to_update, ['available_quantity', 'is_shipment'])
 
 
