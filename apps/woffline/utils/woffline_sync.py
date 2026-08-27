@@ -34,7 +34,7 @@ def pallet_upload(update_date: datetime = None):
     pallets = OfflinePallet.objects.filter(is_offline=True)
     for i in pallets.iterator(chunk_size=1000):
         Pallet.objects.update_or_create(
-            ttn_number=i.ttn_number,
+            ttn_number_id=i.ttn_number_id,
             barcode=i.barcode,
             defaults={
                 'is_deleted': i.is_deleted,
