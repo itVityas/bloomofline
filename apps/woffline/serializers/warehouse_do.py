@@ -168,6 +168,7 @@ class OfflineWarehouseDoPalletSerializer(serializers.ModelSerializer):
     product = OfflineProductGetSerializer(many=False, read_only=True)
     quantity = serializers.IntegerField(required=False, default=1)
     pallet_barcode = serializers.CharField(read_only=True)
+    pallet_use_count = serializers.IntegerField(read_only=True, default=0)
 
     class Meta:
         model = OfflineWarehouseDo
@@ -182,6 +183,7 @@ class OfflineWarehouseDoPalletSerializer(serializers.ModelSerializer):
             'warehouse_action_id',
             'model_name_id',
             'pallet_barcode',
+            'pallet_use_count',
         ]
 
     def create(self, validated_data):
@@ -260,7 +262,9 @@ class OfflineWarehouseDoPalletSerializer(serializers.ModelSerializer):
                 is_offline=True,
                 is_deleted=False
             )
-
+            col_rez = OfflineWarehouseDo.objects.filter(
+                product=product, is_deleted=False, warehouse_ttn__warehouse_action_id=7)
+            warehouse_do.pallet_use_count = col_rez.count()
         return warehouse_do
 
 

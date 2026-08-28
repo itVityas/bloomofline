@@ -469,7 +469,10 @@ class OnlyOfflineWarehouseDoPalletAPIView(CreateAPIView):
             serializer = self.serializer_class(data=request.data, context={'request': request})
             if serializer.is_valid():
                 do = serializer.save()
-                return Response(OfflineWarehouseDoGetSerializer(do).data, status=201)
+                count = do.pallet_use_count
+                response = OfflineWarehouseDoGetSerializer(do).data
+                response['pallet_use_count'] = count
+                return Response(response, status=201)
             return Response(serializer.errors, status=400)
         except Exception as e:
             global_state.set()
