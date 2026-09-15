@@ -10,7 +10,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 
 from apps.warehouse.models import WarehouseDo
-from apps.woffline.models import OfflineWarehouseDo
+from apps.ashtrih.models import OfflineProducts
+from apps.woffline.models import OfflineWarehouseDo, OfflinePallet
 from apps.warehouse.serializers.warehouse_do import (
     WarehouseDoGetSerializer,
     WarehouseDoPostSerializer,
@@ -469,9 +470,17 @@ class OnlyOfflineWarehouseDoPalletAPIView(CreateAPIView):
             serializer = self.serializer_class(data=request.data, context={'request': request})
             if serializer.is_valid():
                 do = serializer.save()
-                count = do.pallet_use_count
                 response = OfflineWarehouseDoGetSerializer(do).data
-                response['pallet_use_count'] = count
+                product = OfflineProducts.objects.filter(
+                        barcode=request.data.get('barcode')
+                    ).first()
+                col_rez = OfflineWarehouseDo.objects.filter(
+                    product=product, is_deleted=False, warehouse_ttn__warehouse_action_id=7)
+                pallets = OfflinePallet.objects.filter(
+                        ttn_number__in=col_rez.values_list('warehouse_ttn__ttn_number', flat=True)
+                    ).values_list('barcode', flat=True)
+                response['pallet_use_count'] = col_rez.count()
+                response['pallet_use'] = pallets
                 return Response(response, status=201)
             return Response(serializer.errors, status=400)
         except Exception as e:
