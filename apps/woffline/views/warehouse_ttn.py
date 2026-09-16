@@ -661,7 +661,7 @@ class OnlyOfflineWarehouseTTNProductsByUserIdAPIView(APIView):
             query = OfflineWarehouseTTN.objects.raw('''
                 SELECT * FROM woffline_offlinewarehousettn
                 WHERE user_id = %s AND is_deleted = 0
-                ORDER BY create_at DESC
+                ORDER BY date DESC, ttn_number DESC
                 LIMIT 1
             ''', [user_id])
 
