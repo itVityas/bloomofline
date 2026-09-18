@@ -14,9 +14,12 @@ class OfflinePalletSerializer(serializers.ModelSerializer):
 
 
 class OfflinePalletGenerateSerializer(serializers.ModelSerializer):
-    """barcode: 5: model + 2: month + 2: year + 3: col + 8: ttn_number
+    """
+    barcode: 5: model + 2: month + 2: year + 3: col + 8: ttn_number
+    old barcode: 5: model + 2: month + 2: year + 3: col + 7: ttn_number
     """
     ttn_number = serializers.CharField(write_only=True, required=True)
+    is_old = serializers.BooleanField(write_only=True, required=False, default=False)
     barcode = serializers.CharField(read_only=True, required=False)
 
     class Meta:
@@ -25,10 +28,11 @@ class OfflinePalletGenerateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         ttn_number = validated_data.pop('ttn_number', None)
+        is_old = validated_data.pop('is_old', False)
         if not ttn_number:
             raise serializers.ValidationError('Не указан номер ТТН')
 
-        barcode = generate_barcode(ttn_number=ttn_number)
+        barcode = generate_barcode(ttn_number=ttn_number, is_old=is_old)
         if 'Error' in barcode or not isinstance(barcode, str):
             raise serializers.ValidationError('Не удалось сгенерировать штрих-код' + barcode)
 

@@ -25,7 +25,7 @@ def len_word(str_in: str, col: int, replace='0') -> str:
     return str_in
 
 
-def generate_barcode(ttn_number: str) -> str:
+def generate_barcode(ttn_number: str, is_old: bool = False) -> str:
     warehouse_ttn = OfflineWarehouseTTN.objects.filter(ttn_number=ttn_number).first()
     if not warehouse_ttn:
         return "Error: ttn_number not found"
@@ -46,7 +46,10 @@ def generate_barcode(ttn_number: str) -> str:
     model = OfflineModels.objects.filter(id=warehouse_do.first().product.model.pk).first()
     model = len_word(str(model.code), 5)  # we need model with 5 character
 
-    ttn_number = len_word(str(ttn_number), 8)  # we need ttn_number with 8 character
+    if is_old:
+        ttn_number = len_word(str(ttn_number), 7)  # we need ttn_number with 7 for character for old
+    else:
+        ttn_number = len_word(str(ttn_number), 8)  # we need ttn_number with 8 character
 
     barcode = model + month + year + col + ttn_number
     if len(barcode) < 18:
