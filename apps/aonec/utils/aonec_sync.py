@@ -50,7 +50,6 @@ class OneCFullSync:
     def onec_ttn_full_sync(self) -> float:
         try:
             start_time = time.time()
-            offline_OneCTTN.objects.all().delete()
             onec_ttn = OneCTTN.objects.all().order_by('id').values(
                 'id', 'number', 'series', 'create_at', 'update_at', 'shipment_date', 'is_bel_receiver')
             list_ttn = []
@@ -78,8 +77,6 @@ class OneCFullSync:
     def onec_ttn_item_full_sync(self) -> float:
         try:
             start_time = time.time()
-            onec_item_update()
-            offline_OneCTTItem.objects.all().delete()
             onec_ttn_items = OneCTTNItem.objects.all().order_by('id').values(
                 'id', 'onec_ttn_id', 'model_name_id', 'count', 'available_quantity', 'create_at', 'update_at')
             list_ttn_item = []

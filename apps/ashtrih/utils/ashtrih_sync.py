@@ -63,8 +63,11 @@ class ShtrihFullSync:
     def model_names_full_sync(self) -> float:
         try:
             time_start = time.time()
-            AshtrihModelNames.objects.all().delete()
+            t1 = time.time()
             model_names = ModelNames.objects.all().values('id', 'name', 'short_name')
+            t2 = time.time()
+            print('model_name_get:', t2-t1)
+            t1 = time.time()
             list_names = []
             for i in model_names:
                 list_names.append(AshtrihModelNames(
@@ -73,6 +76,8 @@ class ShtrihFullSync:
                     short_name=i['short_name'],
                 ))
             AshtrihModelNames.objects.bulk_create(list_names)
+            t2 = time.time()
+            print('model_name_write:', t2-t1)
             time_stop = time.time()
             return time_stop - time_start
         except Exception as e:
@@ -82,11 +87,14 @@ class ShtrihFullSync:
     def models_full_sync(self) -> float:
         try:
             time_start = time.time()
-            AshtrihModels.objects.all().delete()
+            t1 = time.time()
             models = Models.objects.select_related('name').all().order_by('id').values(
                 'id', 'code', 'name_id', 'diagonal', 'weight', 'quantity',
                 'product_warranty', 'storage_warranty',
                 'create_at', 'update_at', 'production_code_id')
+            t2 = time.time()
+            print('model_get:', t2-t1)
+            t1 = time.time()
             list_models = []
             for i in models.iterator(chunk_size=self.batch_size):
                 list_models.append(AshtrihModels(
@@ -107,6 +115,8 @@ class ShtrihFullSync:
                     list_models.clear()
             if list_models:
                 AshtrihModels.objects.bulk_create(list_models)
+            t2 = time.time()
+            print('model_write:', t2-t1)
             time_stop = time.time()
             return time_stop - time_start
         except Exception as e:
@@ -116,8 +126,7 @@ class ShtrihFullSync:
     def products_full_sync(self) -> float:
         try:
             time_start = time.time()
-            product_update()
-            AshtrihProducts.objects.all().delete()
+            t1 = time.time()
             latest_protocol = Protocols.objects.filter(
                 product_id=OuterRef('id')
             ).order_by('-id')
@@ -158,10 +167,15 @@ class ShtrihFullSync:
                 )
                 for row in products.iterator(chunk_size=self.batch_size)
             )
+            t2 = time.time()
+            print('product_get:', t2-t1)
+            t1 = time.time()
             AshtrihProducts.objects.bulk_create(
                 ashtrih_generator,
                 batch_size=self.batch_size
             )
+            t2 = time.time()
+            print('product_write:', t2-t1)
             time_stop = time.time()
             return time_stop - time_start
         except Exception as e:

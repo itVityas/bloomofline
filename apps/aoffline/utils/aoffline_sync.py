@@ -36,7 +36,6 @@ class AccountFullSynchronization:
     def full_role_sync(self) -> float:
         try:
             start_time = time.time()
-            Role_offline.objects.all().delete()
             roles = Role.objects.all().values('id', 'name', 'description', 'create_at', 'update_at')
             for role in roles:
                 off_role = Role_offline.objects.create(
@@ -56,9 +55,12 @@ class AccountFullSynchronization:
     def full_user_sync(self) -> float:
         try:
             start_time = time.time()
-            User_offline.objects.all().delete()
+            t1 = time.time()
             users = User.objects.all().values('id', 'username', 'password', 'fio', 'is_active',
                                               'created_at', 'updated_at', 'departmant', 'position', 'room')
+            t2 = time.time()
+            print('user_get:', t2-t1)
+            t1 = time.time()
             for user in users:
                 User_offline.objects.update_or_create(
                     id=user['id'],
@@ -72,6 +74,8 @@ class AccountFullSynchronization:
                     position=user['position'],
                     room=user['room'],
                 )
+            t2 = time.time()
+            print('user_write:', t2-t1)
             stop_time = time.time()
             return stop_time - start_time
         except Exception as e:
@@ -81,7 +85,6 @@ class AccountFullSynchronization:
     def full_user_roles_sync(self) -> float:
         try:
             start_time = time.time()
-            UserRoles_offline.objects.all().delete()
             user_roles = UserRoles.objects.select_related('user', 'role').all().values(
                 'id', 'user_id', 'role_id', 'create_at', 'update_at')
             for user_role in user_roles.iterator(chunk_size=self.batch_size):

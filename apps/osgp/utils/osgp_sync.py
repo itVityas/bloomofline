@@ -30,7 +30,6 @@ class SGPFullSync:
     def bans_full_sync(self) -> float:
         try:
             start_time = time.time()
-            OfflineShipmentBans.objects.all().delete()
             bans_items = ShipmentBans.objects.all().order_by('id').values(
                 'id', 'order_number', 'order_date', 'order_number', 'order_date',
                 'start_date', 'end_date', 'production_code_id_id', 'model_name_id_id', 'barcode',

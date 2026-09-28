@@ -101,15 +101,6 @@ class WarehouseFullSync:
         try:
             time_full = dict()
             with transaction.atomic():
-                OfflineOldProduct.objects.all().delete()
-                OfflineWarehouseDo.objects.all().delete()
-                OfflinePallet.objects.all().delete()
-                OfflineWarehouseTTN.objects.all().delete()
-                OfflineWarehouse.objects.all().delete()
-                OfflineWarehouseAction.objects.all().delete()
-                OfflineTypeOfWork.objects.all().delete()
-                OfflineNotPackaging.objects.all().delete()
-
                 time_full['type_of_work'] = self.type_of_work_full_sync()
                 time_full['action'] = self.action_full_sync()
                 time_full['warehouse'] = self.warehouse_full_sync()
@@ -178,7 +169,6 @@ class WarehouseFullSync:
     def pallet_full_sync(self):
         try:
             start_time = time.time()
-            pallet_upload(self.sync_date.last_sync)
             pallet_list = Pallet.objects.all().values(
                 'id', 'barcode', 'ttn_number', 'is_deleted', 'create_at', 'update_at'
             )
@@ -227,7 +217,6 @@ class WarehouseFullSync:
     def warehouse_ttn_full_sync(self):
         try:
             start_time = time.time()
-            warehouse_ttn_upload(self.sync_date.last_sync)
             warehouse_ttn_list = WarehouseTTN.objects.all().values(
                 'ttn_number', 'is_close', 'date', 'warehouse_id', 'warehouse_action_id',
                 'onec_ttn_id', 'user_id', 'is_deleted', 'create_at', 'update_at'
@@ -289,7 +278,6 @@ class WarehouseFullSync:
     def warehouse_do_full_sync(self):
         try:
             start_time = time.time()
-            warehouse_do_upload(self.sync_date.last_sync)
             warehouse_do_list = WarehouseDo.objects.all().values(
                 'id', 'warehouse_ttn_id', 'product_id', 'quantity', 'old_product_id',
                 'create_at', 'update_at', 'is_deleted',
@@ -321,7 +309,6 @@ class WarehouseFullSync:
     def NotPackaging_full_sync(self):
         try:
             start_time = time.time()
-            not_packaging_upload()
             not_packaging_list = NotPackaging.objects.all().values(
                 'id', 'product_id', 'warehouse_id', 'bloom_user_id', 'found_date',
                 'solve_date', 'is_solved',

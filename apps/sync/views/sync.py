@@ -3,6 +3,9 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiResponse
 from django.db.models.functions import Now
+from django.db import connection
+from time import time
+import logging
 
 from apps.aoffline.utils.aoffline_sync import AccountFullSynchronization, AccountSync
 from apps.aonec.utils.aonec_sync import OneCFullSync, OneCSync
@@ -14,10 +17,13 @@ from bloomofline.db_routers import ModelDatabaseRouter
 from apps.warehouse.models import WarehouseAction
 
 
+logger = logging.getLogger(__name__)
+
+
 @extend_schema(tags=['Synchronization'])
 @extend_schema_view(
     get=extend_schema(
-        summary='Start full synchronization all app',
+        summary='Start full synchronization all app. Without sync!',
         description='All delete and then all download',
         responses={
             200: OpenApiResponse(description='Synchronization ok'),
@@ -36,6 +42,26 @@ class FullSyncAllView(APIView):
             if not sync_date:
                 sync_date = SyncDate(last_sync='1970-01-01 00:00:00')
             server_time = WarehouseAction.objects.annotate(current_time=Now()).first().current_time
+
+            time_start = time()
+            with connection.cursor() as cursor:
+                try:
+                    cursor.execute("PRAGMA foreign_keys = OFF;")
+                    cursor.execute("""
+                        SELECT name FROM sqlite_master
+                        WHERE type='table'
+                        AND name NOT LIKE 'sqlite_%';
+                    """)
+                    tables = [row[0] for row in cursor.fetchall()]
+                    for table in tables:
+                        cursor.execute(f"DELETE FROM {table};")
+                    cursor.execute("DELETE FROM sqlite_sequence;")
+                except Exception as e:
+                    logger.error(f"Error deleting data: {e}")
+                finally:
+                    cursor.execute("PRAGMA foreign_keys = ON;")
+            time_end = time()
+            print(f'delete: {time_end-time_start}')
 
             time_account = AccountFullSynchronization().full_sync()
             time_shtrih = ShtrihFullSync(sync_date=sync_date).full_sync()
