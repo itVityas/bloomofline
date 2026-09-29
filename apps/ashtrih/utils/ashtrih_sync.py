@@ -1,6 +1,6 @@
 import time
 
-from django.db import transaction
+from django.db import transaction, connection
 from django.db.models import OuterRef, Subquery
 import logging
 
@@ -43,6 +43,33 @@ class ShtrihFullSync:
     def __init__(self, sync_date: SyncDate, batch_size: int = 2000):
         self.batch_size = batch_size
         self.sync_date = sync_date
+
+    def _bulk_insert_products(self, products_qs) -> int:
+        INSERT_SQL = """
+            INSERT INTO ashtrih_offlineproducts
+                (id, model_id, barcode, state, quantity, available_quantity,
+                is_shipment, work_date, type_of_work_id, module_id,
+                color_code, russian_title, shift, is_offline)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
+        """
+        batch, total = [], 0
+        columns = (
+            'id', 'model_id', 'barcode', 'state', 'quantity',
+            'available_quantity', 'is_shipment', 'work_date',
+            'type_of_work_id', 'module_id', 'color_code',
+            'russian_title', 'shift',
+        )
+        with connection.cursor() as cursor:
+            for row in products_qs.iterator(chunk_size=self.batch_size):
+                batch.append(tuple(row[c] for c in columns))
+                if len(batch) >= self.batch_size:
+                    cursor.executemany(INSERT_SQL, batch)
+                    total += len(batch)
+                    batch.clear()
+            if batch:
+                cursor.executemany(INSERT_SQL, batch)
+                total += len(batch)
+        return total
 
     def full_sync(self) -> dict:
         try:
@@ -148,31 +175,31 @@ class ShtrihFullSync:
             ).order_by('id').values(
                 'id', 'model_id', 'barcode', 'state', 'quantity', 'available_quantity', 'is_shipment',
                 'work_date', 'type_of_work_id', 'module_id', 'color_code', 'russian_title', 'shift')
-            ashtrih_generator = (
-                AshtrihProducts(
-                    id=row['id'],
-                    model_id=row['model_id'],
-                    barcode=row['barcode'],
-                    state=row['state'],
-                    quantity=row['quantity'],
-                    available_quantity=row['available_quantity'],
-                    is_shipment=row['is_shipment'],
-                    work_date=row['work_date'],
-                    type_of_work_id=row['type_of_work_id'],
-                    module_id=row['module_id'],
-                    color_code=row['color_code'],
-                    russian_title=row['russian_title'],
-                    shift=row['shift'],
-                )
-                for row in products.iterator(chunk_size=self.batch_size)
-            )
+            # ashtrih_generator = (
+            #     AshtrihProducts(
+            #         id=row['id'],
+            #         model_id=row['model_id'],
+            #         barcode=row['barcode'],
+            #         state=row['state'],
+            #         quantity=row['quantity'],
+            #         available_quantity=row['available_quantity'],
+            #         is_shipment=row['is_shipment'],
+            #         work_date=row['work_date'],
+            #         type_of_work_id=row['type_of_work_id'],
+            #         module_id=row['module_id'],
+            #         color_code=row['color_code'],
+            #         russian_title=row['russian_title'],
+            #         shift=row['shift'],
+            #     )
+            #     for row in products
+            # )
             t2 = time.time()
             print('product_get:', t2-t1)
             t1 = time.time()
-            AshtrihProducts.objects.bulk_create(
-                ashtrih_generator,
-                batch_size=self.batch_size
-            )
+            # AshtrihProducts.objects.bulk_create(
+            #     ashtrih_generator
+            # )
+            self._bulk_insert_products(products)
             t2 = time.time()
             print('product_write:', t2-t1)
             time_stop = time.time()
