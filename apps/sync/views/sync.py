@@ -83,6 +83,8 @@ class FullSyncAllView(APIView):
                     new_sync_date.save()
 
                 cursor.execute("PRAGMA foreign_keys = ON;")
+                cursor.execute("PRAGMA journal_mode = WAL;")
+                cursor.execute("PRAGMA synchronous = NORMAL;")
 
             return Response({
                 'account': time_account,
