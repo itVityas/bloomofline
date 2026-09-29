@@ -6,8 +6,6 @@ from django.db.models.functions import Now
 from django.db import connection, transaction
 import logging
 
-from time import time
-
 from apps.aoffline.utils.aoffline_sync import AccountFullSynchronization, AccountSync
 from apps.aonec.utils.aonec_sync import OneCFullSync, OneCSync
 from apps.ashtrih.utils.ashtrih_sync import ShtrihFullSync, ShtrihSync
@@ -51,10 +49,8 @@ class FullSyncAllView(APIView):
                 cursor.execute("PRAGMA cache_size = -64000;")
                 cursor.execute("PRAGMA temp_store = MEMORY;")
 
-                time_start = time()
                 try:
                     with transaction.atomic():
-                        print(cursor.fetchone())
                         cursor.execute("""
                             SELECT name FROM sqlite_master
                             WHERE type='table'
@@ -66,9 +62,6 @@ class FullSyncAllView(APIView):
                         cursor.execute("DELETE FROM sqlite_sequence;")
                 except Exception as e:
                     logger.error(f"Error deleting data: {e}")
-
-                time_end = time()
-                print(f'delete: {time_end-time_start}')
 
                 with transaction.atomic():
                     time_account = AccountFullSynchronization().full_sync()
