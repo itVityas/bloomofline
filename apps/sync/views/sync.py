@@ -3,9 +3,10 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiResponse
 from django.db.models.functions import Now
-from django.db import connection
-from time import time
+from django.db import connection, transaction
 import logging
+
+from time import time
 
 from apps.aoffline.utils.aoffline_sync import AccountFullSynchronization, AccountSync
 from apps.aonec.utils.aonec_sync import OneCFullSync, OneCSync
@@ -43,36 +44,46 @@ class FullSyncAllView(APIView):
                 sync_date = SyncDate(last_sync='1970-01-01 00:00:00')
             server_time = WarehouseAction.objects.annotate(current_time=Now()).first().current_time
 
-            time_start = time()
             with connection.cursor() as cursor:
+                cursor.execute("PRAGMA foreign_keys = OFF;")
+                cursor.execute("PRAGMA journal_mode = MEMORY;")
+                cursor.execute("PRAGMA synchronous = OFF;")
+                cursor.execute("PRAGMA cache_size = -64000;")
+                cursor.execute("PRAGMA temp_store = MEMORY;")
+
+                time_start = time()
                 try:
-                    cursor.execute("PRAGMA foreign_keys = OFF;")
-                    cursor.execute("""
-                        SELECT name FROM sqlite_master
-                        WHERE type='table'
-                        AND name NOT LIKE 'sqlite_%';
-                    """)
-                    tables = [row[0] for row in cursor.fetchall()]
-                    for table in tables:
-                        cursor.execute(f"DELETE FROM {table};")
-                    cursor.execute("DELETE FROM sqlite_sequence;")
+                    with transaction.atomic():
+                        print(cursor.fetchone())
+                        cursor.execute("""
+                            SELECT name FROM sqlite_master
+                            WHERE type='table'
+                            AND name NOT LIKE 'django_%';
+                        """)
+                        tables = [row[0] for row in cursor.fetchall()]
+                        for table in tables:
+                            cursor.execute(f"DELETE FROM {table};")
+                        cursor.execute("DELETE FROM sqlite_sequence;")
                 except Exception as e:
                     logger.error(f"Error deleting data: {e}")
-                finally:
-                    cursor.execute("PRAGMA foreign_keys = ON;")
-            time_end = time()
-            print(f'delete: {time_end-time_start}')
 
-            time_account = AccountFullSynchronization().full_sync()
-            time_shtrih = ShtrihFullSync(sync_date=sync_date).full_sync()
-            time_ttn = OneCFullSync(sync_date=sync_date).full_sync()
-            time_warehouse = WarehouseFullSync(sync_date=sync_date).full_sync()
-            time_sgp = SGPFullSync(sync_date=sync_date).full_sync()
-            full_time = time_account.get('full', 0) + time_shtrih.get('full', 0) \
-                + time_ttn.get('full', 0) + time_warehouse.get('full', 0) \
-                + time_sgp.get('full', 0)
-            new_sync_date = SyncDate(last_sync=server_time)
-            new_sync_date.save()
+                time_end = time()
+                print(f'delete: {time_end-time_start}')
+
+                with transaction.atomic():
+                    time_account = AccountFullSynchronization().full_sync()
+                    time_shtrih = ShtrihFullSync(sync_date=sync_date).full_sync()
+                    time_ttn = OneCFullSync(sync_date=sync_date).full_sync()
+                    time_warehouse = WarehouseFullSync(sync_date=sync_date).full_sync()
+                    time_sgp = SGPFullSync(sync_date=sync_date).full_sync()
+                    full_time = time_account.get('full', 0) + time_shtrih.get('full', 0) \
+                        + time_ttn.get('full', 0) + time_warehouse.get('full', 0) \
+                        + time_sgp.get('full', 0)
+                    new_sync_date = SyncDate(last_sync=server_time)
+                    new_sync_date.save()
+
+                cursor.execute("PRAGMA foreign_keys = ON;")
+
             return Response({
                 'account': time_account,
                 'onec': time_ttn,

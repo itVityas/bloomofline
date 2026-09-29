@@ -40,17 +40,16 @@ def product_update(update_date: SyncDate = None):
 
 
 class ShtrihFullSync:
-    def __init__(self, sync_date: SyncDate, batch_size: int = 1000):
+    def __init__(self, sync_date: SyncDate, batch_size: int = 2000):
         self.batch_size = batch_size
         self.sync_date = sync_date
 
     def full_sync(self) -> dict:
         try:
             time_full = dict()
-            with transaction.atomic():
-                time_names = self.model_names_full_sync()
-                time_model = self.models_full_sync()
-                time_products = self.products_full_sync()
+            time_names = self.model_names_full_sync()
+            time_model = self.models_full_sync()
+            time_products = self.products_full_sync()
             time_full['names'] = time_names
             time_full['models'] = time_model
             time_full['products'] = time_products

@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class AccountFullSynchronization:
-    def __init__(self, batch_size=1000):
+    def __init__(self, batch_size=2000):
         self.batch_size = batch_size
 
     def full_sync(self) -> dict:
@@ -19,16 +19,15 @@ class AccountFullSynchronization:
         Full synchronization of account app
         """
         try:
-            with transaction.atomic():
-                time_dict = {}
-                time_roles = self.full_role_sync()
-                time_users = self.full_user_sync()
-                time_m2m = self.full_user_roles_sync()
-                time_dict['roles'] = time_roles
-                time_dict['users'] = time_users
-                time_dict['m2m'] = time_m2m
-                time_dict['full'] = time_roles + time_users + time_m2m
-                return time_dict
+            time_dict = {}
+            time_roles = self.full_role_sync()
+            time_users = self.full_user_sync()
+            time_m2m = self.full_user_roles_sync()
+            time_dict['roles'] = time_roles
+            time_dict['users'] = time_users
+            time_dict['m2m'] = time_m2m
+            time_dict['full'] = time_roles + time_users + time_m2m
+            return time_dict
         except Exception as e:
             logger.error('full_sync onec: ' + str('e'))
             raise e
