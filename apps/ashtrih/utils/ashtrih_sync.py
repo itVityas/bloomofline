@@ -54,9 +54,8 @@ class ShtrihFullSync:
             SELECT
                 p.id, p.model_id, p.barcode, p.state, p.quantity,
                 p.available_quantity, p.is_shipment,
-                pr.work_date, pr.shift,
-                w.type_of_work_id, w.module_id,
-                c.color_code, c.russian_title
+                pr.work_date, w.type_of_work_id, w.module_id,
+                c.color_code, c.russian_title, pr.shift
             FROM products p
             LEFT JOIN latest_protocol lp ON lp.product_id = p.id
             LEFT JOIN protocols pr      ON pr.id = lp.max_id
