@@ -54,12 +54,8 @@ class AccountFullSynchronization:
     def full_user_sync(self) -> float:
         try:
             start_time = time.time()
-            t1 = time.time()
             users = User.objects.all().values('id', 'username', 'password', 'fio', 'is_active',
                                               'created_at', 'updated_at', 'departmant', 'position', 'room')
-            t2 = time.time()
-            print('user_get:', t2-t1)
-            t1 = time.time()
             for user in users:
                 User_offline.objects.update_or_create(
                     id=user['id'],
@@ -73,8 +69,6 @@ class AccountFullSynchronization:
                     position=user['position'],
                     room=user['room'],
                 )
-            t2 = time.time()
-            print('user_write:', t2-t1)
             stop_time = time.time()
             return stop_time - start_time
         except Exception as e:
