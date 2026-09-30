@@ -120,7 +120,7 @@ class WarehouseFullSync:
             time_full['ttn'] = self.warehouse_ttn_full_sync()
             time_full['pallet'] = self.pallet_full_sync()
             time_full['old_product'] = self.old_product_full_sync()
-            # time_full['do'] = self.warehouse_do_full_sync()
+            time_full['do'] = self.warehouse_do_full_sync()
             time_full['not_packaging'] = self.NotPackaging_full_sync()
             time_full['full'] = sum(time_full.values())
             return time_full
@@ -273,31 +273,18 @@ class WarehouseFullSync:
     def warehouse_do_full_sync(self):
         try:
             start_time = time.time()
-            t1 = time.time()
-            warehouse_do_list = WarehouseDo.objects.all().values(
+            warehouse_do_list = WarehouseDo.objects.all().values_list(
                 'id', 'warehouse_ttn_id', 'product_id', 'quantity', 'old_product_id',
                 'create_at', 'update_at', 'is_deleted',
+                named=False
             )
-            bulk_list = []
-            for i in warehouse_do_list:
-                bulk_list.append(OfflineWarehouseDo(
-                    id=i['id'],
-                    warehouse_ttn_id=i['warehouse_ttn_id'],
-                    product_id=i['product_id'],
-                    quantity=i['quantity'],
-                    old_product_id=i['old_product_id'],
-                    create_at=i['create_at'],
-                    update_at=i['update_at'],
-                    is_deleted=i['is_deleted'],
-                    is_offline=False,
-                ))
-            t2 = time.time()
-            print('do get:', t2-t1)
-            t1 = time.time()
-            if bulk_list:
-                OfflineWarehouseDo.objects.bulk_create(bulk_list)
-            t2 = time.time()
-            print('do write:', t2-t1)
+            SQL_WAREHOUSEDO_INSERT = """
+                INSERT INTO woffline_offlinewarehousedo
+                (id, warehouse_ttn_id, product_id, quantity, old_product_id,
+                create_at, update_at, is_deleted, is_offline)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)
+            """
+            self._executemany(SQL_WAREHOUSEDO_INSERT, warehouse_do_list)
             end_time = time.time()
             return end_time - start_time
         except Exception as e:
