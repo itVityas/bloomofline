@@ -1,6 +1,6 @@
 import time
 
-from django.db import transaction, connection
+from django.db import transaction, connection, connections
 from django.db.models import OuterRef, Subquery
 import logging
 
@@ -44,30 +44,52 @@ class ShtrihFullSync:
         self.batch_size = batch_size
         self.sync_date = sync_date
 
-    def _bulk_insert_products(self, products_qs) -> int:
-        INSERT_SQL = """
-            INSERT INTO ashtrih_offlineproducts
+    def _iter_products_mssql(self, batch_size: int):
+        sql = """
+            WITH latest_protocol AS (
+                SELECT product_id, MAX(id) AS max_id
+                FROM protocols
+                GROUP BY product_id
+            )
+            SELECT
+                p.id, p.model_id, p.barcode, p.state, p.quantity,
+                p.available_quantity, p.is_shipment,
+                pr.work_date, pr.shift,
+                w.type_of_work_id, w.module_id,
+                c.color_code, c.russian_title
+            FROM products p
+            LEFT JOIN latest_protocol lp ON lp.product_id = p.id
+            LEFT JOIN protocols pr      ON pr.id = lp.max_id
+            LEFT JOIN workplaces w       ON w.id = pr.workplace_id
+            LEFT JOIN colors c          ON c.id = p.color_id
+        """
+        with connections['bloom'].cursor() as cursor:
+            cursor.execute(sql)
+            while True:
+                rows = cursor.fetchmany(batch_size)
+                if not rows:
+                    break
+                for row in rows:
+                    yield row
+
+    def _bulk_insert_products_from_mssql(self) -> int:
+        PRODUCT_INSERT_SQL = """
+        INSERT INTO ashtrih_offlineproducts
                 (id, model_id, barcode, state, quantity, available_quantity,
                 is_shipment, work_date, type_of_work_id, module_id,
                 color_code, russian_title, shift, is_offline)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
         """
         batch, total = [], 0
-        columns = (
-            'id', 'model_id', 'barcode', 'state', 'quantity',
-            'available_quantity', 'is_shipment', 'work_date',
-            'type_of_work_id', 'module_id', 'color_code',
-            'russian_title', 'shift',
-        )
-        with connection.cursor() as cursor:
-            for row in products_qs.iterator(chunk_size=self.batch_size):
-                batch.append(tuple(row[c] for c in columns))
+        with connection.cursor() as sqlite_cursor:
+            for row in self._iter_products_mssql(self.batch_size):
+                batch.append(row)
                 if len(batch) >= self.batch_size:
-                    cursor.executemany(INSERT_SQL, batch)
+                    sqlite_cursor.executemany(PRODUCT_INSERT_SQL, batch)
                     total += len(batch)
                     batch.clear()
             if batch:
-                cursor.executemany(INSERT_SQL, batch)
+                sqlite_cursor.executemany(PRODUCT_INSERT_SQL, batch)
                 total += len(batch)
         return total
 
@@ -89,11 +111,7 @@ class ShtrihFullSync:
     def model_names_full_sync(self) -> float:
         try:
             time_start = time.time()
-            t1 = time.time()
             model_names = ModelNames.objects.all().values('id', 'name', 'short_name')
-            t2 = time.time()
-            print('model_name_get:', t2-t1)
-            t1 = time.time()
             list_names = []
             for i in model_names:
                 list_names.append(AshtrihModelNames(
@@ -102,8 +120,6 @@ class ShtrihFullSync:
                     short_name=i['short_name'],
                 ))
             AshtrihModelNames.objects.bulk_create(list_names)
-            t2 = time.time()
-            print('model_name_write:', t2-t1)
             time_stop = time.time()
             return time_stop - time_start
         except Exception as e:
@@ -113,14 +129,10 @@ class ShtrihFullSync:
     def models_full_sync(self) -> float:
         try:
             time_start = time.time()
-            t1 = time.time()
             models = Models.objects.select_related('name').all().order_by('id').values(
                 'id', 'code', 'name_id', 'diagonal', 'weight', 'quantity',
                 'product_warranty', 'storage_warranty',
                 'create_at', 'update_at', 'production_code_id')
-            t2 = time.time()
-            print('model_get:', t2-t1)
-            t1 = time.time()
             list_models = []
             for i in models.iterator(chunk_size=self.batch_size):
                 list_models.append(AshtrihModels(
@@ -141,8 +153,6 @@ class ShtrihFullSync:
                     list_models.clear()
             if list_models:
                 AshtrihModels.objects.bulk_create(list_models)
-            t2 = time.time()
-            print('model_write:', t2-t1)
             time_stop = time.time()
             return time_stop - time_start
         except Exception as e:
@@ -152,56 +162,7 @@ class ShtrihFullSync:
     def products_full_sync(self) -> float:
         try:
             time_start = time.time()
-            t1 = time.time()
-            latest_protocol = Protocols.objects.filter(
-                product_id=OuterRef('id')
-            ).order_by('-id')
-            latest_work_date = Subquery(latest_protocol.values('work_date')[:1])
-            shift = Subquery(latest_protocol.values('shift')[:1])
-            latest_type_of_work_id = Subquery(
-                latest_protocol.values('workplace__type_of_work_id')[:1]
-            )
-            latest_module_id = Subquery(
-                latest_protocol.values('workplace__module_id')[:1]
-            )
-            color_subquery = Colors.objects.filter(id=OuterRef('color_id'))
-            products = Products.objects.annotate(
-                work_date=latest_work_date,
-                shift=shift,
-                type_of_work_id=latest_type_of_work_id,
-                module_id=latest_module_id,
-                color_code=Subquery(color_subquery.values('color_code')[:1]),
-                russian_title=Subquery(color_subquery.values('russian_title')[:1])
-            ).order_by('id').values(
-                'id', 'model_id', 'barcode', 'state', 'quantity', 'available_quantity', 'is_shipment',
-                'work_date', 'type_of_work_id', 'module_id', 'color_code', 'russian_title', 'shift')
-            # ashtrih_generator = (
-            #     AshtrihProducts(
-            #         id=row['id'],
-            #         model_id=row['model_id'],
-            #         barcode=row['barcode'],
-            #         state=row['state'],
-            #         quantity=row['quantity'],
-            #         available_quantity=row['available_quantity'],
-            #         is_shipment=row['is_shipment'],
-            #         work_date=row['work_date'],
-            #         type_of_work_id=row['type_of_work_id'],
-            #         module_id=row['module_id'],
-            #         color_code=row['color_code'],
-            #         russian_title=row['russian_title'],
-            #         shift=row['shift'],
-            #     )
-            #     for row in products
-            # )
-            t2 = time.time()
-            print('product_get:', t2-t1)
-            t1 = time.time()
-            # AshtrihProducts.objects.bulk_create(
-            #     ashtrih_generator
-            # )
-            self._bulk_insert_products(products)
-            t2 = time.time()
-            print('product_write:', t2-t1)
+            self._bulk_insert_products_from_mssql()
             time_stop = time.time()
             return time_stop - time_start
         except Exception as e:
