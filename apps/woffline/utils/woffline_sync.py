@@ -1,7 +1,7 @@
 import time
 from datetime import datetime
 
-from django.db import transaction
+from django.db import transaction, connection
 import logging
 
 from apps.sync.models import SyncDate
@@ -97,6 +97,20 @@ class WarehouseFullSync:
         self.sync_date = sync_date
         self.batch_size = batch_size
 
+    def _executemany(self, sql: str, qs) -> int:
+        batch, total = [], 0
+        with connection.cursor() as cursor:
+            for row in qs.iterator(chunk_size=self.batch_size):
+                batch.append(row)
+                if len(batch) >= self.batch_size:
+                    cursor.executemany(sql, batch)
+                    total += len(batch)
+                    batch.clear()
+            if batch:
+                cursor.executemany(sql, batch)
+                total += len(batch)
+        return total
+
     def full_sync(self):
         try:
             time_full = dict()
@@ -106,7 +120,7 @@ class WarehouseFullSync:
             time_full['ttn'] = self.warehouse_ttn_full_sync()
             time_full['pallet'] = self.pallet_full_sync()
             time_full['old_product'] = self.old_product_full_sync()
-            time_full['do'] = self.warehouse_do_full_sync()
+            # time_full['do'] = self.warehouse_do_full_sync()
             time_full['not_packaging'] = self.NotPackaging_full_sync()
             time_full['full'] = sum(time_full.values())
             return time_full
@@ -168,22 +182,16 @@ class WarehouseFullSync:
     def pallet_full_sync(self):
         try:
             start_time = time.time()
-            pallet_list = Pallet.objects.all().values(
-                'id', 'barcode', 'ttn_number', 'is_deleted', 'create_at', 'update_at'
+            pallet_list = Pallet.objects.all().values_list(
+                'id', 'ttn_number', 'barcode', 'is_deleted', 'create_at', 'update_at',
+                named=False
             )
-            bulk_list = []
-            for i in pallet_list:
-                ttn = OfflineWarehouseTTN.objects.get(ttn_number=i['ttn_number'])
-                bulk_list.append(OfflinePallet(
-                    id=i['id'],
-                    ttn_number=ttn,
-                    barcode=i['barcode'],
-                    is_deleted=i['is_deleted'],
-                    create_at=i['create_at'],
-                    update_at=i['update_at'],
-                    is_offline=False
-                ))
-            OfflinePallet.objects.bulk_create(bulk_list)
+            PALLET_INSERT_SQL = """
+                INSERT INTO woffline_offlinepallet
+                    (id, ttn_number_id, barcode, is_deleted, create_at, update_at, is_offline)
+                VALUES (?, ?, ?, ?, ?, ?, 0)
+            """
+            self._executemany(PALLET_INSERT_SQL, pallet_list)
             end_time = time.time()
             return end_time - start_time
         except Exception as e:
@@ -216,30 +224,18 @@ class WarehouseFullSync:
     def warehouse_ttn_full_sync(self):
         try:
             start_time = time.time()
-            warehouse_ttn_list = WarehouseTTN.objects.all().values(
+            warehouse_ttn_list = WarehouseTTN.objects.all().values_list(
                 'ttn_number', 'is_close', 'date', 'warehouse_id', 'warehouse_action_id',
-                'onec_ttn_id', 'user_id', 'is_deleted', 'create_at', 'update_at'
+                'onec_ttn_id', 'user_id', 'is_deleted', 'create_at', 'update_at',
+                named=False
             )
-            bulk_list = []
-            for i in warehouse_ttn_list.iterator(chunk_size=self.batch_size):
-                bulk_list.append(OfflineWarehouseTTN(
-                    ttn_number=i['ttn_number'],
-                    is_close=i['is_close'],
-                    date=i['date'],
-                    warehouse_id=i['warehouse_id'],
-                    warehouse_action_id=i['warehouse_action_id'],
-                    onec_ttn_id=i['onec_ttn_id'],
-                    user_id=i['user_id'],
-                    is_deleted=i['is_deleted'],
-                    create_at=i['create_at'],
-                    update_at=i['update_at'],
-                    is_offline=False
-                ))
-                if len(bulk_list) >= self.batch_size:
-                    OfflineWarehouseTTN.objects.bulk_create(bulk_list)
-                    bulk_list.clear()
-            if bulk_list:
-                OfflineWarehouseTTN.objects.bulk_create(bulk_list)
+            TTN_INSERT_SQL = """
+                INSERT INTO woffline_offlinewarehousettn
+                    (ttn_number, is_close, date, warehouse_id, warehouse_action_id,
+                    onec_ttn_id, user_id, is_deleted, create_at, update_at, is_offline)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
+            """
+            self._executemany(TTN_INSERT_SQL, warehouse_ttn_list)
             end_time = time.time()
             return end_time - start_time
         except Exception as e:
@@ -277,12 +273,13 @@ class WarehouseFullSync:
     def warehouse_do_full_sync(self):
         try:
             start_time = time.time()
+            t1 = time.time()
             warehouse_do_list = WarehouseDo.objects.all().values(
                 'id', 'warehouse_ttn_id', 'product_id', 'quantity', 'old_product_id',
                 'create_at', 'update_at', 'is_deleted',
             )
             bulk_list = []
-            for i in warehouse_do_list.iterator(chunk_size=self.batch_size):
+            for i in warehouse_do_list:
                 bulk_list.append(OfflineWarehouseDo(
                     id=i['id'],
                     warehouse_ttn_id=i['warehouse_ttn_id'],
@@ -294,11 +291,13 @@ class WarehouseFullSync:
                     is_deleted=i['is_deleted'],
                     is_offline=False,
                 ))
-                if len(bulk_list) >= self.batch_size:
-                    OfflineWarehouseDo.objects.bulk_create(bulk_list)
-                    bulk_list.clear()
+            t2 = time.time()
+            print('do get:', t2-t1)
+            t1 = time.time()
             if bulk_list:
                 OfflineWarehouseDo.objects.bulk_create(bulk_list)
+            t2 = time.time()
+            print('do write:', t2-t1)
             end_time = time.time()
             return end_time - start_time
         except Exception as e:
