@@ -114,16 +114,25 @@ class SyncAllView(APIView):
                 sync_date = SyncDate(last_sync='1970-01-01 00:00:00')
             server_time = WarehouseAction.objects.annotate(current_time=Now()).first().current_time
 
-            time_account = AccountSync().sync()
-            time_shtrih = ShtrihSync(sync_date=sync_date).sync()
-            time_ttn = OneCSync(sync_date=sync_date).sync()
-            time_warehouse = WarehouseSync(sync_date=sync_date).sync()
-            time_sgp = SGPSync(sync_date=sync_date).sync()
-            full_time = time_account.get('full', 0) + time_shtrih.get('full', 0) \
-                + time_ttn.get('full', 0) + time_warehouse.get('full', 0) \
-                + time_sgp.get('full', 0)
-            new_sync_date = SyncDate(last_sync=server_time)
-            new_sync_date.save()
+            with connection.cursor() as cursor:
+                cursor.execute("PRAGMA journal_mode = WAL;")
+                cursor.execute("PRAGMA synchronous = NORMAL;")   # НЕ OFF — для инкремента
+                cursor.execute("PRAGMA busy_timeout = 5000;")    # ждать блокировки
+                cursor.execute("PRAGMA temp_store = MEMORY;")
+                cursor.execute("PRAGMA cache_size = -64000;")
+                cursor.execute("PRAGMA wal_autocheckpoint = 1000;")
+                cursor.execute("PRAGMA foreign_keys = ON;")
+
+                time_account = AccountSync().sync()
+                time_shtrih = ShtrihSync(sync_date=sync_date).sync()
+                time_ttn = OneCSync(sync_date=sync_date).sync()
+                time_warehouse = WarehouseSync(sync_date=sync_date).sync()
+                time_sgp = SGPSync(sync_date=sync_date).sync()
+                full_time = time_account.get('full', 0) + time_shtrih.get('full', 0) \
+                    + time_ttn.get('full', 0) + time_warehouse.get('full', 0) \
+                    + time_sgp.get('full', 0)
+                new_sync_date = SyncDate(last_sync=server_time)
+                new_sync_date.save()
             return Response({
                 'account': time_account,
                 'onec': time_ttn,
