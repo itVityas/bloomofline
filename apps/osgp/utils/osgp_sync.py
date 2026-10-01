@@ -11,18 +11,17 @@ logger = logging.getLogger(__name__)
 
 
 class SGPFullSync:
-    def __init__(self, sync_date: SyncDate, batch_size: int = 1000):
+    def __init__(self, sync_date: SyncDate, batch_size: int = 2000):
         self.sync_date = sync_date
         self.batch_size = batch_size
 
     def full_sync(self) -> dict:
         try:
-            with transaction.atomic():
-                time_full = dict()
-                time_ban = self.bans_full_sync()
-                time_full['ban'] = time_ban
-                time_full['full'] = time_ban
-                return time_full
+            time_full = dict()
+            time_ban = self.bans_full_sync()
+            time_full['ban'] = time_ban
+            time_full['full'] = time_ban
+            return time_full
         except Exception as e:
             logger.error('onec full sync: ' + str(e))
             raise e
@@ -30,7 +29,6 @@ class SGPFullSync:
     def bans_full_sync(self) -> float:
         try:
             start_time = time.time()
-            OfflineShipmentBans.objects.all().delete()
             bans_items = ShipmentBans.objects.all().order_by('id').values(
                 'id', 'order_number', 'order_date', 'order_number', 'order_date',
                 'start_date', 'end_date', 'production_code_id_id', 'model_name_id_id', 'barcode',
@@ -78,7 +76,8 @@ class SGPSync:
     def sync(self) -> dict:
         try:
             time_full = dict()
-            time_ban = self.ban_sync()
+            with transaction.atomic():
+                time_ban = self.ban_sync()
             time_full['ban'] = time_ban
             time_full['full'] = time_ban
             return time_full

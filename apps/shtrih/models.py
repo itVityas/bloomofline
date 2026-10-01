@@ -234,3 +234,34 @@ class Protocols(models.Model):
 
     def __str__(self):
         return f"Protocol {self.id}"
+
+
+class Valuable_components(models.Model):
+    code = models.IntegerField(db_column='code', primary_key=True)
+    name = models.CharField(max_length=50, db_column='name')
+    active = models.BooleanField(db_column='active')
+    create_at = models.DateTimeField(db_column='create_at')
+
+    class Meta:
+        managed = False
+        db_table = 'valuable_components'
+        ordering = ['code']
+
+
+class Duplicates(models.Model):
+    product = models.ForeignKey(Products, on_delete=models.CASCADE, db_column='product_id')
+    count = models.SmallIntegerField(db_column='count')
+
+    class Meta:
+        managed = False
+        db_table = 'duplicates'
+        ordering = ['id']
+
+
+class ShtrihUser(models.Model):
+    login = models.CharField(max_length=15)
+    full_name = models.CharField(max_length=50)
+
+    class Meta:
+        managed = False
+        db_table = 'users'

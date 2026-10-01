@@ -29,20 +29,19 @@ def onec_item_update(update_date: SyncDate = None):
 
 
 class OneCFullSync:
-    def __init__(self, sync_date: SyncDate, batch_size: int = 1000):
+    def __init__(self, sync_date: SyncDate, batch_size: int = 2000):
         self.sync_date = sync_date
         self.batch_size = batch_size
 
     def full_sync(self) -> dict:
         try:
-            with transaction.atomic():
-                time_full = dict()
-                time_ttn = self.onec_ttn_full_sync()
-                time_item = self.onec_ttn_item_full_sync()
-                time_full['ttn'] = time_ttn
-                time_full['ttn_item'] = time_item
-                time_full['full'] = time_ttn + time_item
-                return time_full
+            time_full = dict()
+            time_ttn = self.onec_ttn_full_sync()
+            time_item = self.onec_ttn_item_full_sync()
+            time_full['ttn'] = time_ttn
+            time_full['ttn_item'] = time_item
+            time_full['full'] = time_ttn + time_item
+            return time_full
         except Exception as e:
             logger.error('onec full sync: ' + str(e))
             raise e
@@ -50,7 +49,6 @@ class OneCFullSync:
     def onec_ttn_full_sync(self) -> float:
         try:
             start_time = time.time()
-            offline_OneCTTN.objects.all().delete()
             onec_ttn = OneCTTN.objects.all().order_by('id').values(
                 'id', 'number', 'series', 'create_at', 'update_at', 'shipment_date', 'is_bel_receiver')
             list_ttn = []
@@ -78,8 +76,6 @@ class OneCFullSync:
     def onec_ttn_item_full_sync(self) -> float:
         try:
             start_time = time.time()
-            onec_item_update()
-            offline_OneCTTItem.objects.all().delete()
             onec_ttn_items = OneCTTNItem.objects.all().order_by('id').values(
                 'id', 'onec_ttn_id', 'model_name_id', 'count', 'available_quantity', 'create_at', 'update_at')
             list_ttn_item = []
@@ -112,9 +108,10 @@ class OneCSync:
 
     def sync(self) -> dict:
         try:
-            time_full = dict()
-            time_ttn = self.onec_ttn_sync()
-            time_item = self.onec_ttn_item_sync()
+            with transaction.atomic():
+                time_full = dict()
+                time_ttn = self.onec_ttn_sync()
+                time_item = self.onec_ttn_item_sync()
             time_full['ttn'] = time_ttn
             time_full['ttn_item'] = time_item
             time_full['full'] = time_ttn + time_item
