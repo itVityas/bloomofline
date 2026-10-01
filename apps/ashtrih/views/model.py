@@ -6,6 +6,7 @@ from rest_framework.response import Response
 
 from apps.ashtrih.models import OfflineModels
 from apps.shtrih.models import Models
+from apps.shtrih.serializers.model import ModelsSerializer
 from apps.ashtrih.serializers.model import OfflineModelsSerializer
 from apps.ashtrih.permission import StrihPermission
 from bloomofline.paginator import StandartResultPaginator
@@ -69,7 +70,7 @@ class OfflineModelListView(ListAPIView):
         try:
             if global_state.get():
                 query = self.filter_queryset(Models.objects.all())
-                serializer = self.serializer_class
+                serializer = ModelsSerializer
                 page = self.paginate_queryset(query)
                 return self.get_paginated_response(serializer(page, many=True).data)
             else:
