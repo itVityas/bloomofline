@@ -76,7 +76,7 @@ class FullSyncAllView(APIView):
                     new_sync_date.save()
 
                 cursor.execute("PRAGMA foreign_keys = ON;")
-                cursor.execute("PRAGMA journal_mode = WAL;")
+                cursor.execute("PRAGMA journal_mode = DELETE;")
                 cursor.execute("PRAGMA synchronous = NORMAL;")
 
             return Response({
@@ -133,6 +133,7 @@ class SyncAllView(APIView):
                     + time_sgp.get('full', 0)
                 new_sync_date = SyncDate(last_sync=server_time)
                 new_sync_date.save()
+                cursor.execute("PRAGMA journal_mode = DELETE;")
             return Response({
                 'account': time_account,
                 'onec': time_ttn,
