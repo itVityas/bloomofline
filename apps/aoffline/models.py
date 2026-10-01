@@ -46,7 +46,7 @@ class OfflineUser(AbstractBaseUser):
 
 class OfflineUserRoles(models.Model):
     id = models.BigIntegerField(primary_key=True)
-    user = models.ForeignKey(OfflineUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(OfflineUser, on_delete=models.CASCADE, related_name="userroles_set")
     role = models.ForeignKey(
         OfflineRole, on_delete=models.SET_NULL, blank=True, null=True)
     create_at = models.DateTimeField(auto_now_add=True)

@@ -78,3 +78,15 @@ python3 manage.py dumpdata account.Role --output=fixture/role.json
 python3 manage.py dumpdata warehouse.TypeOfWork --output=fixture/type_of_work.json
 python3 manage.py dumpdata warehouse.Warehouse --output=fixture/warehouse.json
 python3 manage.py dumpdata warehouse.WarehouseAction --output=fixture/warehouse_action.json
+
+
+## Tests
+
+To run tests use console commands:
+```
+# start all project tests
+python3 manage.py test
+
+# choose specific app
+python3 manage.py test apps.< app-name: aoffline | onec | osgp | ashtrih | woffline >.tests
+```
