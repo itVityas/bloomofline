@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.ashtrih.models import OfflineModelNames
+from apps.ashtrih.models import OfflineModelNames, OfflineModels
 
 
 class OfflineModelNamesSerializer(serializers.ModelSerializer):
@@ -19,6 +19,30 @@ class OfflineModelNamesSerializer(serializers.ModelSerializer):
     class Meta:
         model = OfflineModelNames
         fields = '__all__'
+
+
+class OfflineModelNamesCodeSerializer(serializers.ModelSerializer):
+    """
+    Minimal serializer for model names focusing on code-based identification.
+
+    This serializer is optimized for:
+    - Fast API responses
+    - Code lookups and references
+    - Reduced data transfer overhead
+
+    Fields:
+        - id: Primary key
+        - code: Model identification code
+    """
+    code = serializers.SerializerMethodField(method_name='get_code')
+
+    class Meta:
+        model = OfflineModelNames
+        fields = ('id', 'name', 'short_name', 'code')
+
+    def get_code(self, obj) -> int:
+        model = OfflineModels.objects.filter(name=obj).first()
+        return model.code if model else 0
 
 
 class OfflineCountSerializer(serializers.Serializer):

@@ -1,4 +1,4 @@
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, extend_schema_view
@@ -7,7 +7,11 @@ from rest_framework.response import Response
 
 from apps.ashtrih.models import OfflineModelNames, OfflineModels, OfflineProducts
 from apps.shtrih.models import Products, Models, ModelNames
-from apps.ashtrih.serializers.model_name import OfflineModelNamesSerializer, OfflineCountSerializer
+from apps.ashtrih.serializers.model_name import (
+    OfflineModelNamesSerializer,
+    OfflineCountSerializer,
+    OfflineModelNamesCodeSerializer
+)
 from apps.ashtrih.permission import StrihPermission
 from bloomofline.paginator import StandartResultPaginator
 from apps.ashtrih.filterset import ModelNamesFilter
@@ -112,3 +116,25 @@ class OfflineProductCountByModelNameView(APIView):
         except Exception as e:
             global_state.set()
             return Response({'error': str(e)})
+
+
+@extend_schema(tags=['Offline Shtrih'])
+@extend_schema_view(
+    get=extend_schema(
+        summary='Only offline, get model name and code',
+        description="description='Permission: admin, strih",
+    ),
+)
+class OfflineModelNameCodeView(RetrieveAPIView):
+    """
+    API endpoint that returns model name with their code from models.
+
+    Returns:
+    - id: Model name ID
+    - name: Model name
+    - short_name: Model short name
+    - code: Model code
+    """
+    queryset = OfflineModelNames.objects.all()
+    serializer_class = OfflineModelNamesCodeSerializer
+    permission_classes = (IsAuthenticated, StrihPermission)
