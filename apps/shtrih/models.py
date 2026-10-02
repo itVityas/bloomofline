@@ -244,6 +244,7 @@ class Valuable_components(models.Model):
 
     class Meta:
         managed = False
+        app_label = "shtrih"
         db_table = 'valuable_components'
         ordering = ['code']
 
@@ -254,6 +255,7 @@ class Duplicates(models.Model):
 
     class Meta:
         managed = False
+        app_label = "shtrih"
         db_table = 'duplicates'
         ordering = ['id']
 
@@ -264,4 +266,5 @@ class ShtrihUser(models.Model):
 
     class Meta:
         managed = False
+        app_label = "shtrih"
         db_table = 'users'

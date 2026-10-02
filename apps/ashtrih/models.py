@@ -23,7 +23,7 @@ class OfflineModels(models.Model):
     Main product model containing all technical specifications and attributes.
     Relates to ModelNames and Production_codes.
     """
-    code = models.IntegerField()
+    code = models.IntegerField(db_index=True)
     name = models.ForeignKey(OfflineModelNames, on_delete=models.CASCADE)
     diagonal = models.FloatField(null=True, blank=True)
     weight = models.IntegerField(null=True, blank=True)
@@ -31,6 +31,7 @@ class OfflineModels(models.Model):
     production_code = models.IntegerField()
     product_warranty = models.IntegerField(null=True, blank=True)
     storage_warranty = models.IntegerField(null=True, blank=True)
+    relevance = models.BooleanField(default=True, db_index=True)
     create_at = models.DateTimeField(null=True, blank=True)
     update_at = models.DateTimeField(null=True, blank=True)
 
