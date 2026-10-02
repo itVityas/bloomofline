@@ -231,8 +231,7 @@ class ShtrihSync:
     def models_sync(self) -> float:
         try:
             time_start = time.time()
-            last_model = AshtrihModels.objects.order_by('-id').first()
-            models = Models.objects.filter(id__gt=last_model.id if last_model else 0).order_by('id').values(
+            models = Models.objects.filter(update_at__gt=self.sync_date.last_sync).order_by('id').values(
                 'id', 'code', 'name_id', 'diagonal', 'weight', 'quantity',
                 'product_warranty', 'storage_warranty',
                 'create_at', 'update_at', 'production_code_id'
