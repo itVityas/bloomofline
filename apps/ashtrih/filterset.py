@@ -155,6 +155,10 @@ class ModelFilter(filter.FilterSet):
         field_name='name__short_name',
         lookup_expr='icontains',
         help_text="Filter models by short name containing (case insensitive)",)
+    relevance = filter.BooleanFilter(
+        field_name='relevance',
+        lookup_expr='exact',
+        help_text="Filter models by relevance",)
 
     class Meta:
         model = OfflineModels
@@ -169,4 +173,5 @@ class ModelFilter(filter.FilterSet):
             'start_short_name',
             'end_short_name',
             'cont_short_name',
+            'relevance',
         ]
