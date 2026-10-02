@@ -130,7 +130,7 @@ class ShtrihFullSync:
             time_start = time.time()
             models = Models.objects.select_related('name').all().order_by('id').values(
                 'id', 'code', 'name_id', 'diagonal', 'weight', 'quantity',
-                'product_warranty', 'storage_warranty',
+                'product_warranty', 'storage_warranty', 'relevance',
                 'create_at', 'update_at', 'production_code_id')
             list_models = []
             for i in models.iterator(chunk_size=self.batch_size):
@@ -144,6 +144,7 @@ class ShtrihFullSync:
                     product_warranty=i['product_warranty'],
                     storage_warranty=i['storage_warranty'],
                     production_code=i['production_code_id'],
+                    relevance=i['relevance'],
                     create_at=i['create_at'],
                     update_at=i['update_at'],
                 ))
@@ -233,7 +234,7 @@ class ShtrihSync:
             time_start = time.time()
             models = Models.objects.filter(update_at__gt=self.sync_date.last_sync).order_by('id').values(
                 'id', 'code', 'name_id', 'diagonal', 'weight', 'quantity',
-                'product_warranty', 'storage_warranty',
+                'product_warranty', 'storage_warranty', 'relevance',
                 'create_at', 'update_at', 'production_code_id'
             )
             existing_ids = set(AshtrihModels.objects.values_list('id', flat=True))
@@ -254,6 +255,7 @@ class ShtrihSync:
                         product_warranty=i['product_warranty'],
                         storage_warranty=i['storage_warranty'],
                         production_code=i['production_code_id'],
+                        relevance=i['relevance'],
                         create_at=i['create_at'],
                         update_at=i['update_at'],
                     ))
@@ -273,6 +275,8 @@ class ShtrihSync:
                         quantity=i['quantity'],
                         product_warranty=i['product_warranty'],
                         storage_warranty=i['storage_warranty'],
+                        production_code=i['production_code_id'],
+                        relevance=i['relevance'],
                         create_at=i['create_at'],
                         update_at=i['update_at'],
                     )

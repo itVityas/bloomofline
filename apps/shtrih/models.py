@@ -58,6 +58,7 @@ class Models(models.Model):
     letter_part = models.CharField(max_length=25)
     numeric_part = models.CharField(max_length=20)
     execution_part = models.CharField(max_length=10)
+    relevance = models.BooleanField()
     create_at = models.DateTimeField()
     update_at = models.DateTimeField()
 
