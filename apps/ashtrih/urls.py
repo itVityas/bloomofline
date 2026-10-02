@@ -16,5 +16,5 @@ urlpatterns = [
     path('strih/products/', OfflineProductListView.as_view()),
     path('strih/sync/', SyncShtrihView.as_view()),
     path('strih/fullsync/', SyncFullStrihView.as_view()),
-    path('strih/model_name/code/<int:pk>/', OfflineModelNameCodeView.as_view()),
+    path('strih/model_name/code/', OfflineModelNameCodeView.as_view()),
 ]

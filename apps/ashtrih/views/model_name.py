@@ -1,4 +1,4 @@
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema, extend_schema_view
@@ -125,7 +125,7 @@ class OfflineProductCountByModelNameView(APIView):
         description="description='Permission: admin, strih",
     ),
 )
-class OfflineModelNameCodeView(RetrieveAPIView):
+class OfflineModelNameCodeView(ListAPIView):
     """
     API endpoint that returns model name with their code from models.
 
@@ -138,3 +138,6 @@ class OfflineModelNameCodeView(RetrieveAPIView):
     queryset = OfflineModelNames.objects.all()
     serializer_class = OfflineModelNamesCodeSerializer
     permission_classes = (IsAuthenticated, StrihPermission)
+    pagination_class = StandartResultPaginator
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['id']
