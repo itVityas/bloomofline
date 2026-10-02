@@ -2,7 +2,8 @@ from django.urls import path
 
 from apps.ashtrih.views.model_name import (
     OfflineModelNameListView,
-    OfflineProductCountByModelNameView)
+    OfflineProductCountByModelNameView,
+    OfflineModelNameCodeView)
 from apps.ashtrih.views.model import OfflineModelListView
 from apps.ashtrih.views.product import OfflineProductListView
 from apps.ashtrih.views.shtrih_sync import SyncFullStrihView, SyncShtrihView
@@ -16,4 +17,5 @@ urlpatterns = [
     path('strih/products/', OfflineProductListView.as_view(), name='product-list'),
     path('strih/sync/', SyncShtrihView.as_view()),
     path('strih/fullsync/', SyncFullStrihView.as_view()),
+    path('strih/model_name/code/', OfflineModelNameCodeView.as_view()),
 ]

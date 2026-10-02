@@ -58,6 +58,7 @@ class Models(models.Model):
     letter_part = models.CharField(max_length=25)
     numeric_part = models.CharField(max_length=20)
     execution_part = models.CharField(max_length=10)
+    relevance = models.BooleanField()
     create_at = models.DateTimeField()
     update_at = models.DateTimeField()
 
@@ -244,6 +245,7 @@ class Valuable_components(models.Model):
 
     class Meta:
         managed = False
+        app_label = "shtrih"
         db_table = 'valuable_components'
         ordering = ['code']
 
@@ -254,6 +256,7 @@ class Duplicates(models.Model):
 
     class Meta:
         managed = False
+        app_label = "shtrih"
         db_table = 'duplicates'
         ordering = ['id']
 
@@ -264,4 +267,5 @@ class ShtrihUser(models.Model):
 
     class Meta:
         managed = False
+        app_label = "shtrih"
         db_table = 'users'
