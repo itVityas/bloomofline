@@ -2,6 +2,7 @@ import time
 
 from django.db import transaction
 from django.db.models import Sum, F
+from django.db.models.functions import Now
 import logging
 
 from apps.onec.models import OneCTTN, OneCTTNItem
@@ -24,8 +25,11 @@ def onec_item_update(update_date: SyncDate = None):
         )
 
     for onec_item in items_with_sums:
-        print(f"Item ID {onec_item.id}: {onec_item.total_done or 0}")
-        OneCTTNItem.objects.filter(id=onec_item.id).update(available_quantity=F('count') - onec_item.total_done or 0)
+        OneCTTNItem.objects.filter(id=onec_item.id).update(
+                available_quantity=F('available_quantity') - onec_item.total_done or 0,
+                update_at=Now()
+            )
+    onec_ttn_items.delete()
 
 
 class OneCFullSync:
