@@ -1,6 +1,7 @@
 import time
 
 from django.db import transaction
+from django.db.models import Sum, F
 import logging
 
 from apps.onec.models import OneCTTN, OneCTTNItem
@@ -15,17 +16,16 @@ logger = logging.getLogger(__name__)
 
 def onec_item_update(update_date: SyncDate = None):
     onec_ttn_items = offline_OneCTTItem.objects.filter(is_offline=True)
-    items_ids = []
-    items_dict = {}
-    for i in onec_ttn_items:
-        items_ids.append(i.id)
-        items_dict[i.id] = i
-    onec_items_to_update = OneCTTNItem.objects.filter(id__in=items_ids)
-    for i in onec_items_to_update:
-        buf = items_dict.get(i.id)
-        if buf:
-            i.available_quantity = buf.available_quantity
-    OneCTTNItem.objects.bulk_update(onec_ttn_items, ['available_quantity'])
+
+    items_with_sums = onec_ttn_items.filter(
+            onec_ttn__offlinewarehousettn__offlinewarehousedo__is_offline=True
+        ).annotate(
+            total_done=Sum('onec_ttn__offlinewarehousettn__offlinewarehousedo__quantity')
+        )
+
+    for onec_item in items_with_sums:
+        print(f"Item ID {onec_item.id}: {onec_item.total_done or 0}")
+        OneCTTNItem.objects.filter(id=onec_item.id).update(available_quantity=F('count') - onec_item.total_done or 0)
 
 
 class OneCFullSync:
