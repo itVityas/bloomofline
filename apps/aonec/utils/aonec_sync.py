@@ -11,6 +11,7 @@ from apps.aonec.models import (
     OfflineOneCTTNItem as offline_OneCTTItem
 )
 from apps.sync.models import SyncDate
+from bloomofline.json_writer import json_writer
 
 logger = logging.getLogger(__name__)
 
@@ -24,11 +25,20 @@ def onec_item_update(update_date: SyncDate = None):
             total_done=Sum('onec_ttn__offlinewarehousettn__offlinewarehousedo__quantity')
         )
 
+    data_dict = []
     for onec_item in items_with_sums:
+        data_dict.append(
+            {
+                'id': onec_item.id,
+                'available_quantity': onec_item.available_quantity,
+                'total_done': onec_item.total_done or 0
+            }
+        )
         OneCTTNItem.objects.filter(id=onec_item.id).update(
                 available_quantity=F('available_quantity') - onec_item.total_done or 0,
                 update_at=Now()
             )
+    json_writer(data_dict, 'onec_item')
     onec_ttn_items.delete()
 
 

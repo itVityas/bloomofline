@@ -173,3 +173,6 @@ media/*
 db.sqlite3
 db.sqlite3-shm
 db.sqlite3-wal
+
+/logs/*
+!logs/folder_for_logs

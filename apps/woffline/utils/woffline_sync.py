@@ -26,14 +26,20 @@ from apps.warehouse.models import (
     WarehouseDo,
     NotPackaging,
 )
-
+from bloomofline.json_writer import json_writer
 
 logger = logging.getLogger(__name__)
 
 
 def pallet_upload(update_date: datetime = None):
     pallets = OfflinePallet.objects.filter(is_offline=True)
+    data_json = []
     for i in pallets.iterator(chunk_size=1000):
+        data_json.append({
+            'ttn_number': i.ttn_number_id,
+            'barcode': i.barcode,
+            'is_deleted': i.is_deleted,
+        })
         Pallet.objects.update_or_create(
             ttn_number_id=i.ttn_number_id,
             barcode=i.barcode,
@@ -42,12 +48,24 @@ def pallet_upload(update_date: datetime = None):
                 'update_at': Now(),
             }
         )
+    json_writer(data_json, 'pallet')
     pallets.delete()
 
 
 def warehouse_ttn_upload(update_date: datetime = None):
     warehouse_ttn = OfflineWarehouseTTN.objects.filter(is_offline=True)
+    data_json = []
     for i in warehouse_ttn:
+        data_json.append({
+            'ttn_number': i.ttn_number,
+            'user_id': i.user_id,
+            'warehouse_id': i.warehouse_id,
+            'warehouse_action_id': i.warehouse_action_id,
+            'is_close': i.is_close,
+            'date': i.date,
+            'onec_ttn_id': i.onec_ttn_id,
+            'is_deleted': i.is_deleted,
+        })
         WarehouseTTN.objects.update_or_create(
             ttn_number=i.ttn_number,
             user_id=i.user_id,
@@ -61,12 +79,23 @@ def warehouse_ttn_upload(update_date: datetime = None):
                 'update_at': Now(),
             }
         )
+    json_writer(data_json, 'warehouse_ttn')
     warehouse_ttn.update(is_offline=False)
 
 
 def warehouse_do_upload(update_date: datetime = None):
     warehouse_do = OfflineWarehouseDo.objects.filter(is_offline=True)
+    data_json = []
     for i in warehouse_do.iterator(chunk_size=1000):
+        data_json.append(
+            {
+                'warehouse_ttn_id': i.warehouse_ttn_id,
+                'product': i.product_id,
+                'old_product': i.old_product_id,
+                'quantity': i.quantity,
+                'is_deleted': i.is_deleted,
+            }
+        )
         WarehouseDo.objects.update_or_create(
             id=i.id,
             warehouse_ttn_id=i.warehouse_ttn_id,
@@ -78,6 +107,7 @@ def warehouse_do_upload(update_date: datetime = None):
                 'update_at': Now(),
             }
         )
+    json_writer(data_json, 'warehouse_do')
     warehouse_do.delete()
 
 
