@@ -2,6 +2,7 @@ import time
 from datetime import datetime
 
 from django.db import transaction, connection
+from django.db.models.functions import Now
 import logging
 
 from apps.sync.models import SyncDate
@@ -38,8 +39,10 @@ def pallet_upload(update_date: datetime = None):
             barcode=i.barcode,
             defaults={
                 'is_deleted': i.is_deleted,
+                'update_at': Now(),
             }
         )
+    pallets.delete()
 
 
 def warehouse_ttn_upload(update_date: datetime = None):
@@ -55,8 +58,10 @@ def warehouse_ttn_upload(update_date: datetime = None):
                 'date': i.date,
                 'onec_ttn_id': i.onec_ttn_id,
                 'is_deleted': i.is_deleted,
+                'update_at': Now(),
             }
         )
+    warehouse_ttn.update(is_offline=False)
 
 
 def warehouse_do_upload(update_date: datetime = None):
@@ -70,8 +75,10 @@ def warehouse_do_upload(update_date: datetime = None):
             defaults={
                 'quantity': i.quantity,
                 'is_deleted': i.is_deleted,
+                'update_at': Now(),
             }
         )
+    warehouse_do.delete()
 
 
 def not_packaging_upload():
@@ -88,7 +95,7 @@ def not_packaging_upload():
                 is_solved=i.is_solved,
             )
         )
-        i.delete()
+    not_packaging.delete()
     NotPackaging.objects.bulk_create(not_packaging_list)
 
 

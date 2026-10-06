@@ -37,6 +37,7 @@ def product_update(update_date: SyncDate = None):
             i.available_quantity = buf.available_quantity
             i.is_shipment = buf.is_shipment
     Products.objects.bulk_update(product_to_update, ['available_quantity', 'is_shipment'])
+    products.update(is_offline=False)
 
 
 class ShtrihFullSync:
