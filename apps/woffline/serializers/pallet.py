@@ -5,6 +5,8 @@ from apps.ashtrih.models import OfflineProducts
 from apps.woffline.utils.generate_barcode import generate_barcode
 from apps.woffline.models import OfflineWarehouseTTN
 from apps.ashtrih.serializers.products import OfflineProductGetSerializer
+from apps.aoffline.serializers.user import OfflineUserUpdateSerializer
+from apps.woffline.serializers.warehouse import OfflineWarehouseSerializer
 
 
 class OfflinePalletSerializer(serializers.ModelSerializer):
@@ -53,6 +55,54 @@ class OfflinePalletGenerateSerializer(serializers.ModelSerializer):
             ttn_number=warehouse_ttn,
             is_offline=True
         )
+
+
+class OfflinePalletListSerializer(serializers.ModelSerializer):
+    barcode = serializers.CharField()
+    create_at = serializers.DateTimeField()
+    update_at = serializers.DateTimeField()
+    date = serializers.DateField(source='ttn_number.date')
+    user = OfflineUserUpdateSerializer(source='ttn_number.user')
+    warehouse = OfflineWarehouseSerializer(source='ttn_number.warehouse')
+    count = serializers.SerializerMethodField('get_count')
+    model = serializers.SerializerMethodField('get_model')
+    is_deleted = serializers.BooleanField()
+
+    class Meta:
+        model = OfflinePallet
+        fields = [
+            'id',
+            'barcode',
+            'ttn_number',
+            'create_at',
+            'update_at',
+            'date',
+            'user',
+            'warehouse',
+            'count',
+            'model',
+            'is_deleted',
+        ]
+
+    def get_count(self, obj) -> int:
+        barcode = obj.barcode
+        col = barcode[9:12]
+        try:
+            return int(col)
+        except Exception:
+            return 0
+
+    def get_model(self, obj) -> str:
+        barcode = obj.barcode
+        model_code = barcode[:5]
+        try:
+            model = OfflineProducts.objects.values_list(
+                'model__name__name', flat=True).filter(
+                        model__code=model_code,
+                    ).first()
+            return model
+        except Exception:
+            return ''
 
 
 class OfflinePalletProductsSerializer(serializers.ModelSerializer):
