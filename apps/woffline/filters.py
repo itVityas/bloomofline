@@ -49,6 +49,7 @@ class WarehouseTTNFilter(filters.FilterSet):
 class WarehousePalletFilter(filters.FilterSet):
     pk = filters.NumberFilter(field_name='id', lookup_expr='exact')
     barcode = filters.CharFilter(field_name='barcode', lookup_expr='iexact')
+    cont_barcode = filters.CharFilter(field_name='barcode', lookup_expr='icontains')
     warehouse_id = filters.NumberFilter(field_name='ttn_number__warehouse_id', lookup_expr='exact')
 
     class Meta:
@@ -56,6 +57,8 @@ class WarehousePalletFilter(filters.FilterSet):
         fields = (
             'pk',
             'barcode',
+            'cont_barcode',
+            'warehouse_id',
         )
 
 
