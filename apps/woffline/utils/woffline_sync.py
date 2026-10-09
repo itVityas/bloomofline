@@ -13,7 +13,6 @@ from apps.woffline.models import (
     OfflineWarehouseDo,
     OfflineWarehouseTTN,
     OfflinePallet,
-    OfflineOldProduct,
     OfflineNotPackaging,
 )
 from apps.warehouse.models import (
@@ -22,7 +21,6 @@ from apps.warehouse.models import (
     Pallet,
     Warehouse,
     WarehouseTTN,
-    OldProduct,
     WarehouseDo,
     NotPackaging,
 )
@@ -91,7 +89,6 @@ def warehouse_do_upload(update_date: datetime = None):
             {
                 'warehouse_ttn_id': i.warehouse_ttn_id,
                 'product': i.product_id,
-                'old_product': i.old_product_id,
                 'quantity': i.quantity,
                 'is_deleted': i.is_deleted,
             }
@@ -100,7 +97,6 @@ def warehouse_do_upload(update_date: datetime = None):
             id=i.id,
             warehouse_ttn_id=i.warehouse_ttn_id,
             product_id=i.product_id,
-            old_product_id=i.old_product_id,
             defaults={
                 'quantity': i.quantity,
                 'is_deleted': i.is_deleted,
@@ -156,7 +152,6 @@ class WarehouseFullSync:
             time_full['warehouse'] = self.warehouse_full_sync()
             time_full['ttn'] = self.warehouse_ttn_full_sync()
             time_full['pallet'] = self.pallet_full_sync()
-            time_full['old_product'] = self.old_product_full_sync()
             time_full['do'] = self.warehouse_do_full_sync()
             time_full['not_packaging'] = self.NotPackaging_full_sync()
             time_full['full'] = sum(time_full.values())
@@ -279,47 +274,19 @@ class WarehouseFullSync:
             logger.error('warehouse_ttn_full_sync' + str(e))
             raise e
 
-    def old_product_full_sync(self):
-        try:
-            start_time = time.time()
-            old_product_list = OldProduct.objects.all().values(
-                'id', 'barcode', 'color_id', 'model_id', 'state', 'quantity', 'is_shipment',
-            )
-            bulk_list = []
-            for i in old_product_list.iterator(chunk_size=self.batch_size):
-                bulk_list.append(OfflineOldProduct(
-                    id=i['id'],
-                    barcode=i['barcode'],
-                    color_id=i['color_id'],
-                    model_id=i['model_id'],
-                    state=i['state'],
-                    quantity=i['quantity'],
-                    is_shipment=i['is_shipment'],
-                ))
-                if len(bulk_list) >= self.batch_size:
-                    OfflineOldProduct.objects.bulk_create(bulk_list)
-                    bulk_list.clear()
-            if bulk_list:
-                OfflineOldProduct.objects.bulk_create(bulk_list)
-            end_time = time.time()
-            return end_time - start_time
-        except Exception as e:
-            logger.error('old_product_sync' + str(e))
-            raise e
-
     def warehouse_do_full_sync(self):
         try:
             start_time = time.time()
             warehouse_do_list = WarehouseDo.objects.all().values_list(
-                'id', 'warehouse_ttn_id', 'product_id', 'quantity', 'old_product_id',
+                'id', 'warehouse_ttn_id', 'product_id', 'quantity',
                 'create_at', 'update_at', 'is_deleted',
                 named=False
             )
             SQL_WAREHOUSEDO_INSERT = """
                 INSERT INTO woffline_offlinewarehousedo
-                (id, warehouse_ttn_id, product_id, quantity, old_product_id,
+                (id, warehouse_ttn_id, product_id, quantity,
                 create_at, update_at, is_deleted, is_offline)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)
+                VALUES (?, ?, ?, ?, ?, ?, ?, 0)
             """
             self._executemany(SQL_WAREHOUSEDO_INSERT, warehouse_do_list)
             end_time = time.time()
@@ -373,7 +340,6 @@ class WarehouseSync:
                 time_sync['warehouse'] = self.warehouse_sync()
                 time_sync['ttn'] = self.warehouse_ttn_sync()
                 time_sync['pallet'] = self.pallet_sync()
-                time_sync['old_product'] = self.old_product_sync()
                 time_sync['do'] = self.warehouse_do_sync()
                 time_sync['not_packaging'] = self.not_packaging_sync()
             time_sync['full'] = sum(time_sync.values())
@@ -471,33 +437,6 @@ class WarehouseSync:
             logger.error('warehouse_sync' + str(e))
             raise e
 
-    def old_product_sync(self):
-        try:
-            start_time = time.time()
-            last_old_product = OfflineOldProduct.objects.all().order_by('-id').first()
-            old_product_list = OldProduct.objects.filter(
-                id__gt=last_old_product.id if last_old_product else 0
-            ).values(
-                'id', 'barcode', 'color_id', 'model_id', 'state', 'quantity', 'is_shipment',
-            )
-            bulk_list = []
-            for i in old_product_list:
-                bulk_list.append(OfflineOldProduct(
-                    id=i['id'],
-                    barcode=i['barcode'],
-                    color_id=i['color_id'],
-                    model_id=i['model_id'],
-                    state=i['state'],
-                    quantity=i['quantity'],
-                    is_shipment=i['is_shipment'],
-                ))
-            OfflineOldProduct.objects.bulk_create(bulk_list)
-            end_time = time.time()
-            return end_time - start_time
-        except Exception as e:
-            logger.error('old_product' + str(e))
-            raise e
-
     def pallet_sync(self):
         try:
             start_time = time.time()
@@ -584,7 +523,7 @@ class WarehouseSync:
             warehouse_do_list = WarehouseDo.objects.filter(
                 update_at__gt=self.sync_date.last_sync
             ).values(
-                'id', 'warehouse_ttn_id', 'product_id', 'quantity', 'old_product_id',
+                'id', 'warehouse_ttn_id', 'product_id', 'quantity',
                 'create_at', 'update_at', 'is_deleted',
             )
             bulk_list = []
@@ -594,7 +533,6 @@ class WarehouseSync:
                     warehouse_ttn_id=i['warehouse_ttn_id'],
                     product_id=i['product_id'],
                     quantity=i['quantity'],
-                    old_product_id=i['old_product_id'],
                     create_at=i['create_at'],
                     update_at=i['update_at'],
                     is_deleted=i['is_deleted'],
@@ -609,7 +547,7 @@ class WarehouseSync:
                 bulk_list,
                 update_conflicts=True,
                 unique_fields=['id'],
-                update_fields=['warehouse_ttn_id', 'product_id', 'quantity', 'old_product_id',
+                update_fields=['warehouse_ttn_id', 'product_id', 'quantity',
                                'create_at', 'update_at', 'is_offline', 'is_deleted']
             )
             end_time = time.time()
