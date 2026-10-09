@@ -89,36 +89,9 @@ class Pallet(models.Model):
         return f'{self.id}:{self.barcode}'
 
 
-class OldProduct(models.Model):
-    """
-    Individual old_product items with barcodes, colors, and inventory information.
-    """
-    barcode = models.CharField(max_length=18)
-    color_id = models.ForeignKey(
-        'shtrih.Colors',
-        on_delete=models.CASCADE,
-        db_column='color_id',
-        db_constraint=False,
-        null=True,
-        blank=True)
-    model = models.ForeignKey('shtrih.Models', on_delete=models.CASCADE, db_column='model_id', db_constraint=False)
-    state = models.IntegerField()
-    quantity = models.IntegerField()
-    is_shipment = models.BooleanField(default=False)
-
-    class Meta:
-        ordering = ['-id']
-        managed = False
-        app_label = "warehouse"
-
-    def __str__(self):
-        return f"old_product {self.id} {self.barcode}"
-
-
 class WarehouseDo(models.Model):
     warehouse_ttn = models.ForeignKey(WarehouseTTN, on_delete=models.PROTECT)
-    product = models.ForeignKey(Products, on_delete=models.PROTECT, db_constraint=False, null=True, blank=True)
-    old_product = models.ForeignKey(OldProduct, on_delete=models.PROTECT, null=True, blank=True)
+    product = models.ForeignKey(Products, on_delete=models.PROTECT, db_constraint=False, null=False, blank=False)
     quantity = models.PositiveIntegerField(default=1)
     is_deleted = models.BooleanField(default=False)
     create_at = models.DateTimeField(auto_now_add=True)

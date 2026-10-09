@@ -34,7 +34,6 @@ class WarehouseDoPostSerializer(serializers.ModelSerializer):
         fields = [
             'warehouse_ttn',
             'product',
-            'old_product',
             'quantity',
         ]
 
