@@ -16,6 +16,7 @@ from apps.woffline.serializers.pallet import (
     OfflinePalletGenerateSerializer,
     OfflinePalletProductsSerializer,
     OfflinePalletDecomposeSerializer,
+    OfflinePalletListSerializer,
 )
 from apps.warehouse.serializers.pallet import (
     PalletSerializer,
@@ -28,6 +29,7 @@ from apps.ashtrih.models import OfflineModels
 from apps.woffline.permissions import WarehousePermission
 from bloomofline.paginator import StandartResultPaginator
 from bloomofline.global_state import global_state
+from apps.woffline.filters import WarehousePalletFilter
 
 
 @extend_schema(tags=["Offline Pallet"])
@@ -60,6 +62,22 @@ class OfflinePalletListCreateAPIView(ListAPIView):
         except Exception as e:
             global_state.set()
             return Response({'error': str(e)}, status=400)
+
+
+@extend_schema(tags=['Offline Pallet'])
+@extend_schema_view(
+    get=extend_schema(
+        summary='get list pallet ',
+        description='Permission: admin, warehouse, warehouse_writer'
+    )
+)
+class OfflinePalletListView(ListAPIView):
+    queryset = OfflinePallet.objects.all()
+    serializer_class = OfflinePalletListSerializer
+    permission_classes = [IsAuthenticated, WarehousePermission]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = WarehousePalletFilter
+    pagination_class = StandartResultPaginator
 
 
 @extend_schema(tags=["Offline Pallet"])

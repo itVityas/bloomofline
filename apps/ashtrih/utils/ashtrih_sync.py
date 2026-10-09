@@ -18,6 +18,7 @@ from apps.ashtrih.models import (
     OfflineModelNames as AshtrihModelNames,
 )
 from apps.sync.models import SyncDate
+from bloomofline.json_writer import json_writer
 
 
 logger = logging.getLogger(__name__)
@@ -27,9 +28,16 @@ def product_update(update_date: SyncDate = None):
     products = AshtrihProducts.objects.filter(is_offline=True)
     products_ids = []
     products_dict = {}
+    json_data = []
     for i in products:
         products_ids.append(i.id)
         products_dict[i.id] = i
+        json_data.append({
+            'id': i.id,
+            'available_quantity': i.available_quantity,
+            'is_shipment': i.is_shipment,
+        })
+    json_writer(json_data, 'product')
     product_to_update = Products.objects.filter(id__in=products_ids)
     for i in product_to_update:
         buf = products_dict.get(i.id)
@@ -37,6 +45,7 @@ def product_update(update_date: SyncDate = None):
             i.available_quantity = buf.available_quantity
             i.is_shipment = buf.is_shipment
     Products.objects.bulk_update(product_to_update, ['available_quantity', 'is_shipment'])
+    products.update(is_offline=False)
 
 
 class ShtrihFullSync:

@@ -3,6 +3,7 @@ import django_filters as filters
 from apps.woffline.models import (
     OfflineWarehouseTTN,
     OfflineWarehouseDo,
+    OfflinePallet,
 )
 
 
@@ -42,6 +43,22 @@ class WarehouseTTNFilter(filters.FilterSet):
             'onec_number',
             'onec_series',
             'is_deleted',
+        )
+
+
+class WarehousePalletFilter(filters.FilterSet):
+    pk = filters.NumberFilter(field_name='id', lookup_expr='exact')
+    barcode = filters.CharFilter(field_name='barcode', lookup_expr='iexact')
+    cont_barcode = filters.CharFilter(field_name='barcode', lookup_expr='icontains')
+    warehouse_id = filters.NumberFilter(field_name='ttn_number__warehouse_id', lookup_expr='exact')
+
+    class Meta:
+        model = OfflinePallet
+        fields = (
+            'pk',
+            'barcode',
+            'cont_barcode',
+            'warehouse_id',
         )
 
 

@@ -1,6 +1,8 @@
 import time
 
 from django.db import transaction
+from django.db.models import Sum, F
+from django.db.models.functions import Now
 import logging
 
 from apps.onec.models import OneCTTN, OneCTTNItem
@@ -9,23 +11,35 @@ from apps.aonec.models import (
     OfflineOneCTTNItem as offline_OneCTTItem
 )
 from apps.sync.models import SyncDate
+from bloomofline.json_writer import json_writer
 
 logger = logging.getLogger(__name__)
 
 
 def onec_item_update(update_date: SyncDate = None):
     onec_ttn_items = offline_OneCTTItem.objects.filter(is_offline=True)
-    items_ids = []
-    items_dict = {}
-    for i in onec_ttn_items:
-        items_ids.append(i.id)
-        items_dict[i.id] = i
-    onec_items_to_update = OneCTTNItem.objects.filter(id__in=items_ids)
-    for i in onec_items_to_update:
-        buf = items_dict.get(i.id)
-        if buf:
-            i.available_quantity = buf.available_quantity
-    OneCTTNItem.objects.bulk_update(onec_ttn_items, ['available_quantity'])
+
+    items_with_sums = onec_ttn_items.filter(
+            onec_ttn__offlinewarehousettn__offlinewarehousedo__is_offline=True
+        ).annotate(
+            total_done=Sum('onec_ttn__offlinewarehousettn__offlinewarehousedo__quantity')
+        )
+
+    data_dict = []
+    for onec_item in items_with_sums:
+        data_dict.append(
+            {
+                'id': onec_item.id,
+                'available_quantity': onec_item.available_quantity,
+                'total_done': onec_item.total_done or 0
+            }
+        )
+        OneCTTNItem.objects.filter(id=onec_item.id).update(
+                available_quantity=F('available_quantity') - onec_item.total_done or 0,
+                update_at=Now()
+            )
+    json_writer(data_dict, 'onec_item')
+    onec_ttn_items.delete()
 
 
 class OneCFullSync:
