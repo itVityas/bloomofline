@@ -10,8 +10,7 @@ from apps.aoffline.models import OfflineUser, OfflineRole, OfflineUserRoles
 from apps.aonec.models import OfflineOneCTTN
 from apps.ashtrih.models import OfflineModelNames, OfflineModels, OfflineProducts
 from apps.woffline.models import OfflineWarehouse, OfflineTypeOfWork, OfflineWarehouseAction, OfflineWarehouseTTN
-from apps.woffline.models import OfflinePallet, OfflineWarehouseDo, OfflineOldProduct
-
+from apps.woffline.models import OfflinePallet, OfflineWarehouseDo
 from apps.woffline.utils.generate_barcode import generate_barcode
 
 
@@ -70,15 +69,10 @@ class TTNTest(APITestCase):
                                                       available_quantity=5, type_of_work_id=cls.work_type3.id,
                                                       work_date=datetime.datetime.now(), module_id=2)
 
-        cls.old_product1 = OfflineOldProduct.objects.create(barcode=generate_barcode(cls.warehouse_ttn1.ttn_number),
-                                                            model=cls.model1, state=1, quantity=1)
-        cls.old_product2 = OfflineOldProduct.objects.create(barcode=generate_barcode(cls.warehouse_ttn2.ttn_number),
-                                                            model=cls.model2, state=1, quantity=1)
-
         cls.warehousedo1 = OfflineWarehouseDo.objects.create(warehouse_ttn=cls.warehouse_ttn1, product=cls.product1,
-                                                             old_product=cls.old_product1)
+                                                             )
         cls.warehousedo2 = OfflineWarehouseDo.objects.create(warehouse_ttn=cls.warehouse_ttn2, product=cls.product2,
-                                                             old_product=cls.old_product2)
+                                                             )
 
         cls.pallet1 = OfflinePallet.objects.create(ttn_number=cls.warehouse_ttn1,
                                                    barcode=generate_barcode(cls.warehouse_ttn1))

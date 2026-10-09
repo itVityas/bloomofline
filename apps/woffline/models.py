@@ -86,39 +86,9 @@ class OfflinePallet(models.Model):
         return f'{self.id}:{self.barcode}'
 
 
-class OfflineOldProduct(models.Model):
-    """
-    Individual old_product items with barcodes, colors, and inventory information.
-    """
-    barcode = models.CharField(max_length=18)
-    # color_id = models.ForeignKey(
-    #     'ashtrih.Colors',
-    #     on_delete=models.CASCADE,
-    #     db_column='color_id',
-    #     db_constraint=False,
-    #     null=True,
-    #     blank=True)
-    model = models.ForeignKey(
-        'ashtrih.OfflineModels',
-        on_delete=models.CASCADE,
-        db_column='model_id',
-        db_constraint=False)
-    state = models.IntegerField()
-    quantity = models.IntegerField()
-    is_shipment = models.BooleanField(default=False)
-
-    class Meta:
-        ordering = ['-id']
-        app_label = "woffline"
-
-    def __str__(self):
-        return f"old_product {self.id} {self.barcode}"
-
-
 class OfflineWarehouseDo(models.Model):
     warehouse_ttn = models.ForeignKey(OfflineWarehouseTTN, on_delete=models.CASCADE)
-    product = models.ForeignKey(OfflineProducts, on_delete=models.CASCADE, db_constraint=False, null=True, blank=True)
-    old_product = models.ForeignKey(OfflineOldProduct, on_delete=models.CASCADE, null=True, blank=True)
+    product = models.ForeignKey(OfflineProducts, on_delete=models.CASCADE, db_constraint=False, null=False, blank=False)
     quantity = models.PositiveIntegerField(default=1)
     is_offline = models.BooleanField(default=True, db_index=True)
     is_deleted = models.BooleanField(default=False, db_index=True)
