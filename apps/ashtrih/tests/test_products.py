@@ -36,13 +36,11 @@ class ProductTest(APITestCase):
 
     def test_product_list_noauth(self):
         response = self.client.get(reverse('product-list'))
-        print('Product names: ', response.data)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertNotIn('error', response.data)
 
     def test_product_list_auth(self):
         self.client.force_authenticate(user=self.admin)
         response = self.client.get(reverse('product-list'))
-        print('Product names: ', response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotIn('error', response.data)

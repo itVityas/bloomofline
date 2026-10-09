@@ -43,25 +43,21 @@ class RoleTest(APITestCase):
     def test_create_role_no_rights(self):
         self.client.force_authenticate(user=self.user)
         data = {'id': 3, 'name': 'Test role', 'update_at': datetime.datetime.now()}
-
         response = self.client.post(reverse('listcreate-role'), data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_create_role_admin(self):
         self.client.force_authenticate(user=self.admin)
         data = {'id': 3, 'name': 'Test role', 'update_at': datetime.datetime.now()}
-
         response = self.client.post(reverse('listcreate-role'), data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_update_role_no_rights(self):
         self.client.force_authenticate(user=self.user)
         response = self.client.patch(reverse('update-role', kwargs={'pk': 1}), {'name': 'New name'})
-        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_update_role_admin(self):
         self.client.force_authenticate(user=self.admin)
         response = self.client.patch(reverse('update-role', kwargs={'pk': 1}), {'name': 'New name'})
-        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)

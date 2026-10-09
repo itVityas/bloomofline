@@ -116,15 +116,12 @@ class OnlyOfflineWarehouseTTNListAPIView(ListAPIView):
     )
 )
 class OfflineWarehouseTTNCreateAPIView(CreateAPIView):
-    '''NOT WORKING'''
-
     queryset = OfflineWarehouseTTN.objects.all()
     serializer_class = OfflineWarehouseTTNVisibleSerializer
     permission_classes = [IsAuthenticated, WarehousePermission]
 
     def post(self, request):
         try:
-            print(request.data)
             copied_data = dict(request.data)
             copied_data['user'] = request.user.id
             if global_state.get():

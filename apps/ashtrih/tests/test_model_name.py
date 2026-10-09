@@ -38,39 +38,33 @@ class ModelNameTest(APITestCase):
 
     def test_model_name_list_view_noauth(self):
         response = self.client.get(reverse('model-name-list'))
-        print('Model names: ', response.data)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertNotIn('error', response.data)
 
     def test_model_name_list_view_auth(self):
         self.client.force_authenticate(user=self.admin)
         response = self.client.get(reverse('model-name-list'))
-        print('Model names: ', response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotIn('error', response.data)
 
     def test_model_list_view_noauth(self):
         response = self.client.get(reverse('model-list'))
-        print('Models: ', response.data)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertNotIn('error', response.data)
 
     def test_model_list_view_auth(self):
         self.client.force_authenticate(user=self.admin)
         response = self.client.get(reverse('model-list'))
-        print('Models: ', response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotIn('error', response.data)
 
     def test_product_count_by_model_name_id_noauth(self):
         response = self.client.get(reverse('count-products-by-model', kwargs={'pk': 1}))
-        print('Count is: ', response.data)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertNotIn('error', response.data)
 
     def test_product_count_by_model_name_id_auth(self):
         self.client.force_authenticate(user=self.admin)
         response = self.client.get(reverse('count-products-by-model', kwargs={'pk': 1}))
-        print('Count is: ', response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotIn('error', response.data)

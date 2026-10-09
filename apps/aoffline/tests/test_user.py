@@ -25,24 +25,20 @@ class UserTest(APITestCase):
 
     def test_details_user_noauth(self):
         response = self.client.get(reverse('user-detail', kwargs={'pk': 2}))
-        print("User with ID = 2 is: ", response.data)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_details_user_auth(self):
         self.client.force_authenticate(user=self.user)
         response = self.client.get(reverse('user-detail', kwargs={'pk': 2}))
-        print("User with ID = 2 is: ", response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_list_user_noauth(self):
         response = self.client.get(reverse('user-list'))
-        print("User list is: ", response.data)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_list_user_auth(self):
         self.client.force_authenticate(user=self.user)
         response = self.client.get(reverse('user-list'))
-        print("User list is: ", response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_update_user_no_rights(self):
@@ -59,7 +55,7 @@ class UserTest(APITestCase):
         self.client.force_authenticate(user=self.user)
         needed_role = OfflineRole.objects.get(name='ban')
         response = self.client.delete(reverse('userroledelete')
-                                      + "?"
+                                      + '?'
                                       + urlencode({'user': self.admin.id, 'role': needed_role.id}))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -67,6 +63,6 @@ class UserTest(APITestCase):
         self.client.force_authenticate(user=self.admin)
         needed_role = OfflineRole.objects.get(name='ban')
         response = self.client.delete(reverse('userroledelete')
-                                      + "?"
+                                      + '?'
                                       + urlencode({'user': self.admin.id, 'role': needed_role.id}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)

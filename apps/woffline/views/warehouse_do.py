@@ -371,15 +371,16 @@ class OfflineWarehouseDoBarcodeAPIView(CreateAPIView):
 
     def post(self, request):
         try:
-            request.data['user'] = request.user.id
+            copied_data = request.data
+            copied_data['user'] = request.user.id
             if global_state.get():
-                serializer = WarehouseDoBarcodeSerializer(data=request.data, context={'request': request})
+                serializer = WarehouseDoBarcodeSerializer(data=copied_data, context={'request': request})
                 if serializer.is_valid():
                     do = serializer.save()
                     return Response(WarehouseDoGetSerializer(do).data, status=201)
                 return Response(serializer.errors, status=400)
             else:
-                serializer = self.serializer_class(data=request.data, context={'request': request})
+                serializer = self.serializer_class(data=copied_data, context={'request': request})
                 if serializer.is_valid():
                     do = serializer.save()
                     return Response(OfflineWarehouseDoGetSerializer(do).data, status=201)
@@ -405,8 +406,9 @@ class OnlyOfflineWarehouseDoBarcodeAPIView(CreateAPIView):
 
     def post(self, request):
         try:
-            request.data['user'] = request.user.id
-            serializer = self.serializer_class(data=request.data, context={'request': request})
+            copied_data = request.data
+            copied_data['user'] = request.user.id
+            serializer = self.serializer_class(data=copied_data, context={'request': request})
             if serializer.is_valid():
                 do = serializer.save()
                 return Response(OfflineWarehouseDoGetSerializer(do).data, status=201)
@@ -432,15 +434,16 @@ class OfflineWarehouseDoPalletAPIView(CreateAPIView):
 
     def post(self, request):
         try:
-            request.data['user'] = request.user.id
+            copied_data = request.data
+            copied_data['user'] = request.user.id
             if global_state.get():
-                serializer = WarehouseDoPalletSerializer(data=request.data, context={'request': request})
+                serializer = WarehouseDoPalletSerializer(data=copied_data, context={'request': request})
                 if serializer.is_valid():
                     do = serializer.save()
                     return Response(WarehouseDoGetSerializer(do).data, status=201)
                 return Response(serializer.errors, status=400)
             else:
-                serializer = self.serializer_class(data=request.data, context={'request': request})
+                serializer = self.serializer_class(data=copied_data, context={'request': request})
                 if serializer.is_valid():
                     do = serializer.save()
                     return Response(OfflineWarehouseDoGetSerializer(do).data, status=201)
@@ -466,13 +469,14 @@ class OnlyOfflineWarehouseDoPalletAPIView(CreateAPIView):
 
     def post(self, request):
         try:
-            request.data['user'] = request.user.id
-            serializer = self.serializer_class(data=request.data, context={'request': request})
+            copied_data = request.data
+            copied_data['user'] = request.user.id
+            serializer = self.serializer_class(data=copied_data, context={'request': request})
             if serializer.is_valid():
                 do = serializer.save()
                 response = OfflineWarehouseDoGetSerializer(do).data
                 product = OfflineProducts.objects.filter(
-                        barcode=request.data.get('barcode')
+                        barcode=copied_data.get('barcode')
                     ).first()
                 col_rez = OfflineWarehouseDo.objects.filter(
                     product=product, is_deleted=False, warehouse_ttn__warehouse_action_id=7)
@@ -504,15 +508,16 @@ class OfflineWarehouseDoShipmentAPIView(CreateAPIView):
 
     def post(self, request):
         try:
-            request.data['user'] = request.user.id
+            copied_data = request.data
+            copied_data['user'] = request.user.id
             if global_state.get():
-                serializer = WarehouseDoShipmentSerializer(data=request.data, context={'request': request})
+                serializer = WarehouseDoShipmentSerializer(data=copied_data, context={'request': request})
                 if serializer.is_valid():
                     do = serializer.save()
                     return Response(WarehouseDoGetSerializer(do).data, status=201)
                 return Response(serializer.errors, status=400)
             else:
-                serializer = self.serializer_class(data=request.data, context={'request': request})
+                serializer = self.serializer_class(data=copied_data, context={'request': request})
                 if serializer.is_valid():
                     do = serializer.save()
                     return Response(OfflineWarehouseDoGetSerializer(do).data, status=201)

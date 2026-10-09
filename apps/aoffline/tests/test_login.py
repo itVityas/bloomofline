@@ -19,7 +19,6 @@ class LoginTest(APITestCase):
             'username': 'test_admin',
             'password': 'testpassword'
         }
-
         response = self.client.post(reverse('login'), data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -28,6 +27,5 @@ class LoginTest(APITestCase):
             'username': 'test_admin',
             'password': 'wrong_password'
         }
-
         response = self.client.post(reverse('login'), data, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
