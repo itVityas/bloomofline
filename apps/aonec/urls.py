@@ -10,9 +10,9 @@ from apps.aonec.views.onec_ttn_item import (
 from apps.aonec.views.onec_sync import SyncFullOneCView, SyncOneCView
 
 urlpatterns = [
-    path('onec_ttn/detailed/<int:pk>/', OfflineOneCTTNRetrieveAPIView.as_view()),
-    path('onec_ttn/list/', OfflineOneCTTNListAPIView.as_view()),
-    path('onec_ttn_item/', OfflineOneCTTNItemListView.as_view()),
+    path('onec_ttn/detailed/<int:pk>/', OfflineOneCTTNRetrieveAPIView.as_view(), name='ttn-details'),
+    path('onec_ttn/list/', OfflineOneCTTNListAPIView.as_view(), name='ttn-list'),
+    path('onec_ttn_item/', OfflineOneCTTNItemListView.as_view(), name='ttn-item-list'),
     path('1c/sync/', SyncOneCView.as_view()),
     path('1c/fullsync/', SyncFullOneCView.as_view()),
 ]

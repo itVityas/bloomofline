@@ -11,7 +11,7 @@ from apps.aoffline.views.sync import SyncAccountView
 
 urlpatterns = [
     # user
-    path('login/', TokenObtainPairView.as_view(serializer_class=CustomTokenObtainPairSerializer)),
+    path('login/', TokenObtainPairView.as_view(serializer_class=CustomTokenObtainPairSerializer), name="login"),
     path('users/', UserListView.as_view(), name='user-list'),
     path('user/<int:pk>/', UserDetailedView.as_view(), name='user-update'),
     path('user/detailed/<int:pk>/', UserRetrieveView.as_view(), name='user-detail'),
@@ -22,5 +22,5 @@ urlpatterns = [
     path('userroles/', UserRolesListView.as_view(), name='userrole-list'),
     path('userroles/<int:pk>/', UserRolesDetailedView.as_view(), name='userrole-detailed'),
     # sync
-    path('user/sync/', SyncAccountView.as_view(), name='account_sync')
+    path('user/sync/', SyncAccountView.as_view(), name='account-sync')
 ]

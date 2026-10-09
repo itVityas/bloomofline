@@ -122,15 +122,16 @@ class OfflineWarehouseTTNCreateAPIView(CreateAPIView):
 
     def post(self, request):
         try:
-            request.data['user'] = request.user.id
+            copied_data = dict(request.data)
+            copied_data['user'] = request.user.id
             if global_state.get():
-                serializer = WarehouseTTNPostSerializer(data=request.data)
+                serializer = WarehouseTTNPostSerializer(data=copied_data)
                 if serializer.is_valid():
                     return Response(serializer.data, status=201)
                 return Response(serializer.errors, status=400)
             else:
-                request.data['is_offline'] = True
-                serializer = OfflineWarehouseTTNPostSerializer(data=request.data)
+                copied_data['is_offline'] = True
+                serializer = OfflineWarehouseTTNPostSerializer(data=copied_data)
                 if serializer.is_valid():
                     serializer.save()
                     return Response(serializer.data, status=201)
@@ -184,10 +185,11 @@ class OfflineWarehouseTTNRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIVi
 
     def put(self, request, ttn_number):
         try:
-            request.data['user'] = request.user.id
+            copied_data = request.data
+            copied_data['user'] = request.user.id
             if global_state.get():
                 query = WarehouseTTN.objects.filter(ttn_number=ttn_number).first()
-                serializer = WarehouseTTNPostSerializer(query, data=request.data)
+                serializer = WarehouseTTNPostSerializer(query, data=copied_data)
                 if serializer.is_valid():
                     serializer.save()
                     return Response(serializer.data)
@@ -196,8 +198,8 @@ class OfflineWarehouseTTNRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIVi
                 query = self.queryset.filter(ttn_number=ttn_number).first()
                 if not query:
                     return Response({'error': 'not found'}, status=404)
-                request.data['is_offline'] = True
-                serializer = self.serializer_class(query, data=request.data)
+                copied_data['is_offline'] = True
+                serializer = self.serializer_class(query, data=copied_data)
                 if serializer.is_valid():
                     serializer.save()
                     return Response(serializer.data)
@@ -208,10 +210,11 @@ class OfflineWarehouseTTNRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIVi
 
     def patch(self, request, ttn_number):
         try:
-            request.data['user'] = request.user.id
+            copied_data = request.data
+            copied_data['user'] = request.user.id
             if global_state.get():
                 query = WarehouseTTN.objects.filter(ttn_number=ttn_number).first()
-                serializer = WarehouseTTNPostSerializer(query, data=request.data, partial=True)
+                serializer = WarehouseTTNPostSerializer(query, data=copied_data, partial=True)
                 if serializer.is_valid():
                     serializer.save()
                     return Response(serializer.data)
@@ -220,8 +223,8 @@ class OfflineWarehouseTTNRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIVi
                 query = self.queryset.filter(ttn_number=ttn_number).first()
                 if not query:
                     return Response({'error': 'not found'}, status=404)
-                request.data['is_offline'] = True
-                serializer = self.serializer_class(query, data=request.data, partial=True)
+                copied_data['is_offline'] = True
+                serializer = self.serializer_class(query, data=copied_data, partial=True)
                 if serializer.is_valid():
                     serializer.save()
                     return Response(serializer.data)
