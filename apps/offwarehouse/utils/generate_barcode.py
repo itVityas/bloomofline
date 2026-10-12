@@ -30,7 +30,7 @@ def generate_barcode(ttn_number: str, is_old: bool = False) -> str:
     if not warehouse_ttn:
         return "Error: ttn_number not found"
 
-    warehouse_do = OfflineWarehouseDo.objects.filter(warehouse_ttn=warehouse_ttn)
+    warehouse_do = OfflineWarehouseDo.objects.filter(warehouse_ttn=warehouse_ttn, is_deleted=False)
     if not warehouse_do:
         return "Error: warehouse_do not found"
 
