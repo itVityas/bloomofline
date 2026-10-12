@@ -175,3 +175,36 @@ class ModelFilter(filter.FilterSet):
             'cont_short_name',
             'relevance',
         ]
+
+
+class ModelNameCodeFilter(filter.FilterSet):
+    pk = filter.NumberFilter(
+        field_name='id',
+        lookup_expr='exact',
+        help_text="Filter model names by ID",)
+    code = filter.NumberFilter(
+        field_name='offlinemodels__code',
+        lookup_expr='exact',
+        help_text="Filter model names by model code",)
+    production_code = filter.NumberFilter(
+        field_name='offlinemodels__production_code',
+        lookup_expr='exact',
+        help_text="Filter model names by model code",)
+
+    ordering = filter.OrderingFilter(
+            fields=(
+                ('id', 'id'),
+                ('offlinemodels__code', 'code'),
+                ('offlinemodels__production_code', 'production_code'),
+                ('name', 'name'),
+                ('short_name', 'short_name'),
+            ),
+        )
+
+    class Meta:
+        model = OfflineModelNames
+        fields = [
+            'pk',
+            'code',
+            'production_code',
+        ]
