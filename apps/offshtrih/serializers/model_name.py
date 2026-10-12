@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.offshtrih.models import OfflineModelNames, OfflineModels
+from apps.offshtrih.models import OfflineModelNames
 
 
 class OfflineModelNamesSerializer(serializers.ModelSerializer):
@@ -35,14 +35,25 @@ class OfflineModelNamesCodeSerializer(serializers.ModelSerializer):
         - code: Model identification code
     """
     code = serializers.SerializerMethodField(method_name='get_code')
+    production_code = serializers.SerializerMethodField(method_name='get_production_code')
 
     class Meta:
         model = OfflineModelNames
-        fields = ('id', 'name', 'short_name', 'code')
+        fields = (
+                'id',
+                'name',
+                'short_name',
+                'code',
+                'production_code',
+            )
 
     def get_code(self, obj) -> int:
-        model = OfflineModels.objects.filter(name=obj).first()
+        model = obj.offlinemodels_set.first()
         return model.code if model else 0
+
+    def get_production_code(self, obj) -> int:
+        model = obj.offlinemodels_set.first()
+        return model.production_code if model else 0
 
 
 class OfflineCountSerializer(serializers.Serializer):

@@ -14,7 +14,7 @@ from apps.offshtrih.serializers.model_name import (
 )
 from apps.offshtrih.permission import StrihPermission
 from bloomofline.paginator import StandartResultPaginator
-from apps.offshtrih.filterset import ModelNamesFilter
+from apps.offshtrih.filterset import ModelNamesFilter, ModelNameCodeFilter
 from apps.shtrih.filterset import ModelNamesFilter as OnlineModelNamesFilter
 from bloomofline.global_state import global_state
 
@@ -135,9 +135,9 @@ class OfflineModelNameCodeView(ListAPIView):
     - short_name: Model short name
     - code: Model code
     """
-    queryset = OfflineModelNames.objects.all()
+    queryset = OfflineModelNames.objects.prefetch_related('offlinemodels_set').distinct().all()
     serializer_class = OfflineModelNamesCodeSerializer
     permission_classes = (IsAuthenticated, StrihPermission)
     pagination_class = StandartResultPaginator
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['id']
+    filterset_class = ModelNameCodeFilter
