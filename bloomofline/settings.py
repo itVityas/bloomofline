@@ -54,16 +54,16 @@ INSTALLED_APPS = [
     'corsheaders',
 
     'apps.account',
-    'apps.aoffline',
-    'apps.onec',
+    'apps.offaccount',
+    'apps.shipment',
+    'apps.offshipment',
     'apps.shtrih',
+    'apps.offshtrih',
     'apps.warehouse',
-    'apps.woffline',
+    'apps.offwarehouse',
+    'apps.ban',
+    'apps.offban',
     'apps.sync',
-    'apps.aonec',
-    'apps.ashtrih',
-    'apps.sgp',
-    'apps.osgp',
 ]
 
 MIDDLEWARE = [
@@ -221,7 +221,7 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 
     # "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainPairSerializer",
-    "TOKEN_OBTAIN_SERIALIZER": "apps.aoffline.serializers.autorization.CustomTokenObtainPairSerializer",
+    "TOKEN_OBTAIN_SERIALIZER": "apps.offaccount.serializers.autorization.CustomTokenObtainPairSerializer",
     "TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSerializer",
     "TOKEN_VERIFY_SERIALIZER": "rest_framework_simplejwt.serializers.TokenVerifySerializer",
     "TOKEN_BLACKLIST_SERIALIZER": "rest_framework_simplejwt.serializers.TokenBlacklistSerializer",

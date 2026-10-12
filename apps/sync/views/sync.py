@@ -6,11 +6,11 @@ from django.db.models.functions import Now
 from django.db import connection, transaction
 import logging
 
-from apps.aoffline.utils.aoffline_sync import AccountFullSynchronization, AccountSync
-from apps.aonec.utils.aonec_sync import OneCFullSync, OneCSync
-from apps.ashtrih.utils.ashtrih_sync import ShtrihFullSync, ShtrihSync
-from apps.woffline.utils.woffline_sync import WarehouseFullSync, WarehouseSync
-from apps.osgp.utils.osgp_sync import SGPFullSync, SGPSync
+from apps.offaccount.utils.aoffline_sync import AccountFullSynchronization, AccountSync
+from apps.offshipment.utils.aonec_sync import OneCFullSync, OneCSync
+from apps.offshtrih.utils.offshtrih_sync import ShtrihFullSync, ShtrihSync
+from apps.offwarehouse.utils.woffline_sync import WarehouseFullSync, WarehouseSync
+from apps.offban.utils.osgp import SGPFullSync, SGPSync
 from apps.sync.models import SyncDate
 from bloomofline.db_routers import ModelDatabaseRouter
 from apps.warehouse.models import WarehouseAction

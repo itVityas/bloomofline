@@ -88,5 +88,5 @@ To run tests use console commands:
 python3 manage.py test
 
 # choose specific app
-python3 manage.py test apps.< app-name: aoffline | onec | osgp | ashtrih | woffline >.tests
+python3 manage.py test apps.< app-name: offaccount | offshipment | offban | offshtrih | offwarehouse >.tests
 ```

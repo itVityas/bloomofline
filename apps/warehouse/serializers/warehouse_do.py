@@ -11,8 +11,8 @@ from apps.warehouse.models import (
     Pallet,
     NotPackaging,
 )
-from apps.onec.models import OneCTTN, OneCTTNItem
-from apps.sgp.models import ShipmentBans
+from apps.shipment.models import OneCTTN, OneCTTNItem
+from apps.ban.models import ShipmentBans
 from apps.shtrih.models import Products, Workplaces
 from apps.shtrih.serializers.products import ProductGetSerializer
 from apps.warehouse.serializers.warehouse_ttn import WarehouseTTNGetSerializer
