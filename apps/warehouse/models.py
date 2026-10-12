@@ -2,7 +2,7 @@ from django.db import models
 
 from apps.shtrih.models import Products
 from apps.account.models import User
-from apps.shipment.models import OneCTTN
+from apps.onec.models import OneCTTN
 
 
 class Warehouse(models.Model):

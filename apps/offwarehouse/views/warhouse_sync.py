@@ -3,7 +3,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiResponse
 
-from apps.offwarehouse.utils.woffline_sync import WarehouseFullSync, WarehouseSync
+from apps.offwarehouse.utils.offwarehouse_sync import WarehouseFullSync, WarehouseSync
 from apps.sync.models import SyncDate
 
 

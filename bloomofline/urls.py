@@ -43,14 +43,14 @@ urlpatterns = [
 
     path('api/v1/', include('apps.account.urls')),
     path('api/v1/', include('apps.shtrih.urls')),
-    path('api/v1/', include('apps.shipment.urls')),
+    path('api/v1/', include('apps.onec.urls')),
     path('api/v1/', include('apps.warehouse.urls')),
     path('api/v1/offline/', include('apps.sync.urls')),
     path('api/v1/offline/', include('apps.offaccount.urls')),
     path('api/v1/offline/', include('apps.offshtrih.urls')),
-    path('api/v1/offline/', include('apps.offshipment.urls')),
+    path('api/v1/offline/', include('apps.offonec.urls')),
     path('api/v1/offline/', include('apps.offwarehouse.urls')),
-    path('api/v1/offline/', include('apps.offban.urls')),
+    path('api/v1/offline/', include('apps.offosgp.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -7,7 +7,7 @@ from urllib.parse import urlencode
 
 from bloomofline.global_state import global_state
 from apps.offaccount.models import OfflineUser, OfflineRole, OfflineUserRoles
-from apps.offshipment.models import OfflineOneCTTN
+from apps.offonec.models import OfflineOneCTTN
 from apps.offshtrih.models import OfflineModelNames, OfflineModels, OfflineProducts
 from apps.offwarehouse.models import OfflineWarehouse, OfflineTypeOfWork, OfflineWarehouseAction, OfflineWarehouseTTN
 from apps.offwarehouse.models import OfflinePallet, OfflineWarehouseDo

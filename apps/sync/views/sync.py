@@ -7,10 +7,10 @@ from django.db import connection, transaction
 import logging
 
 from apps.offaccount.utils.aoffline_sync import AccountFullSynchronization, AccountSync
-from apps.offshipment.utils.aonec_sync import OneCFullSync, OneCSync
+from apps.offonec.utils.aonec_sync import OneCFullSync, OneCSync
 from apps.offshtrih.utils.offshtrih_sync import ShtrihFullSync, ShtrihSync
-from apps.offwarehouse.utils.woffline_sync import WarehouseFullSync, WarehouseSync
-from apps.offban.utils.osgp import SGPFullSync, SGPSync
+from apps.offwarehouse.utils.offwarehouse_sync import WarehouseFullSync, WarehouseSync
+from apps.offosgp.utils.osgp import SGPFullSync, SGPSync
 from apps.sync.models import SyncDate
 from bloomofline.db_routers import ModelDatabaseRouter
 from apps.warehouse.models import WarehouseAction

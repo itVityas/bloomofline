@@ -5,7 +5,7 @@ from apps.warehouse.models import WarehouseDo, WarehouseTTN
 from apps.warehouse.serializers.warehouse_action import WarehouseActionPostSerializer
 from apps.warehouse.serializers.warehouse import WarehouseSerializer
 from apps.account.serializers.user import UserSerializer
-from apps.shipment.serializers.onec_ttn import OneCTTNPostSerializer
+from apps.onec.serializers.onec_ttn import OneCTTNPostSerializer
 from apps.shtrih.models import Protocols, Models, Consignments, Valuable_components, Duplicates
 from apps.shtrih.serializers.workplaces import WorkplacesSerializer
 from apps.shtrih.serializers.user import ShtrihUserSerializer

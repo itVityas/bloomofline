@@ -2,7 +2,7 @@ from django.db import models
 
 from apps.offshtrih.models import OfflineProducts
 from apps.offaccount.models import OfflineUser
-from apps.offshipment.models import OfflineOneCTTN
+from apps.offonec.models import OfflineOneCTTN
 
 
 class OfflineWarehouse(models.Model):

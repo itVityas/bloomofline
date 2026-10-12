@@ -29,8 +29,8 @@ from apps.offwarehouse.serializers.warehouse_ttn import (
     OfflineWarehouseTTNProductSerializer,
     OfflineWarehouseTTNVisibleSerializer
 )
-from apps.shipment.models import OneCTTNItem
-from apps.offshipment.models import OfflineOneCTTNItem
+from apps.onec.models import OneCTTNItem
+from apps.offonec.models import OfflineOneCTTNItem
 from apps.offwarehouse.permissions import WarehousePermission
 from bloomofline.paginator import StandartResultPaginator
 from apps.offwarehouse.filters import WarehouseTTNFilter

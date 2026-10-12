@@ -55,14 +55,14 @@ INSTALLED_APPS = [
 
     'apps.account',
     'apps.offaccount',
-    'apps.shipment',
-    'apps.offshipment',
+    'apps.onec',
+    'apps.offonec',
     'apps.shtrih',
     'apps.offshtrih',
     'apps.warehouse',
     'apps.offwarehouse',
-    'apps.ban',
-    'apps.offban',
+    'apps.sgp',
+    'apps.offosgp',
     'apps.sync',
 ]
 

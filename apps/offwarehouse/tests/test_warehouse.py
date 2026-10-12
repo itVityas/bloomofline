@@ -6,7 +6,7 @@ from django.urls import reverse
 
 from bloomofline.global_state import global_state
 from apps.offaccount.models import OfflineUser, OfflineRole, OfflineUserRoles
-from apps.offshipment.models import OfflineOneCTTN
+from apps.offonec.models import OfflineOneCTTN
 from apps.offwarehouse.models import OfflineWarehouse, OfflineTypeOfWork, OfflineWarehouseAction
 
 
