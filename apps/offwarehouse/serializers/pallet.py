@@ -1,0 +1,139 @@
+from rest_framework import serializers
+
+from apps.offwarehouse.models import OfflinePallet
+from apps.offshtrih.models import OfflineProducts
+from apps.offwarehouse.utils.generate_barcode import generate_barcode
+from apps.offwarehouse.models import OfflineWarehouseTTN
+from apps.offshtrih.serializers.products import OfflineProductGetSerializer
+from apps.offaccount.serializers.user import OfflineUserUpdateSerializer
+from apps.offwarehouse.serializers.warehouse import OfflineWarehouseSerializer
+
+
+class OfflinePalletSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OfflinePallet
+        exclude = ['is_offline']
+
+
+class OfflinePalletGenerateSerializer(serializers.ModelSerializer):
+    """
+    barcode: 5: model + 2: month + 2: year + 3: col + 8: ttn_number
+    old barcode: 5: model + 2: month + 2: year + 3: col + 7: ttn_number
+    """
+    ttn_number = serializers.CharField(write_only=True, required=True)
+    is_old = serializers.BooleanField(write_only=True, required=False, default=False)
+    barcode = serializers.CharField(read_only=True, required=False)
+
+    class Meta:
+        model = OfflinePallet
+        exclude = ['is_offline']
+
+    def create(self, validated_data):
+        ttn_number = validated_data.pop('ttn_number', None)
+        is_old = validated_data.pop('is_old', False)
+        if not ttn_number:
+            raise serializers.ValidationError('Не указан номер ТТН')
+
+        barcode = generate_barcode(ttn_number=ttn_number, is_old=is_old)
+        if 'Error' in barcode or not isinstance(barcode, str):
+            raise serializers.ValidationError('Не удалось сгенерировать штрих-код' + barcode)
+
+        pallet = OfflinePallet.objects.filter(barcode=barcode, is_deleted=False).first()
+        if pallet:
+            return pallet
+
+        warehouse_ttn = OfflineWarehouseTTN.objects.filter(ttn_number=ttn_number, is_deleted=False).first()
+        if not warehouse_ttn:
+            raise serializers.ValidationError('ТТН не найден')
+
+        warehouse_ttn.is_close = True
+        warehouse_ttn.is_offline = True
+        warehouse_ttn.save()
+
+        return OfflinePallet.objects.create(
+            barcode=barcode,
+            ttn_number=warehouse_ttn,
+            is_offline=True
+        )
+
+
+class OfflinePalletListSerializer(serializers.ModelSerializer):
+    barcode = serializers.CharField()
+    create_at = serializers.DateTimeField()
+    update_at = serializers.DateTimeField()
+    date = serializers.DateField(source='ttn_number.date')
+    user = OfflineUserUpdateSerializer(source='ttn_number.user')
+    warehouse = OfflineWarehouseSerializer(source='ttn_number.warehouse')
+    count = serializers.SerializerMethodField('get_count')
+    model = serializers.SerializerMethodField('get_model')
+    is_deleted = serializers.BooleanField()
+
+    class Meta:
+        model = OfflinePallet
+        fields = [
+            'id',
+            'barcode',
+            'ttn_number',
+            'create_at',
+            'update_at',
+            'date',
+            'user',
+            'warehouse',
+            'count',
+            'model',
+            'is_deleted',
+        ]
+
+    def get_count(self, obj) -> int:
+        barcode = obj.barcode
+        col = barcode[9:12]
+        try:
+            return int(col)
+        except Exception:
+            return 0
+
+    def get_model(self, obj) -> str:
+        barcode = obj.barcode
+        model_code = barcode[:5]
+        try:
+            model = OfflineProducts.objects.values_list(
+                'model__name__name', flat=True).filter(
+                        model__code=model_code,
+                    ).first()
+            return model
+        except Exception:
+            return ''
+
+
+class OfflinePalletProductsSerializer(serializers.ModelSerializer):
+    products = serializers.SerializerMethodField('get_products')
+
+    class Meta:
+        model = OfflinePallet
+        fields = [
+            'id',
+            'barcode',
+            'ttn_number',
+            'products',
+            'is_deleted',
+            'create_at',
+            'update_at'
+        ]
+
+    def get_products(self, obj) -> dict:
+        products = OfflineProducts.objects.filter(
+            offlinewarehousedo__warehouse_ttn__ttn_number=obj.ttn_number,
+            offlinewarehousedo__is_deleted=False)
+        return OfflineProductGetSerializer(products, many=True).data
+
+
+class OfflinePalletDecomposeSerializer(serializers.Serializer):
+    model_name = serializers.CharField()
+    month = serializers.IntegerField()
+    year = serializers.IntegerField()
+    quantity = serializers.IntegerField()
+    ttn_number = serializers.CharField()
+    pallet = serializers.DictField()
+
+    class Meta:
+        fields = ['model_name', 'month', 'year', 'quantity', 'ttn_number', 'pallet']

@@ -46,11 +46,11 @@ urlpatterns = [
     path('api/v1/', include('apps.onec.urls')),
     path('api/v1/', include('apps.warehouse.urls')),
     path('api/v1/offline/', include('apps.sync.urls')),
-    path('api/v1/offline/', include('apps.aoffline.urls')),
-    path('api/v1/offline/', include('apps.ashtrih.urls')),
-    path('api/v1/offline/', include('apps.aonec.urls')),
-    path('api/v1/offline/', include('apps.woffline.urls')),
-    path('api/v1/offline/', include('apps.osgp.urls')),
+    path('api/v1/offline/', include('apps.offaccount.urls')),
+    path('api/v1/offline/', include('apps.offshtrih.urls')),
+    path('api/v1/offline/', include('apps.offonec.urls')),
+    path('api/v1/offline/', include('apps.offwarehouse.urls')),
+    path('api/v1/offline/', include('apps.offosgp.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

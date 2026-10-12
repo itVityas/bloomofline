@@ -1,0 +1,37 @@
+from django.db import models
+
+from apps.offshtrih.models import OfflineModelNames
+
+
+class OfflineOneCTTN(models.Model):
+    number = models.CharField(max_length=50, db_index=True)
+    series = models.CharField(max_length=50, blank=True, null=True, db_index=True)
+    shipment_date = models.DateField(blank=True, null=True)
+    is_bel_receiver = models.BooleanField(null=True, blank=True)
+    create_at = models.DateTimeField(auto_now_add=True)
+    update_at = models.DateTimeField(auto_now=True, db_index=True)
+    is_offline = models.BooleanField(default=False, db_index=True)
+
+    class Meta:
+        app_label = "aonec"
+        ordering = ['-id']
+
+    def __str__(self):
+        return self.number
+
+
+class OfflineOneCTTNItem(models.Model):
+    onec_ttn = models.ForeignKey(OfflineOneCTTN, on_delete=models.CASCADE)
+    model_name = models.ForeignKey(OfflineModelNames, on_delete=models.CASCADE, db_constraint=False)
+    count = models.PositiveIntegerField(default=1)
+    available_quantity = models.PositiveIntegerField(default=1)
+    create_at = models.DateTimeField(auto_now_add=True)
+    update_at = models.DateTimeField(auto_now=True, db_index=True)
+    is_offline = models.BooleanField(default=False, db_index=True)
+
+    class Meta:
+        app_label = "aonec"
+        ordering = ['-id']
+
+    def __str__(self):
+        return f"{self.id} ({self.count})"
