@@ -11,6 +11,7 @@ from apps.offwarehouse.views.pallet import (
     OfflinePalletWithProductsListAPIView,
     OfflinePalletDecomposeAPIView,
     OfflinePalletByBarcodeWithProductsListAPIView,
+    OfflinePalletListView,
     OnlyOfflinePalletByBarcodeWithProductsListAPIView,
     OnlyOfflinePalletCreateByTTNAPIView,
 )
@@ -62,6 +63,7 @@ urlpatterns = [
     path('warehouse/pallet/offline_pallet_with_products_by_barcode/',
          OnlyOfflinePalletByBarcodeWithProductsListAPIView.as_view(),
          name='offline-pallet-by-barcode-list'),
+    path('warehouse/pallet/offline_list/', OfflinePalletListView.as_view()),
     path('warehouse/pallet/decompose/', OfflinePalletDecomposeAPIView.as_view(), name='decompose'),
     path('warehouse/ttn/', OfflineWarehouseTTNListAPIView.as_view(), name='warehouse-ttn-list'),
     path('warehouse/offline_ttn/', OnlyOfflineWarehouseTTNListAPIView.as_view(), name='offline-warehouse-ttn-list'),
