@@ -18,7 +18,7 @@ class ModelDatabaseRouter:
         'aoffline': 'default',
         'aonec': 'default',
         'ashtrih': 'default',
-        'osgp': 'default',
+        'offsgp': 'default',
         'sgp': 'bloom'
         }
 

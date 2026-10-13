@@ -4,7 +4,7 @@ from django.db import transaction
 import logging
 
 from apps.sgp.models import ShipmentBans
-from apps.offosgp.models import OfflineShipmentBans
+from apps.offsgp.models import OfflineShipmentBans
 from apps.sync.models import SyncDate
 
 logger = logging.getLogger(__name__)

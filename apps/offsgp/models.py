@@ -23,7 +23,7 @@ class OfflineStorageLimits(models.Model):
 
     class Meta:
         ordering = ['-id']
-        app_label = "osgp"
+        app_label = "offsgp"
 
     def __str__(self):
         return f"StorageLimit #{self.id} (Code: {self.production_code})"
@@ -70,7 +70,7 @@ class OfflineShipmentBans(models.Model):
 
     class Meta:
         ordering = ['-id']
-        app_label = "osgp"
+        app_label = "offsgp"
 
     def __str__(self):
         return f"ShipmentBan #{self.id} ({self.order_number})"

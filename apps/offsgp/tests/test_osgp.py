@@ -2,7 +2,7 @@ import datetime
 
 from rest_framework.test import APITestCase
 
-from apps.offosgp.models import OfflineShipmentBans, OfflineStorageLimits
+from apps.offsgp.models import OfflineShipmentBans, OfflineStorageLimits
 from apps.offshtrih.models import OfflineModelNames, OfflineModels
 
 

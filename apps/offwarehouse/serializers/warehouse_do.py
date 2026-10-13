@@ -13,7 +13,7 @@ from apps.offwarehouse.models import (
 )
 from apps.offonec.models import OfflineOneCTTN, OfflineOneCTTNItem
 from apps.offshtrih.models import OfflineProducts
-from apps.offosgp.models import OfflineShipmentBans
+from apps.offsgp.models import OfflineShipmentBans
 from apps.offshtrih.serializers.products import OfflineProductGetSerializer
 from apps.offwarehouse.serializers.warehouse_ttn import OfflineWarehouseTTNGetSerializer
 from apps.offwarehouse.exceptions.barcode import WrongModel

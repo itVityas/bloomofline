@@ -1,6 +1,6 @@
 from django.urls import path
 
-from apps.offosgp.views.sgp_sync import SyncFullSGPView, SyncSGPView
+from apps.offsgp.views.sgp_sync import SyncFullSGPView, SyncSGPView
 
 
 urlpatterns = [

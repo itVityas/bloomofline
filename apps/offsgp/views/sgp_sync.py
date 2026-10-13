@@ -3,7 +3,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiResponse
 
-from apps.offosgp.utils.osgp import SGPSync, SGPFullSync
+from apps.offsgp.utils.osgp import SGPSync, SGPFullSync
 from apps.sync.models import SyncDate
 
 

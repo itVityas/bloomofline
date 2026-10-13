@@ -62,7 +62,7 @@ INSTALLED_APPS = [
     'apps.warehouse',
     'apps.offwarehouse',
     'apps.sgp',
-    'apps.offosgp',
+    'apps.offsgp',
     'apps.sync',
 ]
 

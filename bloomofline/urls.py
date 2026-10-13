@@ -50,7 +50,7 @@ urlpatterns = [
     path('api/v1/offline/', include('apps.offshtrih.urls')),
     path('api/v1/offline/', include('apps.offonec.urls')),
     path('api/v1/offline/', include('apps.offwarehouse.urls')),
-    path('api/v1/offline/', include('apps.offosgp.urls')),
+    path('api/v1/offline/', include('apps.offsgp.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
