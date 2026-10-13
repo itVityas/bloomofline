@@ -135,7 +135,9 @@ class OfflineModelNameCodeView(ListAPIView):
     - short_name: Model short name
     - code: Model code
     """
-    queryset = OfflineModelNames.objects.prefetch_related('offlinemodels_set').distinct().all()
+    queryset = OfflineModelNames.objects.prefetch_related(
+            'offlinemodels_set'
+        ).distinct().filter(offlinemodels__relevance=True)
     serializer_class = OfflineModelNamesCodeSerializer
     permission_classes = (IsAuthenticated, StrihPermission)
     pagination_class = StandartResultPaginator
