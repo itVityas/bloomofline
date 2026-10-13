@@ -115,7 +115,7 @@ class AccountSync:
                 time_dict['full'] = time_roles + time_users + time_m2m
                 return time_dict
         except Exception as e:
-            logger.error('sync' + str('e'))
+            logger.error(f'sync: {e}')
             raise e
 
     def full_role_sync(self) -> float:
