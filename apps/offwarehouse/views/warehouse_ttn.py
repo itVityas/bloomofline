@@ -662,7 +662,7 @@ class OnlyOfflineWarehouseTTNProductsByUserIdAPIView(APIView):
                     )
             serializer = self.serializer_class
             query = OfflineWarehouseTTN.objects.raw('''
-                SELECT * FROM woffline_offlinewarehousettn
+                SELECT * FROM offwarehouse_offlinewarehousettn
                 WHERE user_id = %s AND is_deleted = 0
                 ORDER BY date DESC, ttn_number DESC
                 LIMIT 1
