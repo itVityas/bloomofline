@@ -13,11 +13,11 @@ class ModelDatabaseRouter:
         "onec": 'bloom',
         "shtrih": 'bloom',
         "warehouse": 'bloom',
-        "woffline": 'default',
+        "offwarehouse": 'default',
         "sync": 'default',
-        'aoffline': 'default',
-        'aonec': 'default',
-        'ashtrih': 'default',
+        'offaccount': 'default',
+        'offonec': 'default',
+        'offshtrih': 'default',
         'offsgp': 'default',
         'sgp': 'bloom'
         }

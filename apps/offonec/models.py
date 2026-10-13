@@ -13,7 +13,7 @@ class OfflineOneCTTN(models.Model):
     is_offline = models.BooleanField(default=False, db_index=True)
 
     class Meta:
-        app_label = "aonec"
+        app_label = "offonec"
         ordering = ['-id']
 
     def __str__(self):
@@ -30,7 +30,7 @@ class OfflineOneCTTNItem(models.Model):
     is_offline = models.BooleanField(default=False, db_index=True)
 
     class Meta:
-        app_label = "aonec"
+        app_label = "offonec"
         ordering = ['-id']
 
     def __str__(self):

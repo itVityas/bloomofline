@@ -16,7 +16,7 @@ class OfflineRole(models.Model):
         return self.name
 
     class Meta:
-        app_label = "aoffline"
+        app_label = "offaccount"
         ordering = ['id']
 
 
@@ -40,7 +40,7 @@ class OfflineUser(AbstractBaseUser):
         return self.username
 
     class Meta:
-        app_label = "aoffline"
+        app_label = "offaccount"
         ordering = ['id']
 
 
@@ -53,6 +53,6 @@ class OfflineUserRoles(models.Model):
     update_at = models.DateTimeField()
 
     class Meta:
-        app_label = "aoffline"
+        app_label = "offaccount"
         unique_together = ('user', 'role')
         ordering = ['id']

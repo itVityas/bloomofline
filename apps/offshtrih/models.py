@@ -12,7 +12,7 @@ class OfflineModelNames(models.Model):
 
     class Meta:
         ordering = ['-id']
-        app_label = "ashtrih"
+        app_label = "offshtrih"
 
     def __str__(self):
         return self.name
@@ -37,7 +37,7 @@ class OfflineModels(models.Model):
 
     class Meta:
         ordering = ['-id']
-        app_label = "ashtrih"
+        app_label = "offshtrih"
 
     def __str__(self):
         return f"{self.name} (Code: {self.code})"
@@ -66,7 +66,7 @@ class OfflineProducts(models.Model):
 
     class Meta:
         ordering = ['-id']
-        app_label = "ashtrih"
+        app_label = "offshtrih"
 
     def __str__(self):
         return f"Product {self.barcode}"

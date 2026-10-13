@@ -13,7 +13,7 @@ class OfflineWarehouse(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        app_label = "woffline"
+        app_label = "offwarehouse"
         ordering = ['id']
 
     def __str__(self):
@@ -26,7 +26,7 @@ class OfflineTypeOfWork(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        app_label = "woffline"
+        app_label = "offwarehouse"
         ordering = ['id']
 
     def __str__(self):
@@ -42,7 +42,7 @@ class OfflineWarehouseAction(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        app_label = "woffline"
+        app_label = "offwarehouse"
         ordering = ['id']
 
     def __str(self):
@@ -63,7 +63,7 @@ class OfflineWarehouseTTN(models.Model):
     update_at = models.DateTimeField(auto_now=True, db_index=True)
 
     class Meta:
-        app_label = "woffline"
+        app_label = "offwarehouse"
         ordering = ['-ttn_number']
 
     def __str__(self):
@@ -79,7 +79,7 @@ class OfflinePallet(models.Model):
     is_offline = models.BooleanField(default=True, db_index=True)
 
     class Meta:
-        app_label = "woffline"
+        app_label = "offwarehouse"
         ordering = ['-id']
 
     def __str__(self):
@@ -96,7 +96,7 @@ class OfflineWarehouseDo(models.Model):
     update_at = models.DateTimeField(auto_now=True, db_index=True)
 
     class Meta:
-        app_label = "woffline"
+        app_label = "offwarehouse"
         ordering = ['-id']
 
     def __str__(self):
@@ -113,7 +113,7 @@ class OfflineNotPackaging(models.Model):
     is_offline = models.BooleanField(default=True, db_index=True)
 
     class Meta:
-        app_label = "woffline"
+        app_label = "offwarehouse"
         ordering = ['-id']
 
     def __str__(self):
