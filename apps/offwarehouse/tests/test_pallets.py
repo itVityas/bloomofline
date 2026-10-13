@@ -84,6 +84,17 @@ class PalletTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotIn('error', response.data)
 
+    def test_offline_pallet_list_noauth(self):
+        response = self.client.get(reverse('offline_pallet_list'))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertNotIn('error', response.data)
+
+    def test_offline_pallet_list_auth(self):
+        self.client.force_authenticate(user=self.warehouse)
+        response = self.client.get(reverse('offline_pallet_list'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotIn('error', response.data)
+
     def test_pallet_update_noauth(self):
         response = self.client.delete(reverse('pallet-update', kwargs={'pk': 1}))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
