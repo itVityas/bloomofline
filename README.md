@@ -33,19 +33,13 @@ CipherString = DEFAULT:@SECLEVEL=0
 ```
 + install python3, pip3, python3-venv
 + copy this project 
-+ cd project/dj
++ cd project
 + python3 -m venv venv
 + source venv/bin/activate (activate virtual enviroment)
 + pip3 install -r requirements.txt (install dependencies) .\venv\Scripts\activate.bat
 + python3 manage.py migrate
-+ python3 manage.py createsuperuser
 + python3 manage.py runserver {ip:port|port}
-+ ./manage.py migrate (apply migrations for DB, if you need)
-+ ./manage.py loaddata fixture/role.json (if you run at first)
-+ ./manage.py loaddata fixture/type_of_work.json (if you run at first)
-+ ./manage.py loaddata fixture/warehouse.json (if you run at first)
-+ ./manage.py loaddata fixture/warehouse_action.json (if you run at first)
-+ ./manage.py runsever {ip:port} (start app)
++ python3 manage.py migrate (apply migrations for DB, if you need)
 
 
 ***.env:***
@@ -62,13 +56,6 @@ DB_PASSWORD=
 DB_HOST=
 DB_PORT=
 
-ORACLE_DB_NAME=
-ORACLE_DB_USER=
-ORACLE_DB_PASSWORD=
-
-API_USERNAME=
-API_PASSWORD=
-API_1C_URL_GTD=
 ```
 
 
