@@ -76,7 +76,7 @@ class FullSyncAllView(APIView):
                     new_sync_date.save()
 
                 cursor.execute("PRAGMA foreign_keys = ON;")
-                cursor.execute("PRAGMA journal_mode = DELETE;")
+                cursor.execute("PRAGMA journal_mode = WAL;")
                 cursor.execute("PRAGMA synchronous = NORMAL;")
 
             return Response({
@@ -115,13 +115,11 @@ class SyncAllView(APIView):
             server_time = WarehouseAction.objects.annotate(current_time=Now()).first().current_time
 
             with connection.cursor() as cursor:
-                cursor.execute("PRAGMA journal_mode = WAL;")
                 cursor.execute("PRAGMA synchronous = NORMAL;")   # НЕ OFF — для инкремента
                 cursor.execute("PRAGMA busy_timeout = 5000;")    # ждать блокировки
                 cursor.execute("PRAGMA temp_store = MEMORY;")
                 cursor.execute("PRAGMA cache_size = -64000;")
                 cursor.execute("PRAGMA wal_autocheckpoint = 1000;")
-                cursor.execute("PRAGMA foreign_keys = ON;")
 
                 time_account = AccountSync().sync()
                 time_shtrih = ShtrihSync(sync_date=sync_date).sync()
@@ -133,7 +131,6 @@ class SyncAllView(APIView):
                     + time_sgp.get('full', 0)
                 new_sync_date = SyncDate(last_sync=server_time)
                 new_sync_date.save()
-                cursor.execute("PRAGMA journal_mode = DELETE;")
             return Response({
                 'account': time_account,
                 'onec': time_ttn,
