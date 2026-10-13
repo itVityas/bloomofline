@@ -219,7 +219,7 @@ class WarehouseFullSync:
                 named=False
             )
             PALLET_INSERT_SQL = """
-                INSERT INTO woffline_offlinepallet
+                INSERT INTO offwarehouse_offlinepallet
                     (id, ttn_number_id, barcode, is_deleted, create_at, update_at, is_offline)
                 VALUES (?, ?, ?, ?, ?, ?, 0)
             """
@@ -262,7 +262,7 @@ class WarehouseFullSync:
                 named=False
             )
             TTN_INSERT_SQL = """
-                INSERT INTO woffline_offlinewarehousettn
+                INSERT INTO offwarehouse_offlinewarehousettn
                     (ttn_number, is_close, date, warehouse_id, warehouse_action_id,
                     onec_ttn_id, user_id, is_deleted, create_at, update_at, is_offline)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)
@@ -283,7 +283,7 @@ class WarehouseFullSync:
                 named=False
             )
             SQL_WAREHOUSEDO_INSERT = """
-                INSERT INTO woffline_offlinewarehousedo
+                INSERT INTO offwarehouse_offlinewarehousedo
                 (id, warehouse_ttn_id, product_id, quantity,
                 create_at, update_at, is_deleted, is_offline)
                 VALUES (?, ?, ?, ?, ?, ?, ?, 0)

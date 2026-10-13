@@ -82,7 +82,7 @@ class ShtrihFullSync:
 
     def _bulk_insert_products_from_mssql(self) -> int:
         PRODUCT_INSERT_SQL = """
-        INSERT INTO ashtrih_offlineproducts
+        INSERT INTO offshtrih_offlineproducts
                 (id, model_id, barcode, state, quantity, available_quantity,
                 is_shipment, work_date, type_of_work_id, module_id,
                 color_code, russian_title, shift, is_offline)
