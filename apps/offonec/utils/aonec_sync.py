@@ -202,10 +202,6 @@ class OneCSync:
                         create_at=i['create_at'],
                         update_at=i['update_at'],
                     ))
-                if buf >= self.batch_size:
-                    offline_OneCTTItem.objects.bulk_create(list_items)
-                    list_items.clear()
-                    buf = 0
             if list_items:
                 offline_OneCTTItem.objects.bulk_create(list_items)
             if list_update:
